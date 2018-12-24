@@ -1009,22 +1009,27 @@
             <artifactId>netty-all</artifactId>
             <version>4.1.15.Final</version>
         </dependency>
-        <dependency>
+		<dependency>
             <groupId>Net.PC15</groupId>
             <artifactId>FCardIO</artifactId>
             <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/FCardIO-1.0.0.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.jb2011.lnf</groupId>
             <artifactId>beautyeye</artifactId>
             <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/beautyeye-1.0.0.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.netbeans</groupId>
             <artifactId>nb-lib</artifactId>
             <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/nb-lib-1.0.0.jar</systemPath>
         </dependency>
-
 
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -1057,6 +1062,8 @@
 			<groupId>com.oseasy</groupId>
 			<artifactId>antlr</artifactId>
 			<version>2.7.4</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/antlr-2.7.4.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.oseasy</groupId>
