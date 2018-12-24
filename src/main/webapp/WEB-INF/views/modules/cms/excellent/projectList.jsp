@@ -7,8 +7,30 @@
     <meta charset="UTF-8">
     <title>${backgroundTitle}</title>
     <%@include file="/WEB-INF/views/include/backcreative.jsp" %>
+    <script src="/js/jquery.cookie.js"></script>
 
 <body>
+
+<style>
+    .flow-reminder-content{
+        width: 720px;
+    }
+    .flow-reminder-content .time-horizontal{
+        max-width: 704px;
+    }
+    .flow-reminder-content .flow-li3:first-child{
+        width: 195px;
+    }
+    .flow-reminder-content .flow-li3:last-child{
+        width: 295px;
+    }
+    .flow-reminder-content .time-horizontal li{
+        width: 14%;
+    }
+    .flow-reminder-content .flow-li3:last-child:after{
+        left: 135px;
+    }
+</style>
 
 <div id="app" v-show="pageLoad" style="display: none" class="container-fluid mgb-60">
     <edit-bar></edit-bar>
@@ -69,7 +91,7 @@
                   @selection-change="handleChangeSelection" @sort-change="handleTableSortChange">
             <el-table-column
                     type="selection"
-                    width="55">
+                    width="60">
             </el-table-column>
             <el-table-column label="标题" prop="title" min-width="100">
                 <template slot-scope="scope">
@@ -155,6 +177,35 @@
         </div>
     </div>
 
+    <div class="fixed-act-tip">
+        <a href="javascript:void(0);" @click.stop.prevent="dialogVisibleAutoDefinedFlow=true">项目文章管理操作指南</a>
+    </div>
+    <el-dialog
+            title="温馨提示"
+            :visible.sync="dialogVisibleAutoDefinedFlow"
+            :close-on-click-modal="false"
+            width="765px"
+            :before-close="handleCloseAutoDefinedFlow">
+        <div class="flow-reminder-content">
+            <ul class="time-horizontal">
+                <div>
+                    <div class="flow-li3"><label>项目管理系统</label></div>
+                    <div class="flow-li3"><label>网站内容管理系统</label></div>
+                </div>
+                <li><b class="step-line">1</b><span>项目查询</span></li>
+                <li><b class="step-line">2</b><span>选择项目</span></li>
+                <li><b class="step-line">3</b><span>发布优秀项目</span></li>
+                <li><b class="step-line">4</b><span>项目文章管理</span></li>
+                <li><b class="step-line">5</b><span>修改文章</span></li>
+                <li><b class="step-line">6</b><span>访问</span></li>
+                <li><b>7</b><span>发布</span></li>
+            </ul>
+        </div>
+        <div slot="footer" class="dialog-footer">
+            <el-checkbox v-model="isRemind">不再提醒</el-checkbox>
+        </div>
+    </el-dialog>
+
 </div>
 
 <script>
@@ -165,6 +216,8 @@
         el: '#app',
         data: function () {
             var publishStatues = JSON.parse('${fns: toJson(fns: getDictList('0000000279'))}');
+            var isShowStepModal = $.cookie('isShowStepModalProjectArticle');
+            var dialogVisibleAutoDefinedFlow = !(isShowStepModal);
             return {
                 publishStatues: publishStatues,
                 searchDateList: [{label: '发布时间', value: '1'}, {label: '到期时间', value: '2'}],
@@ -185,7 +238,9 @@
                 multipleSelectedId: [],
                 multipleSelectedPublishStatus: [],
                 tableList: [],
-                loading: false
+                loading: false,
+                dialogVisibleAutoDefinedFlow:dialogVisibleAutoDefinedFlow,
+                isRemind:!!isShowStepModal
             }
         },
         watch: {
@@ -204,6 +259,17 @@
             }
         },
         methods: {
+
+            handleCloseAutoDefinedFlow:function () {
+                this.dialogVisibleAutoDefinedFlow = false;
+                if(this.isRemind){
+                    $.cookie('isShowStepModalProjectArticle','noMore',{
+                        expires:100
+                    });
+                }else{
+                    $.removeCookie('isShowStepModalProjectArticle');
+                }
+            },
 
             getDataList: function () {
                 var self = this;

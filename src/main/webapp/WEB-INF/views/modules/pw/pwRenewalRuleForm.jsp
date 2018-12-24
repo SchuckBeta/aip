@@ -57,7 +57,7 @@
     new Vue({
         el: '#app',
         data: function () {
-            var pwRenewalRule = JSON.parse('${fns:toJson(pwRenewalRule)}');
+            var pwRenewalRule = JSON.parse(JSON.stringify(${fns:toJson(pwRenewalRule)}));
             return {
                 form: {
                     id: pwRenewalRule.id || '',

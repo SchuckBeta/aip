@@ -15,13 +15,25 @@
         <input type="text" style="display: none">
         <div class="conditions">
             <e-condition type="radio" v-model="searchListForm['applicant.office.id']" label="学院" :options="colleges"
-                         name="officeId" :default-props="officeProps" @change="getPwEnterList"></e-condition>
+                         name="officeId" :default-props="officeProps" @change="getPwEnterListBGSH"></e-condition>
             <e-condition type="radio" v-model="searchListForm.status" label="入驻状态" :options="pwEnterStatues"
-                         name="type" @change="getPwEnterList"></e-condition>
+                         name="status" @change="getPwEnterListBGSH" :default-props="roomStatusProps"></e-condition>
+            <e-condition type="radio" v-model="searchListForm['restatus']" label="房间分配" :options="roomStatus"
+                         name="restatus" @change="getPwEnterListBGSH" :default-props="roomStatusProps"></e-condition>
         </div>
         <div class="search-block_bar clearfix">
+            <el-select size="mini" v-model="condition" placeholder="请选择查询条件" clearable @change="handleChangeCondition"
+                       style="width:135px; vertical-align: top">
+                <el-option
+                        v-for="item in conditions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                </el-option>
+            </el-select>
             <el-date-picker
                     v-model="pwEnterApplyDate"
+                    :disabled="!condition"
                     type="daterange"
                     size="mini"
                     align="right"
@@ -31,22 +43,22 @@
                     start-placeholder="开始日期"
                     end-placeholder="结束日期"
                     value-format="yyyy-MM-dd HH:mm:ss"
-                    style="width: 270px;">
+                    style="width: 270px; vertical-align: top">
             </el-date-picker>
             <el-input
-                    placeholder="企业或团队名称/负责人/组成员/导师"
+                    placeholder="企业或团队名称/负责人/组成员/导师/场地"
                     size="mini"
                     name="keys"
                     v-model="searchListForm.keys"
-                    keyup.enter.native="getPwEnterList"
-                    class="w300">
+                    keyup.enter.native="getPwEnterListBGSH"
+                    class="w300" style="vertical-align: top">
                 <el-button slot="append" icon="el-icon-search"
-                           @click.stop.prevent="getPwEnterList"></el-button>
+                           @click.stop.prevent="getPwEnterListBGSH"></el-button>
             </el-input>
         </div>
     </el-form>
     <div class="table-container">
-        <el-table :data="pwEnterList" size="mini" class="table">
+        <el-table :data="pwEnterListBGSH" size="mini" class="table">
             <el-table-column label="入驻信息">
                 <template slot-scope="scope">
                     <table-thing-info :row="getPwEnterInfo(scope.row)"></table-thing-info>
@@ -57,21 +69,48 @@
                     <table-team-member :row="getPwEnterTeamInfo(scope.row)"></table-team-member>
                 </template>
             </el-table-column>
-            <el-table-column label="申请日期" align="center">
+            <el-table-column label="项目数" align="center">
                 <template slot-scope="scope">
-                    {{scope.row.createDate | formatDateFilter('YYYY-MM-DD')}}
+                    {{scope.row.eprojects ? scope.row.eprojects.length : '0'}}
                 </template>
             </el-table-column>
-            <el-table-column label="状态" align="center">
+            <el-table-column label="入驻场地" align="center">
+                <template slot-scope="scope">
+                    <template v-if="scope.row.erooms">
+                            <span v-for="room in scope.row.erooms">
+                            {{room.pwRoom.pwSpace.id | getRoomNames(baseTreeEntries)}}/{{room.pwRoom.name}}
+                                <br>
+                        </span>
+                    </template>
+                    <template v-else>-</template>
+                </template>
+            </el-table-column>
+            <el-table-column label="退孵日期" align="center">
+                <template slot-scope="scope">
+                    {{scope.row.exitDate | formatDateFilter('YYYY-MM-DD')}}
+                </template>
+            </el-table-column>
+            <el-table-column label=" 入驻有效期" align="center">
+                <template slot-scope="scope">
+                    {{scope.row.startDate | formatDateFilter('YYYY-MM-DD')}}至{{scope.row.endDate |
+                    formatDateFilter('YYYY-MM-DD')}}
+                </template>
+            </el-table-column>
+            <el-table-column label="入驻状态" align="center">
                 <template slot-scope="scope">
                     {{scope.row.status | selectedFilter(pwEnterStatusEntries)}}
+                </template>
+            </el-table-column>
+            <el-table-column label="房间分配" align="center">
+                <template slot-scope="scope">
+                    {{scope.row.restatus | selectedFilter(roomStatuEntries)}}
                 </template>
             </el-table-column>
             <el-table-column label="操作" align="center">
                 <template slot-scope="scope">
                     <div class="table-btns-action">
-                        <el-button :disabled="scope.row.status === '1'" type="text" size="mini"
-                                   @click.stop.prevent="goToAudit(scope.row)">审核
+                        <el-button type="text" size="mini"
+                                   @click.stop.prevent="goToChange(scope.row)">变更
                         </el-button>
                     </div>
                 </template>
@@ -103,7 +142,6 @@
         el: '#app',
         data: function () {
             var offices = JSON.parse(JSON.stringify(${fns: toJson(fns: getOfficeList())}));
-            var pwEnterStatues = JSON.parse('${fns: toJson(fns:getDictList('pw_enter_status'))}');
             return {
                 searchListForm: {
                     pageNo: 1,
@@ -113,21 +151,34 @@
                     orderByType: '',
                     startDate: '',
                     startQDate: '',
+                    endDate: '',
+                    endQDate: '',
+                    exitDate: '',
+                    exitQDate: '',
                     keys: '',
+                    status: '',
+                    'restatus': '',
                     'applicant.office.id': ''
                 },
                 pwEnterApplyDate: [],
                 pageCount: 0,
                 pwEnterTypes: [],
-                pwEnterStatues: pwEnterStatues,
+                pwEnterStatues: [],
                 offices: offices,
-                pwEnterList: [],
+                pwEnterListBGSH: [],
                 loading: false,
-
                 officeProps: {
                     label: 'name',
                     value: 'id'
-                }
+                },
+                roomStatus: [],
+                roomStatusProps: {
+                    label: 'name',
+                    value: 'key'
+                },
+                conditions: [{label: "入驻日期", value: "1"}, {label: "到期日期", value: "2"},{label: "退孵日期", value: "3"}],
+                condition: '',
+                baseTreeEntries: {}
             }
         },
         computed: {
@@ -135,7 +186,7 @@
                 return this.getEntries(this.pwEnterTypes)
             },
             pwEnterStatusEntries: function () {
-                return this.getEntries(this.pwEnterStatues)
+                return this.getEntries(this.pwEnterStatues, this.roomStatusProps)
             },
             colleges: function () {
                 return this.offices.filter(function (item) {
@@ -144,31 +195,80 @@
             },
             officeEntries: function () {
                 return this.getEntries(this.offices, {label: 'name', value: 'id'})
+            },
+            roomStatuEntries: function () {
+                return this.getEntries(this.roomStatus, this.roomStatusProps)
             }
         },
         methods: {
 
-            handleChangeApplyDate: function (value) {
-                var startDate, startQDate;
-                var hasValue = value && value.length > 0;
-                startDate = hasValue ? value[0] : '';
-                startQDate = hasValue ? value[1] : '';
-                this.searchListForm.startDate = startDate;
-                this.searchListForm.startQDate = startQDate;
-                this.getPwEnterList();
+
+            handleChangeCondition: function (value) {
+                this.emptyAllDate();
+                this.pwEnterApplyDate = [];
+                if (!value) {
+                    this.getPwEnterListBGSH();
+                }
             },
 
-            goToAudit: function (row) {
-                location.href = this.frontOrAdmin + '/pw/pwEnter/form?id=' + row.id + '&type=' + row.type;
+            emptyAllDate: function () {
+                this.emptyStartDate();
+                this.emptyEndDate();
+                this.emptyTFDate();
             },
+
+            emptyStartDate: function () {
+                this.searchListForm.startDate = '';
+                this.searchListForm.startQDate = '';
+            },
+
+            emptyEndDate: function () {
+                this.searchListForm.endDate = '';
+                this.searchListForm.endQDate = '';
+            },
+
+            emptyTFDate: function () {
+                this.searchListForm.exitDate = '';
+                this.searchListForm.exitQDate = '';
+            },
+
+            handleChangeApplyDate: function (value) {
+                var hasValue = value && value.length > 0;
+                var date1 = hasValue ? value[0] : '';
+                var date2 = hasValue ? value[1] : '';
+                if (this.condition === '1') {
+                    this.searchListForm.startDate = date1;
+                    this.searchListForm.startQDate = date2;
+                    this.emptyEndDate();
+                    this.emptyTFDate();
+                } else if (this.condition === '2') {
+                    this.searchListForm.endDate = date1;
+                    this.searchListForm.endQDate = date2;
+                    this.emptyStartDate();
+                    this.emptyTFDate();
+                }else {
+                    this.searchListForm.exitDate = date1;
+                    this.searchListForm.exitQDate = date2;
+                    this.emptyStartDate();
+                    this.emptyEndDate();
+                }
+
+                this.getPwEnterListBGSH();
+            },
+
+
+            goToChange: function (row) {
+                location.href = this.frontOrAdmin + '/pw/pwEnter/formBgsh?id=' + row.id + '&appType=2';
+            },
+
 
             handlePSizeChange: function (value) {
                 this.searchListForm.pageSize = value;
-                this.getPwEnterList();
+                this.getPwEnterListBGSH();
             },
 
             handlePCPChange: function () {
-                this.getPwEnterList();
+                this.getPwEnterListBGSH();
             },
             getPwEnterTypes: function () {
                 var self = this;
@@ -179,14 +279,14 @@
 
                 })
             },
-            getPwEnterList: function () {
+            getPwEnterListBGSH: function () {
                 var self = this;
                 this.loading = true;
-                this.$axios.get('/pw/pwEnter/ajaxList?' + Object.toURLSearchParams(this.searchListForm)).then(function (response) {
+                this.$axios.get('/pw/pwEnter/ajaxCompanyList?' + Object.toURLSearchParams(this.searchListForm)).then(function (response) {
                     var data = response.data;
                     if (data.status === 1) {
                         var pageData = data.data || {};
-                        self.pwEnterList = pageData.list || [];
+                        self.pwEnterListBGSH = pageData.list || [];
                         self.searchListForm.pageNo = pageData.pageNo || 1;
                         self.searchListForm.pageSize = pageData.pageSize || 10;
                         self.pageCount = pageData.count;
@@ -221,14 +321,46 @@
                     applicantName: applicant.name,
                     snames: eteam.snames,
                     tnames: eteam.tnames,
-                    teamName: eteam.team.name,
+                    teamName: eteam.team.name
                 }
-            }
+            },
+            getRoomStatus: function () {
+                var self = this;
+                this.$axios.get('/pw/pwEnter/ajaxPwEroomStatus').then(function (response) {
+                    var data = response.data;
+                    self.roomStatus = JSON.parse(data.data) || []
+                }).catch(function (error) {
+
+                })
+            },
+            getPwEnterStatus: function () {
+                var self = this;
+                this.$axios.get('/pw/pwEnter/ajaxPwEnterStatus').then(function (response) {
+                    var data = response.data;
+                    self.pwEnterStatues = JSON.parse(data.data) || []
+                }).catch(function (error) {
+
+                })
+            },
+            getSpaceList: function () {
+                var self = this;
+                return this.$axios.get('/pw/pwSpace/treeData').then(function (response) {
+                    self.spaceList = response.data;
+                    var entries = {};
+                    self.spaceList.forEach(function (item) {
+                        entries[item.id] = item;
+                    })
+                    self.baseTreeEntries = entries;
+                })
+            },
 
         },
         created: function () {
-            this.getPwEnterList();
+            this.getPwEnterListBGSH();
             this.getPwEnterTypes();
+            this.getRoomStatus();
+            this.getPwEnterStatus();
+            this.getSpaceList();
         }
     })
 

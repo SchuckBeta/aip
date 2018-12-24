@@ -5,10 +5,7 @@
 <head>
     <title>${backgroundTitle}</title>
     <%@include file="/WEB-INF/views/include/backcreative.jsp" %>
-    <script type="text/javascript" src="/js/components/pwEnter/pwEnterMixin.js?version=${fns: getVevison()}"></script>
-    <script type="text/javascript" src="/js/components/pwEnter/pwEnterView.js?version=${fns: getVevison()}"></script>
-    <script src="/js/components/pwEnter/pwEnterApplyRules.js?version=${fns: getVevison()}"></script>
-    <script src="/js/components/pwEnter/pwEnterApplyForm.js?version=${fns: getVevison()}"></script>
+
 
 </head>
 <body>
@@ -18,7 +15,7 @@
     </div>
     <div class="panel panel-pw-enter mgb-20">
         <div class="panel-body" style="min-width: 1086px;">
-            <applicant-info :pw-enter-id="pwEnterId"></applicant-info>
+            <applicant-info :pw-enter-id="pwEnterId" @change-photo="changePhoto" is-bg></applicant-info>
             <div class="pro-category-placeholder"></div>
         </div>
     </div>
@@ -32,7 +29,7 @@
                 <el-tab-pane v-if="pwApplyForm.type == '2'" label="企业信息" name="firstPwEnterTab">
                     <tab-pane-content>
                         <e-panel label="企业信息">
-                            <enterprise-form ref="enterpriseForm" style="max-width: 960px;"></enterprise-form>
+                            <enterprise-form ref="enterpriseForm" is-admin :app-type="appType" style="max-width: 960px;"></enterprise-form>
                         </e-panel>
                     </tab-pane-content>
                 </el-tab-pane>
@@ -103,7 +100,9 @@
                     appType: '2',
                     createDate: pwEnter.createDate,
                     status: pwEnter.status
-                }
+                },
+                enterType: pwEnter.type,
+                appType: pwEnter.appType
             }
         },
         computed: {
@@ -121,6 +120,10 @@
         methods: {
             saveForm: function () {
                 this.enterFormGroupPromise();
+            },
+
+            changePhoto: function (url) {
+                this.pwApplyForm.declarePhoto = url
             },
 
             enterFormGroupPromise: function () {
@@ -161,11 +164,14 @@
                             closeOnClickModal: false,
                             closeOnPressEscape: false,
                             confirmButtonText: '确定',
+                            showCancelButton: true,
+                            cancelButtonText: '返回列表',
                             showClose: false,
-                            message: '入驻申报'+(isTemp == '0' ? '提交' : '保存')+'成功'
+                            message: '保存成功'
                         }).then(function () {
-                            location.href = '/f/pw/pwEnterRel/list';
+
                         }).catch(function () {
+                            location.href = document.referrer;
                         });
                     }else {
                         self.$alert(data.msg, "提示", {

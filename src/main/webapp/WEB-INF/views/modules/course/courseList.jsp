@@ -97,8 +97,8 @@
     new Vue({
         el: '#app',
         data: function () {
-            var pageData = ${fns: toJson(page)};
-            var courseForm = JSON.parse('${fns: toJson(course)}');
+            var pageData = JSON.parse(JSON.stringify(${fns: toJson(page)})) || {};
+            var courseForm = JSON.parse(JSON.stringify(${fns: toJson(course)})) || {};
             var categories = JSON.parse('${fns: toJson(fns: getDictList('0000000086'))}');
             var courseTypes = JSON.parse('${fns: toJson(fns: getDictList('0000000078'))}');
             var courseStatusList = JSON.parse('${fns: toJson(fns: getDictList('0000000082'))}');

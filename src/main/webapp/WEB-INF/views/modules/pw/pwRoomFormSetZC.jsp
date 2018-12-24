@@ -10,22 +10,19 @@
     <%--<script type="text/javascript" src="${ctxStatic}/treeTransfer/treeTransfer.min.js"></script>--%>
 <body>
 
-<style>
-
-</style>
 
 <div id="app" v-show="pageLoad" style="display: none" class="container-fluid mgb-60 room-asset-assign">
     <div class="mgb-20">
         <shiro:hasPermission name="pw:pwRoom:edit">
-            <edit-bar second-name="资产分配"></edit-bar>
+            <edit-bar second-name="资产分配" href="/pw/pwRoom/tree"></edit-bar>
         </shiro:hasPermission>
         <shiro:lacksPermission name="pw:pwRoom:edit">
-            <edit-bar second-name="查看"></edit-bar>
+            <edit-bar second-name="查看" href="/pw/pwRoom/tree"></edit-bar>
         </shiro:lacksPermission>
     </div>
     <e-panel class="assign-header">
         <span class="current-room">当前房间：{{pwRoom.pwSpace | filterPwRoomAddress(pwSpaceListEntries)}}<span
-                v-if="pwRoom.alias">/{{pwRoom.alias}}</span></span>
+                v-if="pwRoom.name">-{{pwRoom.name}}</span></span>
         <el-button size="mini" type="primary" :disabled="multipleSelectedId.length == 0" @click.stop.prevent="batchCancelAssign(multipleSelectedId.join(','))">
             批量取消分配
         </el-button>
@@ -41,18 +38,17 @@
                                @click.stop.prevent="searchTree"></el-button>
                 </el-input>
             </div>
-
-            <el-tree
-                    ref="tree"
-                    :props="props"
-                    :data="collegesTree"
-                    show-checkbox
-                    node-key="pId"
-                    :default-expanded-keys="['1']"
-                    :filter-node-method="filterTreeNode"
-                    @check-change="handleCheckChange">
-            </el-tree>
-
+            <div class="aside-tree" :style="{height:asideHeight-59 + 'px'}">
+                <el-tree
+                        ref="tree"
+                        :props="props"
+                        :data="collegesTree"
+                        show-checkbox
+                        node-key="level"
+                        :default-expanded-keys="defaultExpandedKeys"
+                        @check-change="handleCheckChange">
+                </el-tree>
+            </div>
         </el-aside>
         <el-main>
 
@@ -67,7 +63,7 @@
                     <el-table size="mini" :data="pageList" class="table" @selection-change="handleSelectionChange">
                         <el-table-column
                                 type="selection"
-                                width="55">
+                                width="60">
                         </el-table-column>
                         <el-table-column prop="pwCategory.name" align="center" label="资产类别">
                         </el-table-column>
@@ -113,7 +109,6 @@
 
         </el-main>
     </el-container>
-    </el-container>
 
 
 </div>
@@ -125,7 +120,7 @@
         el: '#app',
         mixins: [Vue.collegesMixin],
         data: function () {
-            var pwRoom = JSON.parse('${fns:toJson(pwRoom)}');
+            var pwRoom = JSON.parse(JSON.stringify(${fns:toJson(pwRoom)})) || [];
             return {
                 pwRoom: pwRoom,
                 filterTreeText: '',
@@ -152,7 +147,10 @@
                 multipleSelectedId: [],
                 spaceList: [],
                 asideHeight: 0,
-                message:'${message}'
+                message:'${message}',
+                treeList:[],
+                flattenColleges:[],
+                defaultExpandedKeys:[1]
             }
         },
         watch: {},
@@ -163,53 +161,132 @@
                     entries[item.id] = item;
                 });
                 return entries;
+            },
+            treeListIdEntries:function () {
+                var entries = {};
+                this.treeList.forEach(function (item) {
+                    entries[item.id] = item;
+                });
+                return entries;
             }
         },
         methods: {
+            getDataGroup:function (parent,child) {
+                var arr = [];
+                parent.forEach(function (p) {
+                    arr.push(p);
+                    if(child.status){
+                        child.datas.forEach(function (c) {
+                            if(p.id == c.pwCategory.id){
+                                var obj = {
+                                    id: c.id,
+                                    isParent: false,
+                                    name: c.name,
+                                    pId: p.id,
+                                    open: false
+                                };
+                                arr.push(obj);
+                            }
+                        })
+                    }
+                });
+                return arr;
+            },
             getAssetTree: function () {
-                var self = this;
+                var self = this,dataParent = [],dataChild = {},tree = [];
                 this.$axios.get('/pw/pwCategory/treeData?isParent=true').then(function (response) {
-                    var dataParent = response.data;
-                    var tree = [];
+                    dataParent = response.data || [];
                     if (dataParent.length > 0) {
                         self.$axios.get('/pw/pwFassets/treeDataAll').then(function (response) {
-                            var dataChild = response.data;
-                            dataParent.forEach(function (t) {
-                                if (t.pId == 1) {
-                                    t.open = true;
-                                }
-                                tree.push(t);
-                                if (dataChild.status) {
-
-                                    dataChild.datas.forEach(function (tFs) {
-
-                                        if (t.id == tFs.pwCategory.id) {
-                                            var curNode = {
-                                                id: tFs.id,
-                                                isParent: false,
-                                                name: tFs.name,
-                                                pId: t.id,
-                                                open: false
-                                            };
-                                            tree.push(curNode);
-                                        }
-                                    });
-                                }
-                            });
-                            self.colleges = tree;
-                            self.setCollegeEntries(self.colleges);
-                            var rootIds = self.setCollegeRooIds(self.colleges);
-                            self.collegesTree = self.getCollegesTree(rootIds, self.collegesProps);
+                            var dataChild = response.data || {};
+                            tree = self.getDataGroup(dataParent,dataChild);
+                            self.treeList = JSON.parse(JSON.stringify(tree));
+                            self.setColleges(self.treeList);
+                            self.searchTree();
                         })
                     }
                 })
             },
-            searchTree: function () {
-                this.$refs.tree.filter(this.filterTreeText);
+            setLevel:function (tree) {
+                var self = this;
+                tree.forEach(function (item) {
+                    item.level = item.dots.split('-').length;
+                    if(item.children && item.children.length > 0){
+                        self.setLevel(item.children);
+                    }
+                })
             },
-            filterTreeNode: function (value, data) {
-                if (!value) return true;
-                return data.name.indexOf(value) !== -1;
+            setColleges:function (college) {
+                this.collegeEntries = {};
+                this.colleges = JSON.parse(JSON.stringify(college));
+                this.setCollegeEntries(this.colleges);
+                var rootIds = this.setCollegeRooIds(this.colleges);
+                this.collegesTree = this.getCollegesTree(rootIds, this.collegesProps);
+                this.flattenColleges = this.getFlattenColleges(1);
+                this.setLevel(this.collegesTree);
+            },
+            getConnectData:function (arr) {
+                var self = this,parentIds = [],childrenIds = [],relateIdsCf = [],relateList = [];
+                arr.forEach(function (item) {
+                    parentIds = parentIds.concat(self.getParentIds(item,self.treeListIdEntries));
+                    childrenIds = childrenIds.concat(self.getChildrenIds(item,self.collegeEntries));
+                    relateIdsCf = parentIds.concat(childrenIds);
+                });
+                relateIdsCf = relateIdsCf.concat(arr.map(function (item) {
+                    return item.id;
+                }));
+                var qc = {};
+                relateIdsCf.forEach(function (item) {
+                    if(!qc[item]){
+                        qc[item] = true;
+                        if(item in self.treeListIdEntries){
+                            relateList.push(self.treeListIdEntries[item]);
+                        }
+                    }
+                });
+                return relateList;
+            },
+            getParentIds:function (obj,entries) {
+                var parentId = obj.pId;
+                var pIds = [];
+                while (parentId){
+                    var parent = entries[parentId];
+                    if(!parent) break;
+                    pIds.push(parent.id);
+                    parentId = parent.pId;
+                }
+                return pIds;
+            },
+            getChildrenIds:function (obj,entries) {
+                var child = [],cIds = [];
+                child = entries[obj.id].children ? entries[obj.id].children : [];
+                cIds = this.cycle(child);
+                return cIds;
+            },
+            cycle:function (child) {
+                var self = this;
+                var ids = [];
+                if(child && child.length > 0){
+                    child.forEach(function (item) {
+                        ids.push(item.id);
+                        ids = ids.concat(self.cycle(item.children));
+                    })
+                }
+                return ids;
+            },
+            searchTree: function () {
+                var reg = new RegExp(this.filterTreeText),list = [],relateList = [];
+                this.defaultExpandedKeys = [1];
+                if(this.filterTreeText){
+                    this.defaultExpandedKeys = [1,2,3];
+                }
+                this.setColleges(this.treeList);
+                list = [].concat(this.treeList.filter(function (item) {
+                    return reg.test(item.name);
+                }));
+                relateList = this.getConnectData(list);
+                this.setColleges(relateList);
+
             },
             handleCheckChange: function () {
                 var checkNodes = this.$refs.tree.getCheckedNodes();
@@ -233,10 +310,10 @@
                         message: data.status == '1' ? '分配成功' : data.msg || '分配失败',
                         type: data.status == '1' ? 'success' : 'error'
                     });
-                }).catch(function () {
+                }).catch(function (error) {
                     self.$message({
                         type: 'error',
-                        message: '请求失败'
+                        message: self.xhrErrorMsg
                     });
                 })
             },

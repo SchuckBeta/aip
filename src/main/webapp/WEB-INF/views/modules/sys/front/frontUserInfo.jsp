@@ -114,7 +114,7 @@
                         <e-col-item label="联系地址：" align="right">{{userBaseInfo.address}}</e-col-item>
                     </el-col>
                     <el-col :span="24">
-                        <e-col-item label="简介：" align="right">{{userBaseInfo.userIntroduction}}</e-col-item>
+                        <e-col-item label="个人简介：" align="right">{{userBaseInfo.userIntroduction}}</e-col-item>
                     </el-col>
                 </el-row>
                 <el-row v-show="!isEditBaseInfo" :gutter="10" label-width="90px">
@@ -255,7 +255,7 @@
                                 <el-input placeholder="请输入证件号" v-model="userBaseForm.userIdNumber"
                                           class="input-with-select_identity">
                                     <el-form-item prop="idType" slot="prepend" style="margin-bottom: 0;height: 26px;">
-                                        <el-select v-model="userBaseForm.userIdType" placeholder="请选择证件类型">
+                                        <el-select v-model="userBaseForm.userIdType" placeholder="请选择证件类型" style="font-size:12px;">
                                             <el-option v-for="idType in idTypes" :label="idType.label"
                                                        :value="idType.value" :key="idType.id"></el-option>
                                         </el-select>
@@ -281,8 +281,8 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="24" style="height: 66px;">
-                            <el-form-item label="简介" prop="userIntroduction">
-                                <el-input type="textarea" :rows="2" placeholder="请输入简介" v-model="userBaseForm.userIntroduction"></el-input>
+                            <el-form-item label="个人简介" prop="userIntroduction">
+                                <el-input type="textarea" class="el-form-item-textarea-48" :rows="2" placeholder="请输入简介" v-model="userBaseForm.userIntroduction"></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -869,12 +869,15 @@
                         self.userBaseInfo.userMobile = mobileForm.mobile;
                         self.userBaseForm.userMobile = mobileForm.mobile;
                         self.dialogVisibleChangeMobile = false;
-                        self.$refs.userBaseForm.validateField('userMobile')
+                        self.$refs.userBaseForm.validateField('userMobile');
+                        self.$message.success('修改手机号成功');
+                    }else {
+                        self.$message.error(data.msg);
                     }
-                    self.show$message(data);
                     self.isUpdating = false;
                 }).catch(function () {
                     self.isUpdating = false;
+                    self.$message.error(self.xhrErrorMsg);
                 })
             },
 
@@ -973,7 +976,7 @@
                     self.$msgbox({
                         title: '提示',
                         type: 'error',
-                        message: error.response.data
+                        message: self.xhrErrorMsg
                     })
                 })
             },
@@ -985,10 +988,7 @@
                 var formData = new FormData();
 
                 if (data.x < 0 || data.y < 0) {
-                    this.show$message({
-                        status: false,
-                        msg: '超出边界，请缩小裁剪框，点击上传'
-                    });
+                    this.$message.error('超出边界，请缩小裁剪框，点击上传');
                     return false;
                 }
 
@@ -1006,10 +1006,7 @@
                         self.userPicFile = null;
                         self.isUpdating = false;
                         self.dialogVisibleChangeUserPic = false;
-                        self.$message({
-                            type: 'error',
-                            message: data.msg
-                        })
+                        self.$message.error(data.msg);
                     }
                 }).catch(function (error) {
 
@@ -1020,7 +1017,6 @@
                 var self = this;
                 return this.$axios.post('/sys/user/ajaxUpdatePhoto?photo=' + url + "&userId=" + this.userId).then(function (response) {
                     var data = response.data;
-                    self.show$message(data);
                     if (data.status) {
                         data = data.datas;
                         self.dialogVisibleChangeUserPic = false;
@@ -1028,6 +1024,9 @@
                         self.userPhoto = data.photo;
                         self.userPicFile = null;
                         $('#headerUserBlock .user-small-pic,#headerUserBlock .user-info-pic img').attr('src', self.userAvatar)
+                        self.$message.success(response.data.msg);
+                    }else {
+                        self.$message.error(data.msg);
                     }
                     self.isUpdating = false;
 

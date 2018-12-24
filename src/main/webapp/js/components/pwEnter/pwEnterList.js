@@ -1,4 +1,29 @@
+'use strict';
+Vue.pwEnterAuditListMixin = {
+    data: function () {
+        return {
+            pwEnterAuditList: []
+        }
+    },
+    computed: {
+        pwEnterAuditEntries: function () {
+            return this.getEntries(this.pwEnterAuditList)
+        },
+    },
+    methods: {
+        getPwEnterStatus: function () {
+            var self = this;
+            this.$axios.get('/pw/pwEnter/getPwEnterAuditList').then(function (response) {
+                self.pwEnterAuditList = response.data || []
+            }).catch(function (error) {
 
+            })
+        },
+    },
+    created: function () {
+        this.getPwEnterStatus();
+    }
+};
 
 Vue.component('pw-enter-column', {
     template: '<div class="pw-enter-column">\n' +
@@ -21,17 +46,18 @@ Vue.component('pw-record-line', {
     '                                title="建设及意见："\n' +
     '                                width="200"\n' +
     '                                trigger="hover"\n' +
-    '                                :content="item.bgremarks" :disabled="!item.bgremarks">\n' +
-    '                            <span slot="reference" class="base-tag" :class="baseTagClassName(item.status)">{{item.status === \'1\' ? \'审核通过\' : \'审核未通过\'}}</span>\n' +
+    '                                :content="item.remarks" :disabled="item.status!=\'2\'">\n' +
+    '                            <span slot="reference" class="base-tag" :class="baseTagClassName(item.status)">{{item.status | selectedFilter(auditEntries)}}</span>\n' +
     '                        </el-popover>\n' +
     '                    </div>\n' +
-    '                    <h5 class="title"><a :href="frontOrAdmin + \'/pw/pwEnter/view?id=\'+item.eid">{{item.typeString}}</a></h5>\n' +
-    '                    <p class="date">{{item.createDate | formatDateFilter(\'YYYY-MM-DD\')}}</p>\n' +
+    '                    <h5 class="title"><a href="javascript: void(0);" @click.stop.prevent="goToForm(item)">{{item.typeString}}</a></h5>\n' +
+    '                    <p class="date">{{item.createDate | formatDateFilter(\'YYYY-MM-DD HH:mm:ss\')}}</p>\n' +
     '                </div>\n' +
     '            </div>\n' +
     '        </div></div>',
     props: {
-        params: Object
+        params: Object,
+        auditEntries: Object
     },
     data: function () {
         return {
@@ -48,6 +74,12 @@ Vue.component('pw-record-line', {
                 result.push(this.pwRecordLine.slice(start, end));
             }
             return result;
+        },
+        isPassed: function () {
+            if(this.pwRecordLine.length > 0){
+                return this.pwRecordLine[this.pwRecordLine.length - 1].status !== '2'
+            }
+            return false;
         }
     },
 
@@ -57,7 +89,23 @@ Vue.component('pw-record-line', {
             this.$axios.post('/pw/pwApplyRecord/ajaxFindAuditList', this.params).then(function (response) {
                 var data = response.data;
                 if(data.status === 1){
-                    self.pwRecordLine = data.data || [];
+                    var pwRecordLine = data.data || [];
+                    pwRecordLine = pwRecordLine.sort(function (item1, item2) {
+                        var time1 = moment(item1.createDate).valueOf();
+                        var time2 = moment(item2.createDate).valueOf();
+                        if (time1 > time2) {
+                            return 1
+                        } else if (time1 < time2) {
+                            return -1
+                        } else {
+                            return 0
+                        }
+                    })
+                    self.pwRecordLine = pwRecordLine;
+                    if(self.pwRecordLine.length > 0){
+                        self.$emit('get-audit-status', {auditStatus: self.pwRecordLine[pwRecordLine.length - 1].status, id: self.params.eid})
+                    }
+
                 }
             }).catch(function (error) {
 
@@ -69,6 +117,15 @@ Vue.component('pw-record-line', {
                 'base-tag-success': audited === '1',
                 'base-tag-error': audited === '2'
             }
+        },
+
+        goToForm: function (item) {
+            var pageName = this.isPassed ? 'view' : 'form';
+            var params = {id: item.parentId || item.eid};
+            if(!this.isPassed){
+                params['status'] = '0';
+            }
+            location.href = this.frontOrAdmin + '/pw/pwEnter/'+pageName+'?'+ Object.toURLSearchParams(params);
         }
     },
     created: function () {

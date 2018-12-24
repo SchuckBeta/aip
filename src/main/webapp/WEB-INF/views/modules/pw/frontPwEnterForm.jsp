@@ -7,8 +7,6 @@
     <meta charset="UTF-8">
     <title>${fns:getConfig('frontTitle')}</title>
     <meta name="decorator" content="creative"/>
-    <script src="/js/components/pwEnter/pwEnterApplyRules.js?version=${fns: getVevison()}"></script>
-    <script src="/js/components/pwEnter/pwEnterApplyForm.js?version=${fns: getVevison()}"></script>
 </head>
 <body>
 
@@ -16,16 +14,16 @@
     <el-breadcrumb separator-class="el-icon-arrow-right">
         <el-breadcrumb-item><a href="${ctxFront}"><i class="iconfont icon-ai-home"></i>首页</a></el-breadcrumb-item>
         <el-breadcrumb-item>创业基地</el-breadcrumb-item>
-        <el-breadcrumb-item>入驻申请</el-breadcrumb-item>
+        <el-breadcrumb-item>{{applyLabel}}</el-breadcrumb-item>
     </el-breadcrumb>
-    <h3 class="pw-enter-apply-title">大学生创业孵化示范基地入驻申请</h3>
+    <h3 class="pw-enter-apply-title">大学生创业孵化示范基地{{applyLabel}}</h3>
     <row-step-apply>
         <step-item is-complete>第一步（完善基本信息）</step-item>
         <step-item :is-complete="isSecondStep">第二步（输入申报信息）</step-item>
     </row-step-apply>
     <div class="pw-enter-container">
         <div class="pw-apply-topbar">
-            <span class="apply-date">申报日期：</span>
+            <span class="apply-date">申报日期：{{createdDate | formatDateFilter('YYYY-MM-DD')}}</span>
         </div>
         <div class="pw-apply-titlebar-wrap">
             <div class="pw-apply-titlebar">
@@ -37,24 +35,20 @@
                 <div class="card-photo common-upload-one-img">
                     <div class="upload-box-border site-cover-size">
                         <el-upload
-                                :disabled="disabled"
+                                :disabled="disabled || (pwApplyForm.isTemp === '0' && appType === '2')"
                                 class="avatar-uploader"
-                                action="/f/ftp/ueditorUpload/uploadTemp"
+                                action="/f/ftp/ueditorUpload/uploadTemp?folder=pwEnter"
                                 :show-file-list="false"
                                 :on-success="idPhotoSuccess"
                                 :on-error="idPhotoError"
                                 name="upfile"
                                 accept="image/jpg, image/jpeg, image/png">
-                            <img :src="pwApplyForm.declarePhoto | ftpHttpFilter(ftpHttp)">
-                            <i v-if="!pwApplyForm.declarePhoto"
-                               class="el-icon-plus avatar-uploader-icon"></i>
+                            <img :src="pwApplyForm.declarePhoto | ftpHttpFilter(ftpHttp) | cardPhoto">
                         </el-upload>
-                        <div class="arrow-block-delete" v-if="pwApplyForm.declarePhoto">
-                            <i class="el-icon-delete" @click.sotp.prevent="pwApplyForm.declarePhoto = ''"></i>
-                        </div>
+                        <div class="arrow-block-delete" v-if="pwApplyForm.declarePhoto && !(pwApplyForm.isTemp === '0' && appType === '2')"><i class="el-icon-delete" @click.stop.prevent="pwApplyForm.declarePhoto = ''"></i></div>
                     </div>
                     <div class="img-tip">
-                        请上传1寸登记照
+                        请上传1寸登记照，变更申请时，将不可以修改登记照
                     </div>
                 </div>
             </div>
@@ -98,7 +92,7 @@
                         <e-col-item align="right" label="户籍所在地：">{{user.residence}}</e-col-item>
                     </el-col>
                     <el-col :span="24">
-                        <e-col-item align="right" label="创业人简介：" class="white-space-pre-static">{{user.introduction}}
+                        <e-col-item align="right" label="个人简介：" class="white-space-pre-static">{{user.introduction}}
                         </e-col-item>
                     </el-col>
                 </el-row>
@@ -106,7 +100,7 @@
                 <el-form :model="pwApplyForm" ref="pwApplyForm" :disabled="disabled" :rules="pwApplyOneRules"
                          size="mini" label-width="120px">
                     <el-form-item prop="type" label="入驻类型：">
-                        <el-radio-group v-model="pwApplyForm.type">
+                        <el-radio-group v-model="pwApplyForm.type" :disabled="(pwApplyForm.isTemp === '0' && enterType === '2')">
                             <el-radio v-for="item in pwEnterTypes" :key="item.value" :label="item.value">
                                 {{item.label}}
                             </el-radio>
@@ -122,13 +116,13 @@
 
         </div>
         <template v-if="isRender">
-            <enter-form-group ref="enterFormGroup" v-show="isSecondStep" :pw-enter-id="pwApplyForm.id"
+            <enter-form-group ref="enterFormGroup" v-show="isSecondStep" :pw-enter-id="pwApplyForm.id" :disabled="disabled"
                               :form-names="formNames">
                 <template v-if="hasEnterpriseForm">
                     <div class="enter-form-group-titlebar">
                         <span class="title">企业信息 <i class="el-icon-d-arrow-right"></i></span>
                     </div>
-                    <enterprise-form ref="enterpriseForm"></enterprise-form>
+                    <enterprise-form ref="enterpriseForm" :app-type="appType" :enter-type="enterType"></enterprise-form>
                 </template>
                 <div class="enter-form-group-titlebar">
                     <span class="title">团队信息 <i class="el-icon-d-arrow-right"></i></span>
@@ -137,22 +131,22 @@
                 <div class="enter-form-group-titlebar">
                     <span class="title">项目信息 <i class="el-icon-d-arrow-right"></i></span>
                 </div>
-                <link-project-form is-admin ref="linkProjectForm"></link-project-form>
+                <link-project-form ref="linkProjectForm" :status="pwApplyForm.status"></link-project-form>
                 <el-dialog
                         title="入驻场地要求"
                         :visible.sync="dialogVisibleBase"
                         width="520px"
                         :close-on-click-modal="false"
                         :before-close="handleCloseBase">
-                    <pw-site-form ref="pwSiteForm"></pw-site-form>
+                    <pw-site-form ref="pwSiteForm" :app-type="pwApplyForm.appType"></pw-site-form>
                     <span slot="footer" class="dialog-footer">
                             <el-button type="primary" size="mini" :disabled="disabled" @click.stop.prevent="validateBaseForm">确 定</el-button>
                      </span>
                 </el-dialog>
                 <div class="text-center enter-form-group-btns">
                     <el-button size="mini" :disabled="disabled"  @click.stop.prevent="goToFirstStep">上一步</el-button>
-                    <el-button size="mini" :disabled="disabled" type="primary" @click.stop.prevent="saveForm">保存</el-button>
-                    <el-button type="primary" :disabled="disabled" size="mini" @click.stop.prevent="submitForm">提交</el-button></div>
+                    <el-button size="mini" v-if="(pwApplyForm.appType === '1')" :disabled="disabled" type="primary" @click.stop.prevent="saveForm">保存</el-button>
+                    <el-button type="primary" :disabled="disabled" size="mini" @click.stop.prevent="submitForm">{{submitLabel}}</el-button></div>
             </enter-form-group>
         </template>
     </div>
@@ -169,10 +163,13 @@
         data: function () {
             var pwEnter = JSON.parse(JSON.stringify(${fns: toJson(pwEnter)})) || {};
             var user = pwEnter.applicant || {};
+            var changeEnterType = '${changeEnterType}';
+            var isSecondStep = false;
+            var isRender = false;
             return {
                 pwApplyForm: {
                     id: pwEnter.id,
-                    type: pwEnter.type,
+                    type: pwEnter.type || '0',
                     isTemp: pwEnter.isTemp || '1',
                     declarePhoto: pwEnter.declarePhoto,
                     parentId: pwEnter.parentId,
@@ -182,7 +179,8 @@
                         id: user.id
                     },
                     appType: pwEnter.appType || '1',
-
+                    createDate: pwEnter.createDate,
+                    status: pwEnter.status
                 },
                 pwApplyOneRules: {
                     type: [{required: true, message: '请选择入驻类型', trigger: 'change'}]
@@ -193,13 +191,26 @@
                 idTypes: [],
                 professionals: [],
                 disabled: false,
-                isSecondStep: false,
-                isRender: false,
+                isSecondStep: isSecondStep,
+                isRender: isRender,
+                changeEnterType: changeEnterType,
                 dialogVisibleBase: false,
+                enterType: pwEnter.type,
+                appType: pwEnter.appType,
+                originIsTemp: pwEnter.isTemp || '1',
+                sysDate: ''
 
             }
         },
         computed: {
+
+            submitLabel: function () {
+                return (this.pwApplyForm.id && this.appType === '2') ? '提交变更' : '提交'
+            },
+            applyLabel: function () {
+                return (this.pwApplyForm.id && this.appType === '2') ? '变更申请' : '入驻申请'
+            },
+
             idTypeEntries: function () {
                 return this.getEntries(this.idTypes)
             },
@@ -218,10 +229,18 @@
             },
             hasEnterpriseForm: function () {
                 return this.pwApplyForm.type === '2'
+            },
+            createdDate: function () {
+                return this.pwApplyForm.createDate || this.sysDate;
             }
         },
         methods: {
-
+            getSysDate: function () {
+                var self = this;
+                this.$axios.get('/sys/sysCurDateYmdHms').then(function (response) {
+                    self.sysDate = moment(response.data).format('YYYY-MM-DD');
+                })
+            },
             handleCloseBase: function () {
                 this.dialogVisibleBase = false;
             },
@@ -231,6 +250,7 @@
                 this.$refs.pwSiteForm.$refs.pwSiteForm.validate(function (valid) {
                     if(valid){
                         Object.assign(self.postParams, self.$refs.pwSiteForm.$data.pwSiteForm)
+                        self.pwApplyForm.isTemp = '0';
                         self.submitPwApplyForm(self.postParams);
                     }
                 })
@@ -291,15 +311,20 @@
 
             enterFormGroupPromise: function () {
                 var self = this;
-                this.$refs.enterFormGroup.saveEnterForm().then(function (data) {
+                this.$refs.enterFormGroup.noValidateForm().then(function (data) {
                     var pwApplyForm = JSON.parse(JSON.stringify(self.pwApplyForm));
-                    var postParams = Object.assign(pwApplyForm, data);
+                    var postParams = {};
+                    data.forEach(function (item) {
+                        postParams = Object.assign(pwApplyForm, item);
+                    })
                     postParams.team = {id: pwApplyForm.teamId};
                     self.postParams = postParams;
                     self.submitPwApplyForm(postParams);
                 }).catch(function (error) {
-                    self.$alert('请检查表单是否合格，在进行保存', '提示', {
-                        type: 'warning'
+                    self.$alert(error.error, '提示', {
+                        type: 'error'
+                    }).catch(function () {
+
                     })
 //                    console.log('error', error)
                 })
@@ -308,24 +333,26 @@
             submitForm: function () {
                 var self = this;
                 this.pwApplyForm.isTemp = '0';
-
                 this.$refs.enterFormGroup.saveEnterForm().then(function (data) {
                     var pwApplyForm = JSON.parse(JSON.stringify(self.pwApplyForm));
-                    var postParams = Object.assign(pwApplyForm, data);
+                    var postParams = {};
+                    data.forEach(function (item) {
+                        postParams = Object.assign(pwApplyForm, item);
+                    })
                     postParams.team = {id: pwApplyForm.teamId};
                     self.postParams = postParams;
                     self.dialogVisibleBase = true;
                 }).catch(function (error) {
-//                    console.log('error', error)
-                    self.$alert('请检查表单是否合格，在进行提交', '提示', {
-                        type: 'warning'
+                    self.$alert(error.error, '提示', {
+                        type: 'error'
+                    }).catch(function () {
+
                     })
                 })
             },
 
             submitPwApplyForm: function (params) {
                 var self = this;
-                this.disabled = true;
                 var isTemp =  this.pwApplyForm.isTemp;
                 this.disabled = true;
                 this.$axios.post('/pw/pwEnter/ajaxPwEnterApplySave', params).then(function (response) {
@@ -340,11 +367,9 @@
                             closeOnPressEscape: false,
                             confirmButtonText: '确定',
                             showClose: false,
-                            message: '入驻申报'+(isTemp == '0' ? '提交' : '保存')+'成功'
+                            message: self.applyLabel+(isTemp == '0' ? '提交' : '保存')+'成功'
                         }).then(function () {
-                            if(isTemp == '0'){
-                                location.href = '/f/pw/pwEnterRel/list';
-                            }
+                            location.href = '/f/pw/pwEnterRel/list';
                         }).catch(function () {
                         });
                     }else {
@@ -357,13 +382,35 @@
                     self.$message.error(self.xhrErrorMsg);
                     self.disabled = false;
                 })
-            }
+            },
         },
         created: function () {
+            var self = this;
             this.getIdTypes();
             this.getPwEnterTypes();
             this.getProfessionals();
-        }
+            if(!this.pwApplyForm.createDate){
+                this.getSysDate();
+                this.getUserIsCompleted().then(function (response) {
+                    var data = response.data;
+                    if(data.status !== 1){
+                        self.disabled = true;
+                        self.$msgbox({
+                            type: 'error',
+                            title: '提示',
+                            closeOnClickModal: false,
+                            closeOnPressEscape: false,
+                            confirmButtonText: '确定',
+                            showClose: false,
+                            message: data.msg
+                        }).then(function () {
+                            location.href = '/f/sys/frontStudentExpansion/findUserInfoById?custRedict=1&isEdit=1';
+                        }).catch(function () {
+                        });
+                    }
+                })
+            }
+        },
     })
 
 </script>

@@ -13,7 +13,7 @@
 
 <div id="app" v-show="pageLoad" style="display: none" class="container-fluid mgb-60">
     <div class="mgb-20">
-        <edit-bar second-name="楼栋查看"></edit-bar>
+        <edit-bar second-name="楼栋查看" href="/pw/pwSpace/list"></edit-bar>
     </div>
 
     <el-row :gutter="20" label-width="120px">
@@ -64,12 +64,7 @@
             </e-col-item>
         </el-col>
         <el-col :span="20">
-            <e-col-item label="备注：">{{pwSpace.remarks}}</e-col-item>
-        </el-col>
-        <el-col :span="20">
-            <e-col-item>
-                <el-button size="mini" @click.stop.prevent="goToBack">返回</el-button>
-            </e-col-item>
+            <e-col-item label="备注：" class="white-space-pre-static">{{pwSpace.remarks}}</e-col-item>
         </el-col>
     </el-row>
 
@@ -82,7 +77,7 @@
     new Vue({
         el: '#app',
         data: function () {
-            var pwSpace = JSON.parse('${fns:toJson(pwSpace)}');
+            var pwSpace = JSON.parse(JSON.stringify(${fns:toJson(pwSpace)})) || [];
             return {
                 pwSpace: pwSpace,
                 school:'${school}',
@@ -94,43 +89,20 @@
         },
         methods: {
             openWeeksStr: function (arr) {
-                if (arr) {
-                    if (arr.length == 7) {
-                        return '不限';
-                    }
-                    var r = '';
-
-                    arr.forEach(function (item) {
-                        switch (item) {
-                            case '1':
-                                r += '每周一、';
-                                break;
-                            case '2':
-                                r += '每周二、';
-                                break;
-                            case '3':
-                                r += '每周三、';
-                                break;
-                            case '4':
-                                r += '每周四、';
-                                break;
-                            case '5':
-                                r += '每周五、';
-                                break;
-                            case '6':
-                                r += '每周六、';
-                                break;
-                            case '7':
-                                r += '每周日、';
-                                break;
-                            default:
-                                break;
-                        }
-                    });
-                    if (r != '') {
-                        return r.substring(0, r.length - 1);
-                    }
+                var openWeeksLabel = ['每周一','每周二','每周三','每周四','每周五','每周六','每周日'];
+                var strArr = [],str = '';
+                if(!arr || arr.length == 0){
+                    return '';
                 }
+                if(arr.length == 7){
+                    str = '不限';
+                    return str;
+                }
+                arr.forEach(function (item) {
+                    strArr.push(openWeeksLabel[item-1]);
+                });
+                str = strArr.join('、');
+                return str;
             },
             goToBack: function () {
                 window.location.href = this.frontOrAdmin + '/pw/pwSpace/list';

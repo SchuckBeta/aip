@@ -13,6 +13,7 @@ Vue.component('edit-bar', {
             default: true
         },
         secondName: String,
+        href:String
         // isFirst: {
         //     type: Boolean,
         //     default: true
@@ -41,7 +42,11 @@ Vue.component('edit-bar', {
             return menuName;
         },
         historyGoBack: function () {
-            window.history.go(-1);
+            if(!this.href){
+                window.history.go(-1);
+                return false;
+            }
+            window.location.href = this.frontOrAdmin + this.href;
         }
     },
     computed: {

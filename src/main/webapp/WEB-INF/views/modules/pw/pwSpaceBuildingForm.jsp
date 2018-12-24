@@ -13,15 +13,16 @@
 <div id="app" v-show="pageLoad" style="display: none" class="container-fluid mgb-60">
     <div class="mgb-20">
         <shiro:hasPermission name="pw:pwSpace:edit">
-            <edit-bar :second-name="buildingForm.id ? '楼栋修改': '楼栋添加'"></edit-bar>
+            <edit-bar :second-name="buildingForm.id ? '楼栋修改': '楼栋添加'" href="/pw/pwSpace/list"></edit-bar>
         </shiro:hasPermission>
         <shiro:lacksPermission name="pw:pwSpace:edit">
-            <edit-bar :second-name="楼栋查看"></edit-bar>
+            <edit-bar second-name="楼栋查看" href="/pw/pwSpace/list"></edit-bar>
         </shiro:lacksPermission>
     </div>
 
 
-    <el-form size="mini" :model="buildingForm" :rules="buildingFormRules" ref="buildingForm" :disabled="formDisabled" class="space-building-form"
+    <el-form size="mini" :model="buildingForm" :rules="buildingFormRules" ref="buildingForm" :disabled="formDisabled"
+             class="space-building-form"
              action="${ctx}/pw/pwSpace/save" method="POST" label-width="120px">
 
         <input type="hidden" id="id" name="id" :value="buildingForm.id">
@@ -50,7 +51,7 @@
         </el-form-item>
 
         <el-form-item prop="phone" label="联系方式：">
-            <el-input id="phone" name="phone" type="number" v-model.number="buildingForm.phone" class="w300"></el-input>
+            <el-input id="phone" name="phone" v-model="buildingForm.phone" class="w300"></el-input>
         </el-form-item>
 
         <el-form-item label="开放时间：">
@@ -73,9 +74,10 @@
                     <el-col :span="6">
                         <el-form-item prop="amOpenStartTime">
                             <el-time-select style="width: 100%;"
-                                    placeholder="起始时间"
-                                    v-model="buildingForm.amOpenStartTime"
-                                    :picker-options="{
+                                            placeholder="起始时间"
+                                            v-model="buildingForm.amOpenStartTime"
+                                            default-value="10:00"
+                                            :picker-options="{
                             start: '00:00',
                             step: '00:30',
                             end: '12:00'
@@ -89,9 +91,10 @@
                     <el-col :span="6">
                         <el-form-item prop="amOpenEndTime">
                             <el-time-select style="width: 100%;"
-                                    placeholder="结束时间"
-                                    v-model="buildingForm.amOpenEndTime"
-                                    :picker-options="{
+                                            placeholder="结束时间"
+                                            v-model="buildingForm.amOpenEndTime"
+                                            default-value="12:00"
+                                            :picker-options="{
                             start: '00:00',
                             step: '00:30',
                             end: '12:00',
@@ -105,9 +108,9 @@
                     <el-col :span="6">
                         <el-form-item prop="pmOpenStartTime">
                             <el-time-select style="width: 100%;"
-                                    placeholder="起始时间"
-                                    v-model="buildingForm.pmOpenStartTime"
-                                    :picker-options="{
+                                            placeholder="起始时间"
+                                            v-model="buildingForm.pmOpenStartTime"
+                                            :picker-options="{
                             start: '12:00',
                             step: '00:30',
                             end: '24:00'
@@ -121,9 +124,10 @@
                     <el-col :span="6">
                         <el-form-item prop="pmOpenEndTime">
                             <el-time-select style="width: 100%;"
-                                    placeholder="结束时间"
-                                    v-model="buildingForm.pmOpenEndTime"
-                                    :picker-options="{
+                                            placeholder="结束时间"
+                                            v-model="buildingForm.pmOpenEndTime"
+                                            default-value="18:00"
+                                            :picker-options="{
                             start: '12:00',
                             step: '00:30',
                             end: '24:00',
@@ -139,14 +143,14 @@
         </el-form-item>
 
         <el-form-item prop="floorNum" label="楼层：">
-            <el-input name="floorNum" type="number" v-model.number="buildingForm.floorNum" :readonly="bEmpty != 'y'"
+            <el-input name="floorNum" v-model="buildingForm.floorNum" :readonly="bEmpty != 'y'"
                       class="w300">
                 <template slot="append">层</template>
             </el-input>
         </el-form-item>
 
         <el-form-item prop="area" label="占地面积：">
-            <el-input id="area" name="area" type="number" v-model.number="buildingForm.area" class="w300">
+            <el-input id="area" name="area" v-model="buildingForm.area" class="w300">
                 <template slot="append">平方米</template>
             </el-input>
         </el-form-item>
@@ -163,13 +167,12 @@
                         :on-error="fileError"
                         name="upfile"
                         accept="image/jpg, image/jpeg, image/png">
-                    <img v-for="item in fileBuildingImg" :key="item.uid"
-                         :src="item.ftpUrl | ftpHttpFilter(ftpHttp)">
-                    <i v-if="fileBuildingImg.length == 0"
+                    <img v-if="fileBuildingImg" :src="fileBuildingImg | ftpHttpFilter(ftpHttp)">
+                    <i v-if="!fileBuildingImg"
                        class="el-icon-plus avatar-uploader-icon"></i>
                 </el-upload>
-                <div class="arrow-block-delete" v-if="fileBuildingImg.length > 0">
-                    <i class="el-icon-delete" @click.sotp.prevent="fileBuildingImg = []"></i>
+                <div class="arrow-block-delete" v-if="fileBuildingImg">
+                    <i class="el-icon-delete" @click.sotp.prevent="fileBuildingImg = ''"></i>
                 </div>
             </div>
             <div class="img-tip">
@@ -190,7 +193,6 @@
                            @click.stop.prevent="saveForm('buildingForm')">保存
                 </el-button>
             </shiro:hasPermission>
-            <el-button @click.stop.prevent="goToBack">返回</el-button>
         </el-form-item>
 
     </el-form>
@@ -205,10 +207,12 @@
     new Vue({
         el: '#app',
         data: function () {
-            var pwSpace = JSON.parse('${fns:toJson(pwSpace)}');
-            var pwSpaceWeek = JSON.parse('${fns:toJson(fns:getDictList('pw_space_week'))}');
+            var pwSpace = JSON.parse(JSON.stringify(${fns:toJson(pwSpace)})) || [];
+            var pwSpaceWeek = JSON.parse(JSON.stringify(${fns:toJson(fns:getDictList('pw_space_week'))}));
             var nameReg = /['"\s“”‘’]+/;
             var mobileReg = /^((13[0-9])|(14[5,7,9])|(15[^4])|(18[0-9])|(17[0,1,3,5,6,7,8]))\d{8}$$/;
+            var areaReg = /^([1-9]{1}[0-9]{0,5}(\.{1}(?=\d+))|[1-9]{1}[0-9]{0,1})\d{0,4}$/;
+            var reg = /^[1-9][0-9]*$/;
             var validateName = function (rule, value, callback) {
                 if (value) {
                     if (nameReg.test(value)) {
@@ -232,16 +236,17 @@
                 }
             };
             var validateArea = function (rule, value, callback) {
-                var len = value.toString().split('').length;
-                if (value && len > 6) {
-                    callback(new Error('占地面积最大6位数'))
+                if (value && !areaReg.test(value)) {
+                    callback(new Error('请输入数字，如为小数，则小数点前最多6位数且最多保留4位小数'));
                 } else {
                     callback();
                 }
             };
             var validateFloorNum = function (rule, value, callback) {
-                var len = value.toString().split('').length;
-                if (value && len > 2) {
+                var len = value.toString().length;
+                if (value && !reg.test(value)) {
+                    callback(new Error('请输入正整数'))
+                } else if (value && len > 2) {
                     callback(new Error('楼层最大2位数'))
                 } else {
                     callback();
@@ -273,7 +278,7 @@
                 bEmpty: '${bEmpty}',
                 formDisabled: false,
                 message: '${message}',
-                fileBuildingImg: [],
+                fileBuildingImg: '',
                 buildingFormRules: {
                     name: [
                         {required: true, message: '请输入楼栋名称', trigger: 'change'},
@@ -300,9 +305,7 @@
         computed: {},
         watch: {
             fileBuildingImg: function (value) {
-                this.buildingForm.imageUrl = value.map(function (item) {
-                    return item.ftpUrl
-                }).join(',');
+                this.buildingForm.imageUrl = value;
             }
         },
         methods: {
@@ -310,9 +313,7 @@
                 if (!value) {
                     return;
                 }
-                this.fileBuildingImg.push({
-                    ftpUrl: value
-                });
+                this.fileBuildingImg = value;
             },
             fileError: function (err, file, fileList) {
                 if (err.state == 'error') {
@@ -323,10 +324,9 @@
                 }
             },
 
-            fileSuccess: function (response, file, fileList) {
-                var nfile = Object.assign(file, response);
+            fileSuccess: function (response, file) {
                 if (response.state === 'SUCCESS') {
-                    this.fileBuildingImg = fileList.slice(-1);
+                    this.fileBuildingImg = file.response.ftpUrl;
                 } else {
                     this.$message({
                         message: '上传失败',

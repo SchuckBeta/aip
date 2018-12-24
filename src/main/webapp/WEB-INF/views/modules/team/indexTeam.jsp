@@ -33,8 +33,8 @@
             <li>第三步：发布/邀请组员</li>
         </ul>
     </div>
-    <el-form :action="formAction" ref="createTeam" method="post" size="mini"
-             label-width="130px" class="demo-ruleForm" :model="createTeam" :rules="rules">
+    <el-form ref="createTeam" method="post" size="mini"
+             label-width="130px" class="demo-ruleForm" :model="createTeam" :rules="rules" :disabled="formDisabled">
         <input id="id" name="id" type="hidden" :value="createTeam.id">
         <input id="state" name="state" type="hidden" :value="createTeam.state">
         <input id="number" name="number" type="hidden">
@@ -93,7 +93,7 @@
 
 
             <div class="text-right" v-show="userType == 1">
-                <el-button class="create-btn" v-show="createBox" type="primary" @click="submitCreateForm('createTeam')"
+                <el-button class="create-btn" v-show="createBox" type="primary" :disabled="formDisabled" @click="submitCreateForm('createTeam')"
                            size="mini">
                     保存
                 </el-button>
@@ -140,7 +140,7 @@
         <el-table ref="multipleTable" :data="teamList" size="small" style="width: 100%;"
                   class="team-table"
                   @selection-change="handleSelectionChange">
-            <el-table-column type="selection" width="55" :selectable="selectable">
+            <el-table-column type="selection" width="60" :selectable="selectable">
             </el-table-column>
 
             <el-table-column label="团队信息" align="center" width="300">
@@ -180,7 +180,7 @@
                 </template>
             </el-table-column>
 
-            <el-table-column label="操作" align="center">
+            <el-table-column  label="操作" align="center">
                 <template slot-scope="scope">
                     <div class="do-p"
                          v-show="curUserId!=null && curUserId!='' && scope.row.sponsorId!=null && scope.row.sponsorId!='' && curUserId==scope.row.sponsorId && scope.row.state!=2">
@@ -261,7 +261,7 @@
             <div class="publi-form">
                 <el-table ref="multipleMajorTable" :data="clickedMajorList" size="small" style="width: 100%;"
                           @selection-change="handleSelectionMajor">
-                    <el-table-column type="selection" width="55">
+                    <el-table-column type="selection" width="60">
                     </el-table-column>
 
                     <el-table-column prop="name" label="专业" align="center">
@@ -354,7 +354,8 @@
                         schoolTeacherNum: '',
                         enterpriseTeacherNum: '',
                         membership: '',
-                        summary: ''
+                        summary: '',
+                        proType:'${proType}'
                     },
                     teamCheckOnOff: '${teamCheckOnOff}',
 
@@ -397,7 +398,7 @@
                         '3': '待审核',
                         '4': '未通过'
                     },
-                    teamState: ['0','1','2','3','4'],
+                    teamState: [],
                     searchText: '',
                     selectOption: '',
                     teamList: [],
@@ -420,7 +421,8 @@
                     releaseText:'确认发布',
                     teacherMin:'${teacherMin}',
                     teacherMax:'${teacherMax}',
-                    studentMax:'${studentMax}'
+                    studentMax:'${studentMax}',
+                    formDisabled:false
                 }
             },
             computed: {
@@ -533,6 +535,9 @@
                             self.isBorder = true;
                             self.$nextTick(function () {
                                 self.$refs.createTeam.resetFields();
+                                self.createTeam.id = '';
+                                self.createTeam.state = '';
+                                console.log(self.createTeam);
                             });
 
                         } else if (!self.editAble) {
@@ -643,17 +648,23 @@
                     }).then(function () {
                         var deleXhr = self.$axios({
                             method: 'POST',
-                            url: '/team/disTeam?teamIds=' + id
+                            url: '/team/disTeam?id=' + id
                         });
                         deleXhr.then(function (response) {
                             var data = response.data;
                             if (data.code == 0) {
                                 self.searchCondition();
+                            }else {
+                                self.$alert(data.msg, '提示', {
+                                    confirmButtonText: '确定',
+                                    type: 'error',
+                                    size:'mini'
+                                });
                             }
                         }).catch(function () {
-                            self.$alert('该团队有正在进行的项目或者大赛，不能解散团队!', '提示', {
+                            self.$alert('该团队正在进行项目、大赛或已入驻基地，不能解散', '提示', {
                                 confirmButtonText: '确定',
-                                type: 'warning',
+                                type: 'error',
                                 size:'mini'
                             });
                         })
@@ -731,10 +742,11 @@
                                         cancelButtonText: '取消',
                                         type: 'warning'
                                     }).then(function () {
-                                        self.$refs[formName].$el.submit();
+//                                        self.$refs[formName].$el.submit();
+                                        self.saveAjax();
                                     });
                                 } else {
-                                    self.$refs[formName].$el.submit();
+                                    self.saveAjax();
                                 }
 
 
@@ -743,6 +755,33 @@
                     }
                     this.createBox = true;
                     this.isBorder = true;
+                },
+                saveAjax:function () {
+                    var self = this;
+                    this.formDisabled = true;
+                    this.$axios({
+                        method:'POST',
+                        url:'/team/ajaxIndexSave',
+                        params:self.createTeam
+                    }).then(function (response) {
+                        var data = response.data;
+                        if(data.status == '1'){
+                            self.searchCondition();
+                            self.createBox = false;
+                            self.isBorder = false;
+                        }
+                        self.formDisabled = false;
+                        self.$message({
+                            message: data.status == '1' ? data.data.message || '保存成功' : data.msg || '保存失败',
+                            type: data.status == '1' ? 'success' : 'error'
+                        })
+                    }).catch(function () {
+                        self.formDisabled = false;
+                        self.$message({
+                            message: '请求失败',
+                            type:'error'
+                        })
+                    });
                 },
                 resetCreateForm: function () {
                     this.$refs.createTeam.resetFields();

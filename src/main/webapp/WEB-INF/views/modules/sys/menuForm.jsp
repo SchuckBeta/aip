@@ -72,7 +72,7 @@
                         :on-success="imgUrlSuccess"
                         :on-error="imgUrlError"
                         accept="image/jpeg,image/png">
-                    <img :src="menuForm.imgUrl | ftpHttpFilter(ftpHttp)">
+                    <img v-if="menuForm.imgUrl" :src="menuForm.imgUrl | ftpHttpFilter(ftpHttp)">
                     <i v-if="!menuForm.imgUrl"
                        class="el-icon-plus avatar-uploader-icon"></i>
                 </el-upload>
@@ -101,15 +101,7 @@
         data: function () {
             var self = this;
             var menu = JSON.parse(JSON.stringify(${fns: toJson(menu)}));
-            var validateName = function (rules, value, callback) {
-                if (value) {
-                    if (/[@#\$%\^&\*\s]+/g.test(value)) {
-                        return callback(new Error("请不要输入特殊符号"));
-                    }
-                    return callback();
-                }
-                return  callback();
-            }
+
 
             return {
                 imageUrl: '',
@@ -130,31 +122,7 @@
                     remarks: menu.remarks,
                     imgUrl: menu.imgUrl
                 },
-                menuRules: {
-                    name: [
-                        {required: true, message: '请输入菜单名称', trigger: 'blur'},
-                        {max: 24, message: '请输入大不于24个字字符', trigger: 'blur'},
-                        {validator: validateName, trigger: 'blur'},
-                    ],
-                    href: [
-                        {max: 2000, message: '请输入大不于2000个字字符', trigger: 'blur'},
-                    ],
-                    target: [
-                        {max: 12, message: '请输入大不于12个字字符', trigger: 'blur'},
-                    ],
-                    permission: [
-                        {max: 100, message: '请输入大不于100个字字符', trigger: 'blur'},
-                    ],
-                    remarks: [
-                        {max: 200, message: '请输入大不于200个字字符', trigger: 'blur'},
-                    ],
-                    imgUrl: [
-                        {required: true, message: '请上传菜单图片', trigger: 'change'},
-                    ],
-                    tmpParentIds: [
-                        {required: true, message: '请选择上级菜单', trigger: 'change'},
-                    ]
-                },
+
                 cascaderProps: {
                     label: 'name',
                     value: 'id',
@@ -173,7 +141,44 @@
                 if (tmpParentIds.length > 0) {
                     return tmpParentIds[tmpParentIds - 1]
                 }
-            }
+            },
+            menuRules: function () {
+                var tmpParentIds = this.menuForm.tmpParentIds;
+                var validateName = function (rules, value, callback) {
+                    if (value) {
+                        if (/[@#\$%\^&\*\s]+/g.test(value)) {
+                            return callback(new Error("请不要输入特殊符号"));
+                        }
+                        return callback();
+                    }
+                    return  callback();
+                }
+                return {
+                    name: [
+                        {required: true, message: '请输入菜单名称', trigger: 'blur'},
+                        {max: 24, message: '请输入大不于24个字字符', trigger: 'blur'},
+                        {validator: validateName, trigger: 'blur'},
+                    ],
+                    href: [
+                        {max: 2000, message: '请输入大不于2000个字字符', trigger: 'blur'},
+                    ],
+                    target: [
+                        {max: 12, message: '请输入大不于12个字字符', trigger: 'blur'},
+                    ],
+                    permission: [
+                        {max: 100, message: '请输入大不于100个字字符', trigger: 'blur'},
+                    ],
+                    remarks: [
+                        {max: 200, message: '请输入大不于200个字字符', trigger: 'blur'},
+                    ],
+                    imgUrl: [
+                        {required: tmpParentIds.length == '1', message: '请上传菜单图片', trigger: 'change'},
+                    ],
+                    tmpParentIds: [
+                        {required: true, message: '请选择上级菜单', trigger: 'change'},
+                    ]
+                }
+            },
         },
         methods: {
             saveMenu: function () {
@@ -256,6 +261,12 @@
                 })
             },
 
+            getMenuTree: function () {
+              this.$axios.get('/sys/menu/getMenuTree').then(function (response) {
+                  console.log(response.data)
+              })
+            },
+
             dealMenuFormParam: function () {
                 var menuForm = JSON.parse(JSON.stringify(this.menuForm));
                 var parentId = menuForm.tmpParentIds[menuForm.tmpParentIds.length - 1];
@@ -287,6 +298,7 @@
         },
         created: function () {
             this.getMenuList();
+            this.getMenuTree();
         }
     })
 

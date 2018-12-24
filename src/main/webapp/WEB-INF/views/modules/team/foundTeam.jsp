@@ -189,7 +189,7 @@
                             <el-table-column
                                     type="selection"
                                     :selectable="selectableStudent"
-                                    width="55">
+                                    width="60">
                             </el-table-column>
                             <el-table-column align="center" label="姓名">
                                 <template slot-scope="scope">{{scope.row.name}}</template>
@@ -214,7 +214,7 @@
                             <el-table-column
                                     type="selection"
                                     :selectable="selectableTeacher"
-                                    width="55">
+                                    width="60">
                             </el-table-column>
                             <el-table-column align="center" label="姓名">
                                 <template slot-scope="scope">{{scope.row.name}}</template>

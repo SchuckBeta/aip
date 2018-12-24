@@ -343,6 +343,7 @@
                     publishExpires: [],//有效期,
                     contentActions: []
                 },
+                oldTile:cmsArticleForm.title || '',
 
                 baseContentDisabled: false,
 
@@ -419,29 +420,30 @@
                         categories: [{required: true, message: '请选择归属栏目', trigger: 'change'}],
                         module: [{required: true, message: '请选择栏目模块', trigger: 'change'}],
                         title: [
-                            {required: true, message: '请输入标题', trigger: 'blur'},
-                            {max: 20, message: '请输入大不于20位字符', trigger: 'blur'}
+                            {required: true, message: '请输入标题', trigger: 'change'},
+                            {max: 20, message: '请输入不大于20位字符', trigger: 'change'},
+                            {validator: this.validatorTitle, trigger: 'blur'}
                         ],
                         writer: [
 //                            {required: isshowwriter == '1', message: '请输入作者', trigger: 'blur'},
-                            {max: 24, message: '请输入大不于24位字符', trigger: 'blur'}
+                            {max: 24, message: '请输入不大于24位字符', trigger: 'change'}
                         ],
                         cmsArticleData: {
                             copyfrom: [
 //                                {required: isshowcopyfrom == '1', message: '请输入来源', trigger: 'blur'},
-                                {max: 24, message: '请输入大不于24位字符', trigger: 'blur'}
+                                {max: 24, message: '请输入不大于24位字符', trigger: 'change'}
                             ],
                             content: [
                                 {required: true, message: '请输入内容', trigger: 'change'}
                             ]
                         },
                         link: [
-                            {required: baseContentForm.isshowlink == '1', message: '请输入标题链接', trigger: 'blur'},
-                            {max: 2000, message: '请输入大不于2000位字符', trigger: 'blur'}
+                            {required: baseContentForm.isshowlink == '1', message: '请输入标题链接', trigger: 'change'},
+                            {max: 2000, message: '请输入不大于2000位字符', trigger: 'change'}
                         ],
                         description: [
 //                            {required: isshowdescription == '1', message: '请输入摘要', trigger: 'blur'},
-                            {max: 200, message: '请输入大不于200位字符', trigger: 'blur'}
+                            {max: 200, message: '请输入不大于200位字符', trigger: 'change'}
                         ],
 //                        articlepulishDate: [
 //                            {required: isshowpublishdate == '1', message: '请选择文章发表时间', trigger: 'change'}
@@ -592,6 +594,29 @@
                 this.$nextTick(function (_) {
                     this.uploadArticleProPic = (coverImg && coverImg.indexOf('/tool') > -1) ? this.addFtpHttp(coverImg) : '/img/video-default.jpg';
                 })
+            },
+
+
+            validatorTitle:function (rule, value, callback) {
+                var self = this;
+                if(this.oldTile == value){
+                    return callback();
+                }
+                var params = {
+                    cmsCategory: {
+                        id: self.baseContentForm.categoryId
+                    },
+                    title: value
+                };
+                this.$axios.post('cms/cmsArticle/validateArticleName',params).then(function (response) {
+                    var data = response.data;
+                    if(data.code == '1005'){
+                        return callback(new Error('该栏目下此标题已存在'));
+                    }
+                    return callback();
+                }).catch(function (error) {
+                    return callback();
+                });
             },
 
             //图片上传结束

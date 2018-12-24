@@ -19,7 +19,7 @@
             <div class="user-register-form">
                 <el-tabs v-model="activeName" @tab-click="handleClick">
                     <el-tab-pane label="账号密码登录" name="first">
-                        <el-form action="login" :model="accountPwdForm" ref="accountPwdForm" size="mini" :rules="rules" method="POST" class="demo-ruleForm">
+                        <el-form action="login" :model="accountPwdForm" ref="accountPwdForm" size="mini" :rules="rules" method="POST" class="demo-ruleForm" :disabled="disabled">
                             <input type="hidden" name="loginType" :value="loginType"/>
                             <el-form-item prop="username">
                                 <el-input type="text" name="username" v-model="accountPwdForm.username" @keyup.enter.native="submitForm" auto-complete="off" placeholder="请输入登录名或学号">
@@ -43,7 +43,7 @@
                     </el-tab-pane>
 
                     <el-tab-pane label="短信登录" name="second">
-                        <el-form action="login" :model="messageForm" ref="messageForm" size="mini" :rules="rules"  method="POST" class="demo-ruleForm">
+                        <el-form action="login" :model="messageForm" ref="messageForm" size="mini" :rules="rules"  method="POST" class="demo-ruleForm" :disabled="disabled">
                             <input type="hidden" name="loginType" :value="loginType"/>
                             <el-form-item prop="username">
                                 <el-input type="number" name="username" v-model.number="messageForm.username" @keyup.enter.native="submitForm" auto-complete="off" placeholder="请输入手机号">
@@ -63,7 +63,7 @@
                     </el-tab-pane>
 
                     <div class="text-center register-btn">
-                        <el-button type="primary" @click="submitForm" :disabled="isSubmit">登录</el-button>
+                        <el-button type="primary" @click="submitForm" :disabled="isSubmit || disabled">登录</el-button>
                         <a href="/f/toRegister">没有账号，去注册</a>
                     </div>
 
@@ -74,10 +74,9 @@
 </div>
 
 <script>
-    +function(Vue){
         'use strict';
 
-        var app = new Vue({
+         new Vue({
             el:'#app',
             mixins:[Vue.frontLoginMixin],
             data:function(){
@@ -99,7 +98,8 @@
                         password:''
                     },
                     imgCode:'/f/validateCode/createValidateCode',
-                    timeCount:60
+                    timeCount:60,
+                    disabled: false,
                 }
             },
             computed:{
@@ -133,6 +133,7 @@
                     var self = this;
                     this.$refs[this.formName].validate(function(valid){
                         if(valid){
+                            self.disabled = true;
                             self.$refs[self.formName].$el.submit();
                         }
                     })
@@ -177,7 +178,6 @@
                 }
             }
         })
-    }(Vue)
 
 
 </script>

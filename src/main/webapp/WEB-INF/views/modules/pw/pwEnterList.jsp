@@ -20,34 +20,38 @@
                          name="type" @change="getPwEnterList"></e-condition>
         </div>
         <div class="search-block_bar clearfix">
-            <el-date-picker
-                    v-model="pwEnterApplyDate"
-                    type="daterange"
-                    size="mini"
-                    align="right"
-                    @change="handleChangeApplyDate"
-                    unlink-panels
-                    range-separator="至"
-                    start-placeholder="开始日期"
-                    end-placeholder="结束日期"
-                    value-format="yyyy-MM-dd HH:mm:ss"
-                    style="width: 270px;">
-            </el-date-picker>
-            <el-input
-                    placeholder="企业或团队名称/负责人/组成员/导师"
-                    size="mini"
-                    name="keys"
-                    v-model="searchListForm.keys"
-                    keyup.enter.native="getPwEnterList"
-                    class="w300">
-                <el-button slot="append" icon="el-icon-search"
-                           @click.stop.prevent="getPwEnterList"></el-button>
-            </el-input>
+            <div class="search-input">
+                <el-date-picker
+                        v-model="pwEnterApplyDate"
+                        type="daterange"
+                        size="mini"
+                        align="right"
+                        @change="handleChangeApplyDate"
+                        unlink-panels
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        value-format="yyyy-MM-dd HH:mm:ss"
+                        :default-time="searchDefaultTime"
+                        style="width: 270px;">
+                </el-date-picker>
+                <el-input
+                        placeholder="企业或团队名称/负责人/组成员/导师"
+                        size="mini"
+                        name="keys"
+                        v-model="searchListForm.keys"
+                        @keyup.enter.native="getPwEnterList"
+                        class="w300">
+                    <el-button slot="append" icon="el-icon-search"
+                               @click.stop.prevent="getPwEnterList"></el-button>
+                </el-input>
+                <input type="text" style="display: none">
+            </div>
         </div>
     </el-form>
     <div class="table-container">
-        <el-table :data="pwEnterList" size="mini" class="table">
-            <el-table-column label="入驻信息">
+        <el-table :data="pwEnterList" size="mini" class="table" @sort-change="sortChange">
+            <el-table-column label="入驻信息" prop="type" sortable="type">
                 <template slot-scope="scope">
                     <table-thing-info :row="getPwEnterInfo(scope.row)"></table-thing-info>
                 </template>
@@ -57,12 +61,12 @@
                     <table-team-member :row="getPwEnterTeamInfo(scope.row)"></table-team-member>
                 </template>
             </el-table-column>
-            <el-table-column label="申请日期" align="center">
+            <el-table-column label="申请日期" prop="startDate" align="center" sortable="startDate">
                 <template slot-scope="scope">
                     {{scope.row.startDate | formatDateFilter('YYYY-MM-DD')}}
                 </template>
             </el-table-column>
-            <el-table-column label="状态" align="center">
+            <el-table-column label="状态"  prop="status" align="center" sortable="status">
                 <template slot-scope="scope">
                     {{scope.row.status | selectedFilter(pwEnterStatusEntries)}}
                 </template>
@@ -127,7 +131,8 @@
                 officeProps: {
                     label: 'name',
                     value: 'id'
-                }
+                },
+                searchDefaultTime: ['00:00:00','23:59:59']
             }
         },
         computed: {
@@ -147,6 +152,12 @@
             }
         },
         methods: {
+
+            sortChange: function (row) {
+                this.searchListForm.orderBy = row.prop;
+                this.searchListForm.orderByType = row.order ? (row.order.indexOf('asc') ? 'asc' : 'desc') : '';
+                this.getPwEnterList()
+            },
 
             handleChangeApplyDate: function (value) {
                 var startDate, startQDate;
@@ -202,6 +213,10 @@
             getPwEnterInfo: function (row) {
                 var type = row.type;
                 var name = row.eteam.team.name;
+                var pwEnterTypeEntries = this.pwEnterTypeEntries;
+                if(!pwEnterTypeEntries){
+                    return {}
+                }
                 var label = this.pwEnterTypeEntries[row.type];
                 var applicant = row.applicant;
                 if (type == '2') {

@@ -12,7 +12,7 @@
 
 
 <div id="app" v-show="pageLoad" style="display: none" class="container-fluid mgb-60 renewal-back-manage">
-    <edit-bar></edit-bar>
+    <edit-bar second-name="分配详情" href="/pw/pwRoom/allotRoomList"></edit-bar>
     <el-form :model="searchListForm" ref="searchListForm" size="mini">
         <div class="conditions">
 
@@ -54,12 +54,13 @@
                                 range-separator="至"
                                 start-placeholder="开始日期"
                                 end-placeholder="结束日期"
-                                value-format="yyyy-MM-dd"
+                                value-format="yyyy-MM-dd HH:mm:ss"
+                                :default-time="searchDefaultTime"
                                 style="width: 270px;">
                 </el-date-picker>
                 <input type="text" style="display:none">
                 <el-input name="keys" size="mini" class="w300" v-model="searchListForm.keys"
-                          placeholder="团队/企业/负责人/组成员/导师" @keyup.enter.native="getDataList">
+                          placeholder="团队/企业/负责人/组成员" @keyup.enter.native="getDataList">
                     <el-button slot="append" class="el-icon-search" @click.stop.prevent="getDataList"></el-button>
                 </el-input>
             </div>
@@ -70,10 +71,7 @@
     <div class="table-container">
         <el-table :data="pageList" ref="pageList" class="table" size="mini" v-loading="loading"
                    @sort-change="handleTableSortChange">
-            <el-table-column
-              type="index"
-              width="50">
-            </el-table-column>
+
             <el-table-column label="团队/企业" align="left">
                 <template slot-scope="scope">
                     <table-thing-info :row="getPwEnterInfo(scope.row)"></table-thing-info>
@@ -85,9 +83,9 @@
                 </template>
             </el-table-column>
             <el-table-column label="分配场地" align="left">
-                <template slot-scope="scope">
-                    <div>{{scope.row.numtype | selectedFilter(numTypesEntries)}}：共{{scope.row.num}}<span v-if="scope.row.numtype == '1'">人</span><span v-else>个</span></div>
-                    <div>占地面积：{{scope.row.area}}平方米</div>
+                <template slot-scope="scope" v-if="scope.row.place">
+                    <div>{{scope.row.place.numtype | selectedFilter(numTypesEntries)}}：共{{scope.row.place.num}}<span v-if="scope.row.place.numtype == '1'">人</span><span v-else>个</span></div>
+                    <div>占地面积：{{scope.row.place.area}}平方米</div>
                 </template>
             </el-table-column>
             <el-table-column prop="startDate" label="有效期" align="center" sortable="startDate">
@@ -97,7 +95,7 @@
             </el-table-column>
             <el-table-column prop="querystatus" label="状态" align="center" sortable="querystatus">
                 <template slot-scope="scope">
-                    <span :class="{red:scope.row.querystatus == '4'}">{{scope.row.querystatus | selectedFilter(roomStatesEntries)}}</span>
+                    <span :class="{red:scope.row.querystatus == '11'}">{{scope.row.querystatus | selectedFilter(roomStatesEntries)}}</span>
                 </template>
             </el-table-column>
 
@@ -125,7 +123,7 @@
     new Vue({
         el: '#app',
         data: function () {
-            var professionals = JSON.parse('${fns:getOfficeListJson()}') || [];
+            var professionals = JSON.parse(JSON.stringify(${fns:getOfficeListJson()})) || [];
             var rid = '${rid}';
             return {
                 professionals: professionals,
@@ -168,6 +166,7 @@
                 pwEnterTypes: [],
                 numTypes: [],
                 roomStates: [],
+                searchDefaultTime: ['00:00:00','23:59:59'],
 
                 pageList: []
             }
@@ -206,7 +205,20 @@
                     if (data.status == '1') {
                         self.pageCount = data.data.count;
                         self.searchListForm.pageSize = data.data.pageSize;
-                        self.pageList = data.data.list || [];
+                        var list = data.data.list || [];
+                        list.forEach(function (item) {
+                            if(item.erooms){
+                                item.erooms.forEach(function (obj) {
+                                    if(obj.pwRoom.id == self.rid){
+                                        item.place = {};
+                                        item.place.num = obj.num || '';
+                                        item.place.numtype = obj.pwRoom.numtype || '';
+                                        item.place.area = obj.pwRoom.area || '';
+                                    }
+                                })
+                            }
+                        });
+                        self.pageList = list;
                     }
                     self.loading = false;
                 }).catch(function () {
@@ -255,7 +267,7 @@
                 return {
                     label: label,
                     name: name,
-                    officePro: applicant.officeName + (applicant.professional ? ('/' + this.officeEntries[applicant.professional]) : '')
+                    officePro: applicant.officeName + '/' + (applicant.professional && this.officeEntries[applicant.professional] ? this.officeEntries[applicant.professional] : '-')
                 }
             },
             getPwEnterTeamInfo: function (row) {
@@ -263,8 +275,7 @@
                 var applicant = row.applicant;
                 return {
                     applicantName: applicant.name,
-                    snames: eteam.snames || '',
-                    tnames: eteam.tnames || ''
+                    snames: eteam.snames || ''
                 }
             },
 
@@ -304,7 +315,7 @@
             },
             getRoomStates:function () {
                 var self = this;
-                this.$axios.get('/pw/pwRoom/roomUseType?num=3').then(function (response) {
+                this.$axios.get('/pw/pwRoom/roomUseStatusList').then(function (response) {
                     var data = response.data;
                     self.roomStates = data.data || [];
                 })

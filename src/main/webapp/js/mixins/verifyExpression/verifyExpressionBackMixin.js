@@ -39,10 +39,17 @@ Vue.verifyExpressionBackMixin = {
         validateLoginName: function (rule, value, callback) {
             var self = this;
             if (value) {
+                var teacherForm = this.teacherForm;
+                var userId = teacherForm.userid;
+                var no = teacherForm.userNo;
+                var loginName = teacherForm.userLoginName;
                 if (this.loginNameReg.test(value)) {
                     return callback(new Error('登录名存在空格或者引号'))
                 }
-                return this.$axios.post('/sys/backTeacherExpansion/checkLoginName', { loginName: value, id:  self.teacherForm.userid}).then(function (response) {
+                return this.$axios.post('/sys/user/checkLoginName?' + Object.toURLSearchParams({
+                        userid: userId,
+                        loginName: loginName
+                    })).then(function (response) {
                     var data = response.data;
                     if (!data) {
                         return callback(new Error('登录名已存在'))
@@ -120,35 +127,46 @@ Vue.verifyExpressionBackMixin = {
         },
         validateUserNo: function (rule, value, callback) {
             if (value) {
+                var isUserForm = !!this.userBaseForm;
+                var userid = (isUserForm ? this.userBaseForm.userId : this.teacherForm.userid);
+                var label = (isUserForm ? '学号' : '职工号');
                 if (!this.userNoReg.test(value)) {
                     return callback(new Error('请输入英文或者数字'));
+                } else {
+                    return this.$axios.post('/sys/user/checkNo?' + Object.toURLSearchParams({
+                            userid: userid,
+                            no: value
+                        })).then(function (response) {
+                        var data = response.data;
+                        if (data) {
+                            return callback();
+                        }
+                        return callback(label + '已经存在')
+                    })
                 }
-              return  this.$axios.get('/sys/user/checkNo?no=' + value+'&id=').then(function (response) {
-                    //后台代码返回有误，开卡表单有用到
-                    if (response.data) {
-                        return callback()
-                    }else {
-                        return callback(new Error('学号已存在'))
-                    }
-
-                })
             }
             return callback()
         },
         //导师风采
         validateTeacherFormUserNo: function (rule, value, callback) {
             if (value) {
+                var isUserForm = !!this.userBaseForm;
+                var userid = (isUserForm ? this.userBaseForm.userId : this.teacherForm.userid);
+                var label = (isUserForm ? '学号' : '职工号');
                 if (!this.userNoReg.test(value)) {
                     return callback(new Error('请输入英文或者数字'));
+                } else {
+                    return this.$axios.post('/sys/user/checkNo?' + Object.toURLSearchParams({
+                            userid: userid,
+                            no: value
+                        })).then(function (response) {
+                        var data = response.data;
+                        if (data) {
+                            return callback();
+                        }
+                        return callback(label + '已经存在')
+                    })
                 }
-                return  this.$axios.get('/sys/user/checkNo?no=' + value+'&userid='+this.teacherForm.userid).then(function (response) {
-                    if (response.data) {
-                        return callback()
-                    }else {
-                        return callback(new Error('职工号已存在'))
-                    }
-
-                })
             }
             return callback()
         }

@@ -250,7 +250,7 @@
                                             <img src="/images/time-line.png" alt="">
                                             <div class="relative">
                                                 <e-file-item :file="file" size="mini" :show="false"></e-file-item>
-                                                <span class='date'>{{file.createDate}}</span>
+                                                <span class='date'>{{file.createDate | formatDateFilter('YYYY-MM-DD HH:mm')}}</span>
                                             </div>
                                         </li>
                                     </ul>

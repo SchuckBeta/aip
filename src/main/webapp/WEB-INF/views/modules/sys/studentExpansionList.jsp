@@ -50,9 +50,9 @@
                   @sort-change="handleSortStudent">
             <el-table-column
                     type="selection"
-                    width="55">
+                    width="60">
             </el-table-column>
-            <el-table-column align="center" width="230" label="学生信息">
+            <el-table-column align="center" width="300" label="学生信息">
                 <template slot-scope="scope">
                     <e-student-profile-member :user="scope.row.user" :name="scope.row.user.name"
                                               :profession="scope.row.user.professional | collegeFilter(collegeEntries)"></e-student-profile-member>

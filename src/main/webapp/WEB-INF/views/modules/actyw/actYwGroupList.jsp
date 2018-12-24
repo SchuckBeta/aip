@@ -152,7 +152,7 @@
             </ul>
         </div>
         <div slot="footer" class="dialog-footer">
-            <el-checkbox v-model="isRemind">不在提醒</el-checkbox>
+            <el-checkbox v-model="isRemind">不再提醒</el-checkbox>
         </div>
     </el-dialog>
 </div>
@@ -168,7 +168,7 @@
             var yesNoes = JSON.parse('${fns: toJson(fns: getDictList('yes_no'))}');
             var actProjectTypes = JSON.parse('${fns: toJson(fns: getDictList('act_project_type'))}');
             var isShowStepModal = $.cookie('isShowStepModal');
-            var isShowOnce = $.cookie('isShowOnce');
+//            var isShowOnce = $.cookie('isShowOnce');
             var dialogVisibleAutoDefinedFlow = !(isShowStepModal);
 
             return {
@@ -448,11 +448,11 @@
             this.getActYwGroupList();
             this.getFlowThemes();
             this.getFlowTypes();
-            if (this.dialogVisibleAutoDefinedFlow) {
-                $.cookie('isShowStepModal', 'noMore', {
-                    expires: 100
-                })
-            }
+//            if (this.dialogVisibleAutoDefinedFlow) {
+//                $.cookie('isShowStepModal', 'noMore', {
+//                    expires: 100
+//                })
+//            }
         },
         mounted: function () {
             if (this.actYwGroupMessage) {

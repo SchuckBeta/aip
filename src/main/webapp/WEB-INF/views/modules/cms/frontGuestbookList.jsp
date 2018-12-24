@@ -261,7 +261,26 @@
                 }
             },
             created: function () {
+                var self = this;
                 this.getDataList();
+
+                this.getUserIsCompleted().then(function (response) {
+                    var data = response.data;
+                    if(data.status !== 1){
+                        self.$msgbox({
+                            type: 'error',
+                            title: '提示',
+                            closeOnClickModal: false,
+                            closeOnPressEscape: false,
+                            confirmButtonText: '确定',
+                            showClose: false,
+                            message: data.msg
+                        }).then(function () {
+                            location.href = '/f/sys/frontStudentExpansion/findUserInfoById?custRedict=1&isEdit=1';
+                        }).catch(function () {
+                        });
+                    }
+                })
             }
         });
 

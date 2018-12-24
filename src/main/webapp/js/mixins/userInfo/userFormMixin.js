@@ -49,9 +49,11 @@
                 },
                 userBaseFormRule: {
                     userResidence: [
+                        {required: true, message: '请填写户籍', trigger: 'blur'},
                         { max: 64, message: '请输入大不于64个字', trigger: 'blur'},
                     ],
                     userIntroduction: [
+                        {required: true, message: '请填写个人简介', trigger: 'blur'},
                         {max: 200, message: '请输入不大于200个字', trigger: 'blur'},
                     ],
                     userLoginName: [

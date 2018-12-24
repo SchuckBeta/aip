@@ -13,10 +13,10 @@
 <div id="app" v-show="pageLoad" style="display: none" class="container-fluid mgb-60">
     <div class="mgb-20">
         <shiro:hasPermission name="pw:pwSpace:edit">
-            <edit-bar :second-name="baseForm.id ? '基地修改': '基地添加'"></edit-bar>
+            <edit-bar :second-name="baseForm.id ? '基地修改': '基地添加'" href="/pw/pwSpace/list"></edit-bar>
         </shiro:hasPermission>
         <shiro:lacksPermission name="pw:pwSpace:edit">
-            <edit-bar :second-name="基地查看"></edit-bar>
+            <edit-bar second-name="基地查看" href="/pw/pwSpace/list"></edit-bar>
         </shiro:lacksPermission>
     </div>
 
@@ -42,7 +42,7 @@
         </el-form-item>
 
         <el-form-item prop="area" label="占地面积：">
-            <el-input name="area" type="number" v-model.number="baseForm.area" class="w300">
+            <el-input name="area" v-model="baseForm.area" class="w300">
                 <template slot="append">平方米</template>
             </el-input>
         </el-form-item>
@@ -59,13 +59,12 @@
                         :on-error="fileError"
                         name="upfile"
                         accept="image/jpg, image/jpeg, image/png">
-                    <img v-for="item in fileBaseImg" :key="item.uid"
-                         :src="item.ftpUrl | ftpHttpFilter(ftpHttp)">
-                    <i v-if="fileBaseImg.length == 0"
+                    <img v-if="fileBaseImg" :src="fileBaseImg | ftpHttpFilter(ftpHttp)">
+                    <i v-if="!fileBaseImg"
                        class="el-icon-plus avatar-uploader-icon"></i>
                 </el-upload>
-                <div class="arrow-block-delete" v-if="fileBaseImg.length > 0">
-                    <i class="el-icon-delete" @click.sotp.prevent="fileBaseImg = []"></i>
+                <div class="arrow-block-delete" v-if="fileBaseImg">
+                    <i class="el-icon-delete" @click.sotp.prevent="fileBaseImg = ''"></i>
                 </div>
             </div>
             <div class="img-tip">
@@ -85,7 +84,6 @@
                            @click.stop.prevent="saveForm('baseForm')">保存
                 </el-button>
             </shiro:hasPermission>
-            <el-button @click.stop.prevent="goToBack">返回</el-button>
         </el-form-item>
 
     </el-form>
@@ -101,9 +99,10 @@
     new Vue({
         el: '#app',
         data: function () {
-            var pwSpace = JSON.parse('${fns:toJson(pwSpace)}');
+            var pwSpace = JSON.parse(JSON.stringify(${fns:toJson(pwSpace)})) || [];
 
             var nameReg = /['"\s“”‘’]+/;
+            var areaReg = /^([1-9]{1}[0-9]{0,5}(\.{1}(?=\d+))|[1-9]{1}[0-9]{0,1})\d{0,4}$/;
             var validateName = function (rule, value, callback) {
                 if (nameReg.test(value)) {
                     callback(new Error('基地名称存在空格或者引号'))
@@ -112,10 +111,9 @@
                 }
             };
             var validateArea = function (rule, value, callback) {
-                var len = value.toString().split('').length;
-                if(value && len > 6){
-                    callback(new Error('占地面积最大6位数'))
-                }else{
+                if (value && !areaReg.test(value)) {
+                    callback(new Error('请输入数字，如为小数，则小数点前最多6位数且最多保留4位小数'));
+                } else {
                     callback();
                 }
             };
@@ -134,7 +132,7 @@
                 secondName:'${secondName}',
                 formDisabled:false,
                 message:'${message}',
-                fileBaseImg:[],
+                fileBaseImg:'',
                 baseFormRules:{
                     name: [
                         {required: true, message: '请输入基地名称', trigger: 'change'},
@@ -149,9 +147,7 @@
         },
         watch:{
             fileBaseImg: function (value) {
-                this.baseForm.imageUrl = value.map(function (item) {
-                    return item.ftpUrl
-                }).join(',');
+                this.baseForm.imageUrl = value;
             }
         },
         methods: {
@@ -159,9 +155,7 @@
                 if (!value) {
                     return;
                 }
-                this.fileBaseImg.push({
-                    ftpUrl: value
-                });
+                this.fileBaseImg = value;
             },
             fileError: function (err, file, fileList) {
                 if (err.state == 'error') {
@@ -172,10 +166,9 @@
                 }
             },
 
-            fileSuccess: function (response, file, fileList) {
-                var nfile = Object.assign(file, response);
+            fileSuccess: function (response, file) {
                 if (response.state === 'SUCCESS') {
-                    this.fileBaseImg = fileList.slice(-1);
+                    this.fileBaseImg = file.response.ftpUrl;
                 } else {
                     this.$message({
                         message: '上传失败',
@@ -192,9 +185,6 @@
                         self.$refs.baseForm.$el.submit();
                     }
                 })
-            },
-            goToBack:function () {
-                window.location.href = this.frontOrAdmin + '/pw/pwSpace/list';
             }
         },
         created: function () {

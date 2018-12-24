@@ -182,11 +182,12 @@
     /*返回promise object*/
     NotifyModule.prototype.getUnReadOaNotify = function () {
         if(!this.user) return false;
-        var xhr = $.get('/f/unReadOaNotify?' + Math.random());
+        var xhr = $.get('/f/oa/oaNotify/unFootReadOaNotify?' + Math.random());
         var self = this;
         xhr.success(function (res) {
-            if (res || res[0]) {
-                self.list = res;
+            if (res) {
+                self.list = res.list || [];
+                self.inOnOff = res.inOnOff;
             }
         });
         return xhr;
@@ -195,6 +196,7 @@
     NotifyModule.prototype.tplListHtml = function (list) {
         var html = '';
         var strTeamName = '';
+        var self = this;
         $.each(list, function (i, item) {
             var type = item.type;
             var data = {};
@@ -243,7 +245,7 @@
                 '<div class="msg-box"> ' + infoTpl +
                 '</div> </div>  <div class="text-center" style="font-size: 0;">' +
                 ' <div class="btn-group" data-notify-id="' + item.notifyId + '" data-team-id="' + item.teamId + '">' ;
-            if (type == 5 || type == 6 ) {
+            if ((type == 5 || type == 6) && self.inOnOff === '1') {
                 html +=' <button type="button" class="btn btn-accept btn-sm" style="display: ' + (!data.accept ? 'none' : 'inline-block') + '">接受</button>' +
                 ' <button type="button" class="btn btn-refuse btn-sm" style="display: ' + (!data.refuse ? 'none' : 'inline-block') + '">拒绝</button>' ;
             }
@@ -583,6 +585,13 @@ function changeUnreadTrForNotify(nid) {
 $(function () {
     if($('input[type="hidden"][name="userId"]').val()){
         getUnreadCountForHead();
+    }
+
+    if($.browser.msie && $.browser.version<10){
+        $('body').css({
+            'height': $(window).height(),
+            'overflow': 'hidden'
+        }).append('<div class="browser-dialog"><div class="bro-dia-tip">请使用IE9以上的版本、谷歌等浏览器以获得更好的体验</div></div>');
     }
 });
 function getUnreadCountForHead() {

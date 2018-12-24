@@ -30,10 +30,17 @@
             validateLoginName: function (rule, value, callback) {
                 var self = this;
                 if (value) {
+                    var userBaseForm = this.userBaseForm;
+                    var userId = userBaseForm.userId;
+                    // var no = userBaseForm.userNo;
+                    var loginName = userBaseForm.userLoginName;
                     if (this.loginNameReg.test(value)) {
                         return callback(new Error('登录名存在空格或者引号'))
                     }
-                    return this.$axios.post('/sys/user/checkLoginName?loginName=' + value + '&userid=' + self.userBaseForm.userId).then(function (response) {
+                    return this.$axios.post('/sys/user/checkLoginName?' + Object.toURLSearchParams({
+                            userid: userId,
+                            loginName: loginName
+                        })).then(function (response) {
                         var data = response.data;
                         if (!data) {
                             return callback(new Error('登录名已存在'))
@@ -49,10 +56,17 @@
             validateLoginNameTeacher: function (rule, value, callback) {
                 var self = this;
                 if (value) {
+                    var teacherForm = this.teacherForm;
+                    var userId = teacherForm.userid;
+                    var no = teacherForm.userNo;
+                    var loginName = teacherForm.userLoginName;
                     if (this.loginNameReg.test(value)) {
                         return callback(new Error('登录名存在空格或者引号'))
                     }
-                    return this.$axios.post('/sys/user/checkLoginName?loginName=' + value + '&userid=' + self.teacherForm.userid).then(function (response) {
+                    return this.$axios.post('/sys/user/checkLoginName?' + Object.toURLSearchParams({
+                            userid: userId,
+                            loginName: loginName
+                        })).then(function (response) {
                         var data = response.data;
                         if (!data) {
                             return callback(new Error('登录名已存在'))
@@ -170,18 +184,21 @@
             validateUserNo: function (rule, value, callback) {
                 var self = this;
                 if (value) {
+                    var isUserForm = !!this.userBaseForm;
+                    var userid = (isUserForm ? this.userBaseForm.userId : this.teacherForm.userid);
+                    var label = (isUserForm ? '学号' : '职工号');
                     if (!this.userNoReg.test(value)) {
                         return callback(new Error('请输入英文或者数字'));
                     } else {
-                        return this.$axios.post('/sys/user/checkUserNoUnique', {
-                            id: (this.userBaseForm ? this.userBaseForm.userId : this.teacherForm.userid),
-                            no: value
-                        }).then(function (response) {
+                        return this.$axios.post('/sys/user/checkNo?' + Object.toURLSearchParams({
+                                userid: userid,
+                                no: value
+                            })).then(function (response) {
                             var data = response.data;
                             if (data) {
                                 return callback();
                             }
-                            return callback((self.userBaseForm ? '学号' : '职工号')+ '已经存在')
+                            return callback(label + '已经存在')
                         })
                     }
                 }
@@ -201,7 +218,7 @@
             var validateLoginNameXhr = function (rule, value, callback) {
                 self.$axios({
                     method: 'POST',
-                    url: '/register/checkLoginNameUnique?loginName=' + value
+                    url: '/register/checkLoginNameUnique?loginName=' + encodeURI(value)
                 }).then(function (response) {
                     var data = response.data;
                     if (!data) {
@@ -592,19 +609,27 @@
             var userNoReg = /^[a-zA-Z0-9]+$/;
             var mobileReg = /^((13[0-9])|(14[5,7,9])|(15[^4])|(18[0-9])|(17[0,1,3,5,6,7,8]))\d{8}$$/;
             var validateLoginName = function (rule, value, callback) {
-                if (nameReg.test(value)) {
-                    callback(new Error('登录名存在空格或者引号'))
-                } else {
-                    self.$axios.post('/sys/user/checkLoginName?loginName=' + value + '&userid=' + self.createUserForm.id).then(function (response) {
+                if (value) {
+                    var createUserForm = self.createUserForm;
+                    var userId = createUserForm.id;
+                    var loginName = createUserForm.loginName;
+                    if (nameReg.test(value)) {
+                        return callback(new Error('登录名存在空格或者引号'))
+                    }
+                    return self.$axios.post('/sys/user/checkLoginName?' + Object.toURLSearchParams({
+                            userid: userId,
+                            loginName: loginName
+                        })).then(function (response) {
                         var data = response.data;
                         if (!data) {
-                            callback(new Error('登录名已存在'))
+                            return callback(new Error('登录名已存在'))
                         }
-                        callback();
-                    }).catch(function () {
-                        callback(new Error('请求失败'))
-                    });
+                        return callback();
+                    }).catch(function (error) {
+                        return callback(new Error('请求失败'))
+                    })
                 }
+                return callback();
             };
             var validateName = function (rule, value, callback) {
                 if (nameReg.test(value)) {
@@ -705,27 +730,32 @@
             var nameReg = /['"\s“”‘’]+/;
             var mobileReg = /^((13[0-9])|(14[5,7,9])|(15[^4])|(18[0-9])|(17[0,1,3,5,6,7,8]))\d{8}$$/;
             var reg = /^[1-9][0-9]*$/;
+            var areaReg = /^([1-9]{1}[0-9]{0,5}(\.{1}(?=\d+))|[1-9]{1}[0-9]{0,1})\d{0,4}$/;
             var validatePlace = function (rule, value, callback) {
                 if (self.spaceListEntries[value].type != '4') {
                     callback(new Error('请选择楼层'))
-                } else {
+                }else{
                     callback();
                 }
             };
             var validateName = function (rule, value, callback) {
                 if (nameReg.test(value)) {
                     callback(new Error('房间名称存在空格或者引号'))
-                } else if(value != self.currentName){
-                    self.$axios.get('/pw/pwRoom/ajaxVerifyName?sid=' + self.roomForm.pwSpace.id + '&name=' + value).then(function (response) {
-                        var data = response.data;
-                        if (data.status == '0') {
-                            callback(new Error('同楼层房间名已存在'))
-                        }
+                } else if (value != self.currentName) {
+                    if(!self.roomForm.pwSpace.id){
                         callback();
-                    }).catch(function () {
-                        callback(new Error('请求失败'))
-                    });
-                }else{
+                    }else{
+                        self.$axios.get('/pw/pwRoom/ajaxVerifyName?sid=' + self.roomForm.pwSpace.id + '&name=' + value).then(function (response) {
+                            var data = response.data;
+                            if (data.status == '0') {
+                                callback(new Error('同楼层房间名已存在'))
+                            }
+                            callback();
+                        }).catch(function () {
+                            callback(new Error('请求失败'))
+                        });
+                    }
+                } else {
                     callback();
                 }
             };
@@ -747,37 +777,28 @@
                 }
             };
             var validateArea = function (rule, value, callback) {
-                var arr,frontLen,lastLen;
-                value = value.toString();
-                arr = value.split('.');
-                frontLen = arr[0].length;
-                if(arr.length >= 2){
-                    lastLen = arr[1].length;
-                }
-                if (value && frontLen > 6 && !lastLen) {
-                    callback(new Error('占地面积小数点前最大6位数'));
-                } else if(value && frontLen <= 6 && lastLen > 4) {
-                    callback(new Error('占地面积小数点后最大4位数'));
-                }else{
+                if (value && !areaReg.test(value)) {
+                    callback(new Error('请输入数字，如为小数，则小数点前最多6位数且最多保留4位小数'));
+                } else {
                     callback();
                 }
             };
             var validateNum = function (rule, value, callback) {
-                var len = value.toString().split('').length;
+                var len = value.toString().length;
                 if (!reg.test(value)) {
                     callback(new Error('请输入正整数'));
-                }else if((len > 6)){
+                } else if ((len > 6)) {
                     callback(new Error('房间容量最大6位数'))
-                } else if(self.roomForm.numtype == ''){
+                } else if (self.roomForm.numtype == '') {
                     callback(new Error('请选择容量类型'))
-                }else{
+                } else {
                     callback();
                 }
             };
             return {
                 roomFormRules: {
-                    pwSpace:{
-                        id:[
+                    pwSpace: {
+                        id: [
                             {required: true, message: '请选择场地', trigger: 'change'},
                             {validator: validatePlace, trigger: 'change'}
                         ]
@@ -789,7 +810,7 @@
                     ],
                     mobile: [
                         {required: true, message: '请输入联系电话', trigger: 'change'},
-                        {validator: validateMobile, trigger: 'blur'}
+                        {validator: validateMobile, trigger: 'change'}
                     ],
                     person: [
                         {required: true, message: '请输入负责人', trigger: 'change'},

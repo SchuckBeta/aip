@@ -195,8 +195,8 @@
             data: function () {
                 var pwRoomTypes = JSON.parse('${fns:toJson(fns:getDictList('pw_room_type'))}');
                 var pwAppointmentStatuses = JSON.parse('${fns: toJson(fns:getDictList('pw_appointment_status'))}');
-                var appList = JSON.parse('${fns:toJson(list)}') || [];
-                var appRule = JSON.parse('${fns:toJson(appRule)}') || {};
+                var appList = JSON.parse(JSON.stringify(${fns:toJson(list)})) || [];
+                var appRule = JSON.parse(JSON.stringify(${fns:toJson(appRule)})) || {};
                 var validatorNumber = function (rule, value, callback) {
                     if (value) {
                         if (!(/^\d{1,}$/.test(value))) {
@@ -215,12 +215,12 @@
                 return {
                     appList: appList,
                     appRule: appRule,
-                    user: JSON.parse('${fns:toJson(fns:getUser())}'),
+                    user: JSON.parse(JSON.stringify(${fns:toJson(fns:getUser())})),
                     isAdmin: ${isAdmin},
                     now: '${now}',
                     pwRoomTypes: pwRoomTypes,
                     pwAppointmentStatuses: pwAppointmentStatuses,
-                    rooms: JSON.parse('${fns:toJson(rooms)}'),
+                    rooms: JSON.parse(JSON.stringify(${fns:toJson(rooms)})),
                     appointmentForm: {
                         startDate: '',
                         endDate: '',

@@ -297,6 +297,14 @@
     </function>
 
     <function>
+        <description>获取评审标准列表</description>
+        <name>getAuditStandardList</name>
+        <function-class>com.oseasy.initiate.modules.auditstandard.util.AuditStandardUtils</function-class>
+        <function-signature>java.util.List getAuditStandardList()</function-signature>
+        <example>${fns:getAuditStandardList()}</example>
+    </function>
+
+    <function>
         <description>根据资源id获得html代码</description>
         <name>getHtmlByTemplate</name>
         <function-class>com.oseasy.initiate.modules.cms.utils.CmsUtils</function-class>
@@ -802,7 +810,7 @@
         <description>根据gnodeId查找Gnode</description>
         <name>getActYwGnode</name>
         <function-class>com.oseasy.initiate.modules.act.utils.ProcessDefUtils</function-class>
-        <function-signature>com.oseasy.pact.modules.actyw.entity.ActYwGnode getActYwGnode(java.lang.String)</function-signature>
+        <function-signature>com.oseasy.initiate.modules.actyw.entity.ActYwGnode getActYwGnode(java.lang.String)</function-signature>
         <example>${fns:getActYwGnode(id)}</example>
     </function>
 

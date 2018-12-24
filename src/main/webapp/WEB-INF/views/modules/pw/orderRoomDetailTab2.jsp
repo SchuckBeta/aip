@@ -12,7 +12,7 @@
 
 
 <div id="app" v-show="pageLoad" style="display: none" class="container-fluid mgb-60 renewal-back-manage">
-    <edit-bar></edit-bar>
+    <edit-bar second-name="预约详情" href="/pw/pwRoom/orderRoomList"></edit-bar>
     <el-form :model="searchListForm" ref="searchListForm" size="mini">
         <div class="conditions">
 
@@ -47,7 +47,7 @@
                                 end-placeholder="结束预约时间"
                                 value-format="yyyy-MM-dd HH:mm"
                                 format="yyyy-MM-dd HH:mm"
-                                :default-time="['8:00:00', '08:00:00']"
+                                :default-time="['8:00:00', '17:00:00']"
                                 style="width:280px;">
                 </el-date-picker>
                 <input type="text" style="display:none">
@@ -63,10 +63,7 @@
     <div class="table-container">
         <el-table :data="pageList" ref="pageList" class="table" size="mini" v-loading="loading"
                    @sort-change="handleTableSortChange">
-            <el-table-column
-              type="index"
-              width="50">
-            </el-table-column>
+
             <el-table-column label="预约人" align="left">
                 <template slot-scope="scope">
                     <div>
@@ -80,17 +77,17 @@
                         </el-tooltip>
                     </div>
                     <div>
-                        <el-tooltip :content="scope.row.office.name + '/' + scope.row.user.professional" popper-class="white" placement="right">
-                            <span class="break-ellipsis">{{scope.row.office.name}}/{{scope.row.user.professional}}</span>
+                        <el-tooltip :content="scope.row.office.name + '/' + (scope.row.user.professional && officeEntries[scope.row.user.professional] ? officeEntries[scope.row.user.professional] : '-')" popper-class="white" placement="right">
+                            <span class="break-ellipsis">{{scope.row.office.name}}/{{scope.row.user.professional | selectedFilter(officeEntries)}}</span>
                         </el-tooltip>
                     </div>
                 </template>
             </el-table-column>
             <el-table-column prop="user.mobile" label="联系方式" align="center">
             </el-table-column>
-            <el-table-column prop="pwAppointment.appointmentstyle" label="预约形式" align="center" sortable="pwAppointment.appointmentstyle">
+            <el-table-column prop="appointmentstyle" label="预约形式" align="center" sortable="appointmentstyle">
                 <template slot-scope="scope">
-                    {{scope.row.pwAppointment.appointmentstyle | selectedFilter(appointmentStylesEntries)}}
+                    {{scope.row.appointmentstyle | selectedFilter(appointmentStylesEntries)}}
                 </template>
             </el-table-column>
             <el-table-column prop="startDate" label="预约时段" align="center" sortable="startDate">
@@ -103,7 +100,7 @@
             </el-table-column>
             <el-table-column prop="querystatus" label="状态" align="center" sortable="querystatus">
                 <template slot-scope="scope">
-                    <span :class="{red:scope.row.querystatus == '4'}">{{scope.row.querystatus | selectedFilter(roomStatesEntries)}}</span>
+                    <span :class="{red:scope.row.querystatus == '11'}">{{scope.row.querystatus | selectedFilter(roomStatesEntries)}}</span>
                 </template>
             </el-table-column>
 
@@ -131,7 +128,7 @@
     new Vue({
         el: '#app',
         data: function () {
-            var professionals = JSON.parse('${fns:getOfficeListJson()}') || [];
+            var professionals = JSON.parse(JSON.stringify(${fns:getOfficeListJson()})) || [];
             var rid = '${rid}';
             return {
                 professionals: professionals,
@@ -161,8 +158,10 @@
                     rid:rid || '',
                     queryType:'2',
                     'office.id': '',
-                    startDate: '',
-                    endDate: '',
+                    dateFrom:'',
+                    dateTo:'',
+                    timeFrom:'',
+                    timeTo:'',
                     keys: ''
                 },
                 defaultProps: {
@@ -182,6 +181,9 @@
                         return item.grade == '2';
                     })
                 }
+            },
+            officeEntries: function () {
+                return this.getEntries(this.professionals, {label: 'name', value: 'id'})
             },
             statesEntries: function () {
                 return this.getEntries(this.states);
@@ -220,11 +222,15 @@
             handleChangeDate: function (value) {
                 value = value || [];
                 if(value.length == 0){
-                    this.searchListForm.startDate = '';
-                    this.searchListForm.endDate = '';
+                    this.searchListForm.dateFrom = '';
+                    this.searchListForm.dateTo = '';
+                    this.searchListForm.timeFrom = '';
+                    this.searchListForm.timeTo = '';
                 }else{
-                    this.searchListForm.startDate = moment(value[0]).format('YYYY-MM-DD HH:mm');
-                    this.searchListForm.endDate = moment(value[1]).format('YYYY-MM-DD HH:mm');
+                    this.searchListForm.dateFrom = moment(value[0]).format('YYYY-MM-DD');
+                    this.searchListForm.dateTo = moment(value[1]).format('YYYY-MM-DD');
+                    this.searchListForm.timeFrom = moment(value[0]).format('HH:mm');
+                    this.searchListForm.timeTo = moment(value[1]).format('HH:mm');
                 }
                 this.getDataList();
             },
@@ -250,7 +256,7 @@
             },
             getRoomStates:function () {
                 var self = this;
-                this.$axios.get('/pw/pwRoom/roomUseType?num=2').then(function (response) {
+                this.$axios.get('/pw/pwRoom/roomUseStatusList').then(function (response) {
                     var data = response.data;
                     self.roomStates = data.data || [];
                 })

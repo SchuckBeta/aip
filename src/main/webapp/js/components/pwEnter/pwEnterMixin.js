@@ -6,7 +6,6 @@ Vue.pwEnterMixin = {
             pwEnterTypes: [],
             cityData: cityData,
             regMtypes: [],
-            xhrErrorMsg: '请求失败'
         }
     },
     computed: {

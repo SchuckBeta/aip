@@ -84,7 +84,7 @@
         <table class="table el-table table-center table-dr-re-list mgb-20">
             <thead>
             <tr>
-                <th width="55">
+                <th width="60">
                     <el-checkbox v-model="isAllCard" @change="handleChangeAllCard">{{cardIdLabel}}</el-checkbox>
                 </th>
                 <th>卡号</th>
@@ -99,7 +99,7 @@
             <tbody>
             <c:forEach items="${page.list}" var="drCardRecord">
                 <tr>
-                    <td width="55" style="text-align: center;">
+                    <td width="60" style="text-align: center;">
                         <el-checkbox label="${drCardRecord.id}" v-model="cardRecords" @change="handleChangeCardId">
                             {{cardIdLabel}}
                         </el-checkbox>

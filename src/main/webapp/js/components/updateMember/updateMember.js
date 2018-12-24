@@ -4,13 +4,10 @@
 Vue.component('update-member', {
     template: '\n' +
     '    <div class="update-member-box">\n' +
-    '                <e-col-item label="项目组成员：">\n' +
-    '                           <el-tooltip class="item" popper-class="white"  effect="dark" :disabled="tooltipStuDisabled"  :content="upStuMaxText" placement="top">' +
-    '                           <el-button class="btn-add" :disabled="disabled" style="float:right" type="primary" size="mini"' +
+    '                <div class="text-right mgb-20"><el-tooltip class="item" popper-class="white"  effect="dark" :disabled="tooltipStuDisabled"  :content="upStuMaxText" placement="top"><el-button class="btn-add" :disabled="disabled" type="primary" size="mini"' +
     '                              @click.stop.prevent="inviteStudent"><i class="el-icon-circle-plus el-icon--left"></i>添加组员\n' +
-    '                           </el-button></el-tooltip>\n' +
-    '                       </e-col-item>\n' +
-    '                    <div class="table-container mgb-20">\n' +
+    '                           </el-button></el-tooltip></div><e-col-item label-width="110px" label="项目组成员：">\n' +
+    '                    <div class="table-container">\n' +
     '                        <el-table size="mini" :data="studentList" class="table" ref="multipleTable" v-loading="loading">\n' +
     '                            <el-table-column label="姓名"  align="center" width="210"><template slot-scope="scope"><div class="user-info-box"><span class="user-pic"><img :src="scope.row.photo | ftpHttpFilter(ftpHttp) | studentPicFilter"></span>{{scope.row.name}}</div></template>\n' +
     '                            </el-table-column>\n' +
@@ -27,26 +24,25 @@ Vue.component('update-member', {
     '                                <template slot-scope="scope">\n' +
     '                                    <template v-if="!isAdmin"><span v-if="scope.row.userId == declareId">负责人</span>\n' +
     '                                    <span v-else>组成员</span></template>' +
-    '                                   <template v-else><el-tooltip class="item" popper-class="white" :disabled="scope.row.userzz !==\'1\'"  effect="dark" content="请先更换其他组成员为负责人" placement="top">' +
-    '                                   <el-select size="mini" :disabled="scope.row.userzz===\'1\'" v-model="scope.row.userzz" @change="handleChangeChargeMen(scope.row)">' +
+    '                                   <template v-else><el-tooltip class="item" popper-class="white" :disabled="scope.row.userzz !==\'0\'"  effect="dark" content="请先更换其他组成员为负责人" placement="top">' +
+    '                                   <el-select size="mini" :disabled="scope.row.userzz===\'0\'" v-model="scope.row.userzz" @change="handleChangeChargeMen(scope.row)">' +
     '                                       <el-option v-for="item in userDuties" :key="item.value" :value="item.value" :label="item.label"></el-option></el-select></el-tooltip></template>\n' +
     '                                </template>\n' +
     '                            </el-table-column>\n' +
     '                            <el-table-column label="操作" width="64" align="center" v-if="operateBtnShow">\n' +
     '                                <template slot-scope="scope">\n' +
-    '                                        <el-button icon="el-icon-delete" size="mini" :disabled="(scope.row.userzz == \'1\') || disabled"\n' +
+    '                                        <el-button icon="el-icon-delete" size="mini" :disabled="(scope.row.userzz == \'0\') || disabled"\n' +
     '                                           @click.stop.prevent="deleteStudent(scope.$index)"></el-button>\n' +
     '                                </template>\n' +
     '                            </el-table-column>\n' +
     '                        </el-table>\n' +
     '                    </div>\n' +
-    '                <e-col-item label="指导教师：">\n' +
-    '                           <el-tooltip class="item" popper-class="white"  effect="dark" :disabled="tooltipTeaDisabled" :content="upTeaMaxTex" placement="top">' +
-    '                           <el-button class="btn-add" :disabled="disabled" style="float: right;" type="primary" size="mini"' +
-    '                              @click.stop.prevent="inviteTeacher"><i class="el-icon-circle-plus el-icon--left"></i>添加导师\n' +
-    '                           </el-button></el-tooltip>\n' +
     '                       </e-col-item>\n' +
-    '                    <div class="table-container mgb-20">\n' +
+    '                <div class="text-right mgb-20"><el-tooltip class="item" popper-class="white"  effect="dark" :disabled="tooltipTeaDisabled" :content="upTeaMaxTex" placement="top">' +
+    '                           <el-button class="btn-add" :disabled="disabled" type="primary" size="mini"' +
+    '                              @click.stop.prevent="inviteTeacher"><i class="el-icon-circle-plus el-icon--left"></i>添加导师\n' +
+    '                           </el-button></el-tooltip></div><e-col-item label-width="110px" label="指导教师：">\n' +
+    '                    <div class="table-container">\n' +
     '                        <el-table size="mini" :data="teacherList" class="table" ref="multipleTable" v-loading="loading">\n' +
     '                           <el-table-column label="姓名" align="center" width="210"><template slot-scope="scope"><div class="user-info-box"><span class="user-pic"><img :src="scope.row.photo | ftpHttpFilter(ftpHttp) | studentPicFilter"></span>{{scope.row.name}}</div></template>\n' +
     '                            </el-table-column>\n' +
@@ -124,7 +120,7 @@ Vue.component('update-member', {
     '                                <el-table-column\n' +
     '                                        type="selection"\n' +
     '                                        :selectable="selectableStudent"\n' +
-    '                                        width="55">\n' +
+    '                                        width="60">\n' +
     '                                </el-table-column>\n' +
     '                                <el-table-column align="center" label="姓名">\n' +
     '                                    <template slot-scope="scope">{{scope.row.name}}</template>\n' +
@@ -150,7 +146,7 @@ Vue.component('update-member', {
     '                                <el-table-column\n' +
     '                                        type="selection"\n' +
     '                                        :selectable="selectableTeacher"\n' +
-    '                                        width="55">\n' +
+    '                                        width="60">\n' +
     '                                </el-table-column>\n' +
     '                                <el-table-column align="center" label="姓名">\n' +
     '                                    <template slot-scope="scope">{{scope.row.name}}</template>\n' +
@@ -241,11 +237,11 @@ Vue.component('update-member', {
             highlightTree: false,
             paginationDisabled: true,
             collegesTreeOriginName: '',
-            studentMax: 5,
-            teacherMax: 2,
+            studentMax: -1,
+            teacherMax: -1,
             userDuties: [
-                {value: '1', label: '负责人'},
-                {value: '0', label: '组成员'}
+                {value: '0', label: '负责人'},
+                {value: '1', label: '组成员'}
             ]
         }
     },
@@ -297,7 +293,7 @@ Vue.component('update-member', {
             });
         },
         studentListIds: function () {
-           return this.studentList.map(function (item) {
+            return this.studentList.map(function (item) {
                 return item.userId
             });
         },
@@ -317,8 +313,10 @@ Vue.component('update-member', {
             var declareId = this.declareId;
             return this.studentList.map(function (item) {
                 return {
-                    userType: item.user_type || item.userType || item.utype ,                    teamId: teamId,
+                    userType: item.user_type || item.userType || item.utype,
+                    teamId: teamId,
                     userzz: item.userzz,
+                    name: item.name,
                     userId: item.userId
                 }
             })
@@ -327,7 +325,8 @@ Vue.component('update-member', {
             var teamId = this.teamId;
             return this.teacherList.map(function (item) {
                 return {
- userType: item.user_type || item.userType || item.utype,,                    teamId: teamId,
+                    userType: item.user_type || item.userType || item.utype,
+                    teamId: teamId,
                     userId: item.userId,
                 }
             })
@@ -353,7 +352,7 @@ Vue.component('update-member', {
                     data = data.data;
                     var stuList = data.stuList || [];
                     self.studentList = stuList.map(function (item) {
-                        item['userzz'] = item.userId === self.declareId ? '1' : '0';
+                        item['userzz'] = item.userId === self.declareId ? '0' : '1';
                         return item;
                     });
                     self.teacherList = data.teaList || [];
@@ -395,7 +394,7 @@ Vue.component('update-member', {
         },
         inviteStudent: function () {
             var self = this;
-            if (this.studentList.length >= this.studentMax) {
+            if (this.studentList.length >= this.studentMax && this.studentMax != -1) {
                 this.$message({
                     message: '项目组成员不得超过' + self.studentMax + '人',
                     type: 'warning'
@@ -442,7 +441,7 @@ Vue.component('update-member', {
             var self = this;
             var len, tableLength, selectedLength;
             len = this.studentList.length + this.userListStudentMultipleTable.length;
-            if (len > this.studentMax) {
+            if (len > this.studentMax  && this.studentMax != -1) {
                 this.$message({
                     message: '项目组成员不得超过' + self.studentMax + '人',
                     type: 'warning'
@@ -457,7 +456,7 @@ Vue.component('update-member', {
                 if (data.status === 1) {
                     var student = data.data || [];
                     student = student.map(function (item) {
-                        item['userzz'] = item.userId === self.declareId ? '1' : '0';
+                        item['userzz'] = item.userId === self.declareId ? '0' : '1';
                         item["userType"] = item.userType;
                         return item;
                     })
@@ -483,7 +482,7 @@ Vue.component('update-member', {
             tableLength = this.teacherList.filter(function (item) {
                 return item.teacherType == '校园导师';
             }).length;
-            if (tableLength >= this.teacherMax) {
+            if (tableLength >= this.teacherMax  && this.teacherMax != -1) {
                 this.$message({
                     message: '指导导师不得超过' + self.teacherMax + '人',
                     type: 'warning'
@@ -534,7 +533,6 @@ Vue.component('update-member', {
                 teacherList: this.teamHistoryTea
             });
         },
-
 
 
         handleClose: function () {
@@ -652,14 +650,20 @@ Vue.component('update-member', {
 
         handleChangeChargeMen: function (row) {
             var studentList = this.studentList;
-            for(var i = 0; i < studentList.length; i++){
-                if(studentList[i].userzz === row.userzz && studentList[i].id !== row.id){
-                    studentList[i].userzz = '0';
+            for (var i = 0; i < studentList.length; i++) {
+                if (studentList[i].userzz === row.userzz && studentList[i].id !== row.id) {
+                    studentList[i].userzz = '1';
                     break;
                 }
             }
+            this.$emit('change', {
+                studentListIds: this.studentListIds,
+                teacherListIds: this.teacherListIds,
+                studentList: this.teamHistoryStu,
+                teacherList: this.teamHistoryTea
+            });
         },
-        
+
         getTeacherTypes: function () {
             var self = this;
             this.$axios.get('/sys/dict/getDictList?type=master_type').then(function (response) {
@@ -686,14 +690,15 @@ Vue.component('update-member', {
                 var data = response.data || {};
                 if (data.status === 1) {
                     data = data.data;
-                    var stuList = data.stus || [];
-                    self.studentList = stuList.map(function (item) {
-                        item['userzz'] = item.userId === self.declareId ? '1' : '0';
-                        return item;
-                    });
-                    self.teacherList = data.teas || [];
+                    if(data){
+                        var stuList = data.stus || [];
+                        self.studentList = stuList.map(function (item) {
+                            item['userzz'] = item.userId === self.declareId ? '0' : '1';
+                            return item;
+                        });
+                        self.teacherList = data.teas || [];
+                    }
                 }
-
                 self.$emit('change', {
                     studentListIds: self.studentListIds,
                     teacherListIds: self.teacherListIds,
@@ -704,9 +709,9 @@ Vue.component('update-member', {
         }
     },
     created: function () {
-        if(this.savedTeamUrl){
+        if (this.savedTeamUrl) {
             this.getSaveTeam();
-        }else if(this.teamId){
+        } else if (this.teamId) {
             this.getMember();
         }
         this.getColleges();

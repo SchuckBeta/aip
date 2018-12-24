@@ -44,7 +44,7 @@
                   @sort-change="handleSortTeacher">
             <el-table-column
                     type="selection"
-                    width="55">
+                    width="60">
             </el-table-column>
             <el-table-column prop="u.no" label="职工号" align="center" sortable="u.no">
                 <template slot-scope="scope">

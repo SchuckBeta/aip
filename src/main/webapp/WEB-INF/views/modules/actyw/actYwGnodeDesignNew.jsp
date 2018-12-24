@@ -224,7 +224,7 @@
                 <user-task v-show="userTaskShow" ref="userTask" v-model="userTask"
                            :roles="taskRoles"
                            :users="users"
-                           :reg-types="regTypes"
+                           :reg-types="cpRegTypes"
                            :list-form="isListForm"
                            :has-users="false"
                            :task-types="taskTypes"
@@ -727,10 +727,26 @@
                         subProcessForm: '根据筛选表单类型，该列表只显示单一类型的表单'
                     },
                     roleGroup: '',
-                    nodeDataUserTask: {}
+                    nodeDataUserTask: {},
+                    taskTypesFilters: {
+                        'None': ['1','2'],
+                        'Parallel': ['2']
+                    }
                 }
             },
             computed: {
+
+                cpRegTypes: function () {
+                    var userTask = this.userTask;
+                    var taskTypesFilters = this.taskTypesFilters;
+                    if(!userTask.taskType){
+                        return this.taskTypes;
+                    }
+                  return this.regTypes.filter(function (item) {
+                        return taskTypesFilters[userTask.taskType].indexOf(item.id) > -1
+                  })
+                },
+
                 taskRoles: {
                     get: function () {
                         var roleGroup = this.roleGroup;
@@ -1105,7 +1121,7 @@
                                 self.changePath(item.path.select('.v-path'), dLine);
                                 self.changePath(item.path.select('.v-path-wrap'), dLine);
                                 self.changePathTriangle(item.path.select('.v-triangle'), dLine, quadrant.tAngle)
-                                self.changePathText(item.path, item.path.select('text'))
+                                self.changePathText(item.path, item.path.select('text'), quadrant)
                             })
                         }
 
@@ -2115,11 +2131,23 @@
                     ele.attr('transform', pathTargetMatrix.toTransformString());
                 },
 
-                changePathText: function (pathGroup, textElement) {
+                changePathText: function (pathGroup, textElement, quadrant) {
                     if (!textElement) return;
-                    var BBox = pathGroup.getBBox();
-                    var translateX = BBox.x + BBox.width / 2;
-                    var translateY = BBox.y + BBox.height / 2;
+                    var vPath = pathGroup.select('.v-path');
+                    var BBox = vPath.getBBox();
+                    var pointAtLength = vPath.getPointAtLength();
+                    var translateX = pointAtLength.x;
+                    var translateY = pointAtLength.y;
+                    var leftSide = ['leftCenter-rightCenter', 'topCenter-leftCenter'];
+                    if(leftSide.indexOf(quadrant.d) > -1){
+                        translateX = pointAtLength.x +  textElement.getBBox().width + 10;
+                        translateY = pointAtLength.y +  textElement.getBBox().height - 10;
+                    }else {
+                        translateX = pointAtLength.x - textElement.getBBox().width - 10;
+                        translateY = pointAtLength.y - textElement.getBBox().height + 10;
+                    }
+
+
                     textElement.attr({
                         'transform': 'matrix(1,0,0,1,' + translateX + ',' + translateY + ')'
                     })
@@ -2893,6 +2921,13 @@
                     var pathGroup = overallGroup.select('g[model-id="' + this.currentUUid + '"]');
                     var designPaper = this.designPaper;
                     var reTextElement = pathGroup.select('text')
+                    var source = overallGroup.select('g[model-id="' + pathGroup.attr('source-id') + '"]');
+                    var target = overallGroup.select('g[model-id="' + pathGroup.attr('target-id') + '"]');
+                    var parentSub = overallGroup.select('g[model-id="' + pathGroup.attr('parent-id') + '"]');
+                    var parentX = parentSub ? parentSub.getBBox().x : 0;
+                    var parentY = parentSub ? parentSub.getBBox().y : 0;
+                    var position = this.getAllPosition(source.getBBox(), target.getBBox(), parentX, parentY);
+                    var quadrant = this.quadrant(position);
                     var list = [];
                     var attr = {
                         fill: '#333333',
@@ -2912,7 +2947,7 @@
                             textes.push(item.state)
                         })
                         var textElement = designPaper.text(0, 0, textes);
-                        this.changePathText(pathGroup, textElement)
+                        this.changePathText(pathGroup, textElement, quadrant)
                         textElement.attr(attr);
                         textElement.selectAll('tspan').forEach(function (tspan, i) {
                             if (i > 0) {

@@ -408,7 +408,7 @@
                     if ($(v).attr("style") == "display: none") {
 
                     } else {
-                        temtotal = temtotal + parseInt($(v).html());
+                        temtotal = temtotal + (parseInt($(v).html()) || 0);
                     }
                 });
                 if (temtotal == 0 || !temtotal) {
@@ -419,6 +419,23 @@
                 }
 
             },
+
+            changeStaticUnreadTagTargetUrl: function (dataurl,tagurl, time) {
+                setTimeout(function () {
+                    $.ajax({
+                        url: dataurl,
+                        type: 'GET',
+                        dataType: 'text',
+                        success: function (data) {
+                            var $aHref = $("a[href='"+tagurl+"']");
+                            $aHref.find('i.unread-tag')[(data > 0 ? 'show' : 'hide')]().text(data);
+                            var $selector =  $aHref.parents('.oe-menu-item');
+                            sideNavModule.changeTotalUnreadTag($selector.parents(".submenu")[0]);
+                        }
+                    });
+                }, time || 0)
+            },
+
             changeLink: function (href) {
                 var sideNav = this.sideNav;
                 var $allAs = sideNav.find('a');
@@ -432,6 +449,14 @@
                     }
                 });
             },
+            changeTodoNum: function (url, num) {
+                $("a[href='"+url+"']").find('i.unread-tag')[(num > 0 ? 'show' : 'hide')]().text(num);
+                sideNavModule.changeTotalUnreadTag( $("a[href='"+url+"']").parents(".submenu")[0]);
+            },
+            topReload: function (url) {
+//                location.href = url;
+                window.location.reload();
+            }
         }
         window['sideNavModule'] = sideNavModule;
 

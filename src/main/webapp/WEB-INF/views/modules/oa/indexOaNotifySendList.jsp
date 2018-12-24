@@ -47,7 +47,7 @@
                   @sort-change="handleSortCNotifyList">
             <el-table-column
                     type="selection"
-                    width="55">
+                    width="60">
             </el-table-column>
             <el-table-column label="标题" align="center">
                 <template slot-scope="scope">

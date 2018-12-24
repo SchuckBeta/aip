@@ -159,7 +159,8 @@ Vue.component('e-upload-file', {
         },
 
         downUploadFile: function (file) {
-            location.href = this.frontOrAdmin + "/ftp/ueditorUpload/downFile?url=" + file.ftpUrl + "&fileName=" + encodeURI(encodeURI(file.fileName || file.name));
+            console.log(this.frontOrAdmin + "/ftp/ueditorUpload/downFile?url=" + file.ftpUrl + "&fileName=" + encodeURI(encodeURI(file.name)))
+            location.href = this.frontOrAdmin + "/ftp/ueditorUpload/downFile?url=" + file.ftpUrl + "&fileName=" + encodeURI(encodeURI(file.name));
         },
 
 
@@ -176,7 +177,8 @@ Vue.component('e-upload-file', {
                 })
                 return;
             }
-            window.open(this.ftpHttp + file.viewUrl.replace('/tool', ''))
+            var viewUrl = file.viewUrl.indexOf(this.ftpHttp) > -1 ? file.viewUrl : (this.ftpHttp + file.viewUrl.replace('/tool', ''))
+            window.open(viewUrl)
         },
 
         handleSuccessUploadFile: function (response, file, fileList) {
@@ -201,6 +203,9 @@ Vue.component('e-upload-file', {
                 if(sameFile){
                     this.removeUploadFile(sameFile, fileList)
                 }
+                file.tempFtpUrl = response.ftpUrl;
+                file.tempUrl = response.url;
+                file.suffix = response.type;
                 this.updateUploadFile(Object.assign({}, file, response), fileList)
 
             } else {

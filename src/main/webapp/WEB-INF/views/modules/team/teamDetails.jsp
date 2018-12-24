@@ -105,7 +105,7 @@
                                 项目负责人
                             </el-tag>
                         </e-col-item>
-                        <e-col-item label="学号：" align="right">{{info.no}}
+                        <e-col-item label="学号：" align="right">{{info.no | hideNo(hasJoin)}}
                             <el-tag v-show="info.currState" type="info" size="mini">
                                 {{getCurStateLabel(info.currState)}}
                             </el-tag>
@@ -116,7 +116,7 @@
                         <%--<e-col-item label="当前在研：" align="right">--%>
                             <%--{{info.curJoin}}--%>
                         <%--</e-col-item>--%>
-                        <e-col-item label="联系方式：" align="right">{{info.mobile}}
+                        <e-col-item label="联系方式：" align="right">{{info.mobile | hideMobile(hasJoin)}}
                         </e-col-item>
                         <e-col-item label="技术领域：" align="right">{{info.domainlt}}
                         </e-col-item>
@@ -130,7 +130,7 @@
 
 
     </div>
-    <div class="panel">
+    <div class="panel mgb-20">
         <div class="panel-header">指导老师</div>
         <div class="panel-body">
             <el-row :gutter="20" class="team-list-teacher team-list" label-width="76px"
@@ -146,7 +146,7 @@
                                 {{getTeacherSourceLabel(tInfo.teacherType)}}
                             </el-tag>
                         </e-col-item>
-                        <e-col-item label="工号：" align="right">{{tInfo.no}}</e-col-item>
+                        <e-col-item label="工号：" align="right">{{tInfo.no | hideNo(hasJoin)}}</e-col-item>
                         <e-col-item label="学院/专业：" align="right">
                             {{tInfo.officeId}}
                         </e-col-item>
@@ -159,6 +159,9 @@
                 暂无导师
             </div>
         </div>
+    </div>
+    <div class="mgb-20 text-center">
+        <el-button size="mini" @click.stop.prevent="goToBack">返回</el-button>
     </div>
 </div>
 
@@ -178,6 +181,7 @@
                 var colleges = JSON.parse('${fns: getOfficeListJson()}') || [];
                 var currentStates = JSON.parse('${fns: getDictListJson("current_sate")}') || [];
                 var teacherTypes = JSON.parse('${fns: getDictListJson('master_type')}') || [];
+
                 return {
                     teamInfo: teamInfo,
                     dutyFirstTeamStu: [],
@@ -189,6 +193,7 @@
                     notifyType: '${notifyType}',
                     notifyForm: '${from}',
                     notifyId: '${notifyId}',
+                    hasJoin: ${hasJoin},
                     notifyDisabled: false
                 }
             },
@@ -294,6 +299,9 @@
                             message: self.xhrErrorMsg
                         })
                     });
+                },
+                goToBack: function () {
+                    window.location.href = this.frontOrAdmin + '/team/indexMyTeamList';
                 }
             },
             created: function () {

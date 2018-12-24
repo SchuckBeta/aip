@@ -1,25 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ include file="/WEB-INF/views/include/taglib.jsp" %>
 <!--------顶部------->
-<style>
-	div.jbox .jbox-button {
-         background:#e9432d;
-        border: #e53018 1px solid;
-        /* color: #888; */
-        color: #fff;
-        /*background-color: #e9432d;*/
-        /*border-color: #e53018;*/
-        border-radius: 3px;
-        /* border-radius: 3px 3px 3px 3px; */
-        margin: 1px 7px 0 0;
-        height: 22px;
-        cursor: pointer;
-        /* padding: 2px 10px; */
-    }
-
-
-
-</style>
 <div class="top-header" style="position: fixed;left: 0;top: 0;width: 100%; height: 70px; z-index: 1000">
     <ul>
         <li class="remove-nav-index logout"><a href="/a/logout"><i class="icon-signout"></i> 退出</a></li>
@@ -264,11 +245,12 @@
 
         /*返回promise object*/
         NotifyModule.prototype.getUnReadOaNotify = function () {
-            var xhr = $.get('/a/oa/oaNotify/unReadOaNotify?'+Math.random());
+            var xhr = $.get('/a/oa/oaNotify/unFootReadOaNotify?'+Math.random());
             var self = this;
             xhr.success(function (res) {
-                if (res || res[0]) {
-                    self.list = res;
+                if (res) {
+                    self.list = res.list || [];
+                    self.inOnOff = res.inOnOff;
                 }
             });
             return xhr;

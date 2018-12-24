@@ -4,252 +4,261 @@
 <html>
 <head>
     <title>${backgroundTitle}</title>
-    <%@include file="/WEB-INF/views/include/backcyjd.jsp" %>
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $("#ps").val($("#pageSize").val());
-
-            $.ajax({
-                type: "GET",
-                url: "${ctx}/pw/pwEnter/ajaxListBGSH",
-                data: {
-
-               	},
-                dataType: "json",
-                success: function(data){
-                	console.info(data.data.list);
-                }
-            });
-        });
-        function page(n, s) {
-            $("#pageNo").val(n);
-            $("#pageSize").val(s);
-            $("#searchForm").submit();
-            return false;
-        }
-    </script>
+    <%@include file="/WEB-INF/views/include/backcreative.jsp" %>
 </head>
 <body>
-<div class="container-fluid">
-    <%--<div class="edit-bar clearfix">--%>
-        <%--<div class="edit-bar-left">--%>
-            <%--<span>场地分配</span>--%>
-            <%--<i class="line weight-line"></i>--%>
-        <%--</div>--%>
-    <%--</div>--%>
-    <%@ include file="/WEB-INF/views/layouts/navigation.jsp" %>
 
-
-    <form:form id="searchForm" modelAttribute="pwEnter" action="${ctx}/pw/pwEnter/listBGSH" method="post"
-               class="form-horizontal clearfix form-search-block">
-        <input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
-        <input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
-        <div class="col-control-group">
-            <div style="width:100%;height:45px;">
-            <div class="control-group">
-                <label class="control-label">入驻编号</label>
-                <div class="controls">
-                    <form:input path="no" htmlEscape="false" maxlength="64" class="input-medium"/>
-                </div>
-            </div>
-            <div class="control-group">
-                <label class="control-label">负责人</label>
-                <div class="controls">
-                    <form:input path="applicant.name" htmlEscape="false" maxlength="64" class="input-medium"/>
-                        <%-- <sys:treeselect id="applicant" name="applicant" value="${pwEnter.applicant}"
-                                        labelName="user.name" labelValue="${pwEnter.applicant.name}"
-                                        title="用户" url="/sys/office/treeData?type=3" cssClass="input-small"
-                                        allowClear="true" notAllowSelectParent="true"/> --%>
-                </div>
-
-            </div>
-            <div class="control-group">
-                <label class="control-label">状态</label>
-                <div class="controls">
-                    <c:if test="${empty pwEnterStatus}">
-                        <form:select path="status" class="input-medium" cssStyle="width: 164px;">
-                            <form:option value="" label="--请选择--"/>
-                            <form:options items="${fns:getDictList('pw_enter_status')}" itemLabel="label"
-                                          itemValue="value" htmlEscape="false"/>
-                        </form:select>
-                    </c:if>
-                    <c:if test="${not empty pwEnterStatus}">
-                        <form:select path="status" class="input-medium" cssStyle="width: 164px;">
-                            <form:option value="" label="--请选择--"/>
-                            <form:options items="${pwEnterStatus}" itemLabel="name"
-                                          itemValue="key" htmlEscape="false"/>
-                        </form:select>
-                    </c:if>
-                </div>
-            </div>
-            </div>
-            <div class="control-group">
-                <label class="control-label">入驻时间</label>
-                <div class="controls">
-                    <input id="qstartQDate" name="startQDate" type="text" readonly="readonly" maxlength="20"
-                           class="input-medium Wdate"
-                           value="<fmt:formatDate value="${pwEnter.startQDate}" pattern="yyyy-MM-dd"/>"
-                           onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true,maxDate:$('#qstartDate').val()});"/> -
-                    <input id="qstartDate" name="startDate" type="text" readonly="readonly" maxlength="20"
-                           class="input-medium Wdate"
-                           value="<fmt:formatDate value="${pwEnter.startDate}" pattern="yyyy-MM-dd"/>"
-                           onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true, minDate:$('#qstartQDate').val()});"/>
-                </div>
-            </div>
-            <div class="control-group">
-                <label class="control-label">入驻有效期</label>
-                <div class="controls">
-                    <input id="qendQDate" name="endQDate" type="text" readonly="readonly" maxlength="20"
-                           class="input-medium Wdate"
-                           value="<fmt:formatDate value="${pwEnter.endQDate}" pattern="yyyy-MM-dd"/>"
-                           onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true,maxDate:$('#qendDate').val()});"/> -
-                    <input id="qendDate" name="endDate" type="text" readonly="readonly" maxlength="20"
-                           class="input-medium Wdate"
-                           value="<fmt:formatDate value="${pwEnter.endDate}" pattern="yyyy-MM-dd"/>"
-                           onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true, minDate:$('#qendQDate').val()});"/>
-                </div>
+<div id="app" v-show="pageLoad" class="container-fluid mgb-60" style="display: none">
+    <edit-bar></edit-bar>
+    <el-form :model="searchListForm" ref="searchListForm" size="mini"
+             :show-message="false">
+        <input type="text" style="display: none">
+        <div class="conditions">
+            <e-condition type="radio" v-model="searchListForm['applicant.office.id']" label="学院" :options="colleges"
+                         name="officeId" :default-props="officeProps" @change="getPwEnterList"></e-condition>
+            <e-condition type="radio" v-model="searchListForm.type" label="类型" :options="pwEnterTypes"
+                         name="type" @change="getPwEnterList"></e-condition>
+        </div>
+        <div class="search-block_bar clearfix">
+            <div class="search-input">
+                <el-date-picker
+                        v-model="pwEnterApplyDate"
+                        type="daterange"
+                        size="mini"
+                        align="right"
+                        @change="handleChangeApplyDate"
+                        unlink-panels
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        value-format="yyyy-MM-dd HH:mm:ss"
+                        :default-time="searchDefaultTime"
+                        style="width: 270px;">
+                </el-date-picker>
+                <el-input
+                        placeholder="企业或团队名称/负责人/组成员/导师"
+                        size="mini"
+                        name="keys"
+                        v-model="searchListForm.keys"
+                        @keyup.enter.native="getPwEnterList"
+                        class="w300">
+                    <el-button slot="append" icon="el-icon-search"
+                               @click.stop.prevent="getPwEnterList"></el-button>
+                </el-input>
+                <input type="text" style="display: none">
             </div>
         </div>
-        <div class="search-btn-box">
-            <input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
+    </el-form>
+    <div class="table-container">
+        <el-table :data="pwEnterList" size="mini" class="table" @sort-change="sortChange">
+            <el-table-column label="入驻信息" prop="type" sortable="type">
+                <template slot-scope="scope">
+                    <table-thing-info :row="getPwEnterInfo(scope.row)"></table-thing-info>
+                </template>
+            </el-table-column>
+            <el-table-column label="团队成员">
+                <template slot-scope="scope">
+                    <table-team-member :row="getPwEnterTeamInfo(scope.row)"></table-team-member>
+                </template>
+            </el-table-column>
+            <el-table-column label="变更说明" align="center">
+                <template slot-scope="scope">
+                    <template v-if="scope.row.applyRecords && scope.row.applyRecords.length > 0">
+                        <div v-for="reItem in scope.row.applyRecords">
+                            {{reItem.bgremarks}}
+                        </div>
+                    </template>
+                    <template v-else>-</template>
+                </template>
+            </el-table-column>
+            <el-table-column label="申请日期" align="center" prop="startDate" sortable="startDate">
+                <template slot-scope="scope">
+                    {{scope.row.startDate | formatDateFilter('YYYY-MM-DD')}}
+                </template>
+            </el-table-column>
+            <el-table-column label="状态" align="center">
+                <template slot-scope="scope">
+                    {{scope.row.status | selectedFilter(pwEnterStatusEntries)}}
+                </template>
+            </el-table-column>
+            <el-table-column label="操作" align="center">
+                <template slot-scope="scope">
+                    <div class="table-btns-action">
+                        <el-button :disabled="scope.row.status === '1'" type="text" size="mini"
+                                   @click.stop.prevent="goToAudit(scope.row)">审核
+                        </el-button>
+                    </div>
+                </template>
+            </el-table-column>
+        </el-table>
+        <div class="text-right mgb-20">
+            <el-pagination
+                    size="small"
+                    @size-change="handlePSizeChange"
+                    background
+                    @current-change="handlePCPChange"
+                    :current-page.sync="searchListForm.pageNo"
+                    :page-sizes="[5,10,20,50,100]"
+                    :page-size="searchListForm.pageSize"
+                    layout="total,prev, pager, next, sizes"
+                    :total="pageCount">
+            </el-pagination>
         </div>
-    </form:form>
-    <sys:message content="${message}"/>
-    <table id="contentTable"
-           class="table table-bordered table-condensed table-hover table-center table-orange table-sort table-nowrap table-subscribe">
-        <thead>
-        <tr>
-            <th>入驻编号</th>
-            <th>负责人</th>
-
-            <th>入驻房间</th>
-            <!-- <th>分配状态</th> -->
-            <th>入驻类型</th>
-            <!-- <th>类型|状态|名称</th> -->
-            <!-- <th>期限(天)</th> -->
-            <!-- <th>周期</th> -->
-            <th>入驻时间</th>
-            <th>入驻有效期</th>
-            <%--<th>最后更新时间</th>--%>
-            <%--<th>备注</th>--%>
-            <th>状态</th>
-            <shiro:hasPermission name="pw:pwEnter:edit">
-                <th>操作</th>
-            </shiro:hasPermission>
-        </tr>
-        </thead>
-        <tbody>
-        <c:forEach items="${page.list}" var="pwEnter" varStatus="idx">
-            <tr>
-                <td><a href="${ctx}/pw/pwEnter/form?id=${pwEnter.id}">
-                        ${pwEnter.no}
-                </a></td>
-                <td>
-                        ${pwEnter.applicant.name}
-                </td>
-
-                <td>
-                    <c:if test="${not empty pwEnter.eroom.pwRoom}">${pwEnter.eroom.pwRoom.name}</c:if>
-                    <c:if test="${empty pwEnter.eroom.pwRoom}"> - </c:if>
-                </td>
-                <!-- <td> 临时 </td> -->
-                <td class="deal-separator">
-                    <%-- <c:if test="${not empty pwEnter.eteam}">${fns:getDictLabel(pwEnter.eteam.type, 'pw_enter_type', '')}/</c:if>
-                    <c:if test="${not empty pwEnter.eproject}">${fns:getDictLabel(pwEnter.eproject.type, 'pw_enter_type', '')}/ </c:if>
-                    <c:if test="${not empty pwEnter.ecompany}">${fns:getDictLabel(pwEnter.ecompany.type, 'pw_enter_type', '')}</c:if> --%>
-                </td>
-                    <%-- <td>
-		                <c:if test="${not empty pwEnter.eteam}"> <span class="bd1 mlr5"> ${fns:getDictLabel(pwEnter.eteam.type, 'pw_enter_type', '')} </span> </c:if>
-		                <c:if test="${not empty pwEnter.eproject}"> <span class="bd1 mlr5"> ${fns:getDictLabel(pwEnter.eproject.type, 'pw_enter_type', '')} </span> </c:if>
-		                <c:if test="${not empty pwEnter.ecompany}"> <span class="bd1 mlr5"> ${fns:getDictLabel(pwEnter.ecompany.type, 'pw_enter_type', '')} </span> </c:if>
-	                </td> --%>
-                    <%-- <td>
-                        <table style="width: 100%;">
-                            <tr>
-                                <td style="text-align: left; border-left: none;">
-                                    <c:if test="${not empty pwEnter.eteam}">${fns:getDictLabel(pwEnter.eteam.type, 'pw_enter_type', '')}
-                                    | ${fns:getDictLabel(pwEnter.eteam.status, 'pw_enter_shstatus', '')}
-                                    | ${pwEnter.eteam.team.name}</c:if>
-                                    <c:if test="${empty pwEnter.eteam}"> - | - | - </c:if>
-                            <tr>
-                                <td style="text-align: left; border-left: none;">
-                                    <c:if test="${not empty pwEnter.eproject}">${fns:getDictLabel(pwEnter.eproject.type, 'pw_enter_type', '')}
-                                    | ${fns:getDictLabel(pwEnter.eproject.status, 'pw_enter_shstatus', '')}
-                                    | ${pwEnter.eproject.project.name}</c:if>
-                                    <c:if test="${empty pwEnter.eproject}"> - | - | - </c:if>
-                            <tr>
-                                <td style="text-align: left; border-left: none;">
-                                    <c:if test="${not empty pwEnter.ecompany}">${fns:getDictLabel(pwEnter.ecompany.type, 'pw_enter_type', '')} | ${fns:getDictLabel(pwEnter.ecompany.status, 'pw_enter_shstatus', '')} | ${pwEnter.ecompany.pwCompany.name}</c:if>
-                                    <c:if test="${empty pwEnter.ecompany}"> - | - | - </c:if>
-                                </td>
-                            </tr>
-                        </table>
-                    </td> --%>
-                    <%-- <td>
-                        <c:set var="iterm" value="${fns:getDictLabel(pwEnter.term, 'pw_enter_term', '')}"></c:set>
-                        <c:if test="${empty iterm}">${pwEnter.term} 天</c:if>
-                        <c:if test="${not empty iterm}">${iterm}</c:if>
-                    </td> --%>
-                    <%-- <td>
-                        <c:if test="${not empty pwEnter.startDate}"><fmt:formatDate value="${pwEnter.startDate}"
-                                                                                    pattern="yyyy-MM-dd"/></c:if>
-                        <c:if test="${empty pwEnter.startDate}">-</c:if>至
-                        <c:if test="${not empty pwEnter.endDate}"><fmt:formatDate value="${pwEnter.endDate}"
-                                                                                  pattern="yyyy-MM-dd"/></c:if>
-                        <c:if test="${empty pwEnter.endDate}">-</c:if>
-                    </td> --%>
-                <td>
-                    <c:if test="${not empty pwEnter.startDate}"><fmt:formatDate value="${pwEnter.startDate}"
-                                                                                pattern="yyyy-MM-dd"/></c:if>
-                    <c:if test="${empty pwEnter.startDate}">-</c:if>
-                </td>
-                <td>
-                    <c:if test="${not empty pwEnter.endDate}">
-                        <fmt:formatDate value="${pwEnter.endDate}" pattern="yyyy-MM-dd"/>
-                    </c:if>
-                    <c:if test="${empty pwEnter.endDate}">-</c:if>
-                </td>
-                    <%--<td>--%>
-                    <%--<fmt:formatDate value="${pwEnter.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>--%>
-                    <%--</td>--%>
-                    <%--<td>--%>
-                    <%--${pwEnter.remarks}--%>
-                    <%--</td>--%>
-                <td>
-                   <c:if test="${(empty pwEnter.eroom) || (empty pwEnter.eroom.id)}">
-	                    <c:if test="${(pwEnter.status eq '3')}">
-	                        <span class="primary-color">
-		                        ${fns:getDictLabel(pwEnter.status, 'pw_enter_status', '')}
-	                        </span>
-	                    </c:if>
-	                    <c:if test="${(pwEnter.status ne '3')}">
-	                        ${fns:getDictLabel(pwEnter.status, 'pw_enter_status', '')}
-	                    </c:if>
-                    </c:if>
-                    <c:if test="${(not empty pwEnter.eroom) && (not empty pwEnter.eroom.id)}">
-                    	<c:if test="${(pwEnter.status eq '3')}">
-	                        <span class="primary-color">
-                    			${fns:getDictLabel(pwEnter.status, 'pw_enter_status', '')}
-                    		</span>
-                    	</c:if>
-                    	<c:if test="${(pwEnter.status ne '3')}">
-                    		${fns:getDictLabel(pwEnter.status, 'pw_enter_status', '')}
-                    	</c:if>
-                    </c:if>
-                </td>
-                <shiro:hasPermission name="pw:pwEnter:edit">
-                    <td>
-                    	<a class="btn-primary btn-small btn" href="${ctx}/pw/pwEnter/form?id=${pwEnter.id}&isView=false&secondName=审核">审核</a>
-                    </td>
-                </shiro:hasPermission>
-            </tr>
-        </c:forEach>
-        </tbody>
-    </table>
-    ${page.footer}
+    </div>
 </div>
-<div id="dialog-message" title="信息">
-    <p id="dialog-content"></p>
-</div>
+
+
+<script type="text/javascript">
+
+    'use strict';
+
+
+    new Vue({
+        el: '#app',
+        data: function () {
+            var offices = JSON.parse(JSON.stringify(${fns: toJson(fns: getOfficeList())}));
+            var pwEnterStatues = JSON.parse('${fns: toJson(fns:getDictList('pw_enter_status'))}');
+            return {
+                searchListForm: {
+                    pageNo: 1,
+                    pageSize: 10,
+                    type: '',
+                    orderBy: '',
+                    orderByType: '',
+                    startDate: '',
+                    startQDate: '',
+                    keys: '',
+                    'applicant.office.id': ''
+                },
+                pwEnterApplyDate: [],
+                pageCount: 0,
+                pwEnterTypes: [],
+                pwEnterStatues: pwEnterStatues,
+                offices: offices,
+                pwEnterList: [],
+                loading: false,
+
+                officeProps: {
+                    label: 'name',
+                    value: 'id'
+                },
+                searchDefaultTime: ['00:00:00','23:59:59']
+            }
+        },
+        computed: {
+            pwEnterTypeEntries: function () {
+                return this.getEntries(this.pwEnterTypes)
+            },
+            pwEnterStatusEntries: function () {
+                return this.getEntries(this.pwEnterStatues)
+            },
+            colleges: function () {
+                return this.offices.filter(function (item) {
+                    return item.grade === '2'
+                })
+            },
+            officeEntries: function () {
+                return this.getEntries(this.offices, {label: 'name', value: 'id'})
+            }
+        },
+        methods: {
+
+
+            sortChange: function (row) {
+                this.searchListForm.orderBy = row.prop;
+                this.searchListForm.orderByType = row.order ? (row.order.indexOf('asc') ? 'asc' : 'desc') : '';
+                this.getPwEnterList()
+            },
+
+            handleChangeApplyDate: function (value) {
+                var startDate, startQDate;
+                var hasValue = value && value.length > 0;
+                startDate = hasValue ? value[0] : '';
+                startQDate = hasValue ? value[1] : '';
+                this.searchListForm.startDate = startDate;
+                this.searchListForm.startQDate = startQDate;
+                this.getPwEnterList();
+            },
+
+            goToAudit: function (row) {
+                location.href = this.frontOrAdmin + '/pw/pwEnter/formBgsh?id=' + row.id + '&type=' + row.type;
+            },
+
+            handlePSizeChange: function (value) {
+                this.searchListForm.pageSize = value;
+                this.getPwEnterList();
+            },
+
+            handlePCPChange: function () {
+                this.getPwEnterList();
+            },
+            getPwEnterTypes: function () {
+                var self = this;
+                this.$axios.get('/pw/pwEnter/getPwEnterTypes').then(function (response) {
+                    var data = response.data;
+                    self.pwEnterTypes = data || [];
+                }).catch(function () {
+
+                })
+            },
+            getPwEnterList: function () {
+                var self = this;
+                this.loading = true;
+                this.$axios.get('/pw/pwEnter/ajaxListBGSH?' + Object.toURLSearchParams(this.searchListForm)).then(function (response) {
+                    var data = response.data;
+                    if (data.status === 1) {
+                        var pageData = data.data || {};
+                        self.pwEnterList = pageData.list || [];
+                        self.searchListForm.pageNo = pageData.pageNo || 1;
+                        self.searchListForm.pageSize = pageData.pageSize || 10;
+                        self.pageCount = pageData.count;
+                    } else {
+                        self.$message.error(data.msg)
+                    }
+                    self.loading = true;
+                }).catch(function (error) {
+                    self.$message.error(self.xhrErrorMsg);
+                    self.loading = true;
+                })
+            },
+            getPwEnterInfo: function (row) {
+                var type = row.type;
+                var name = row.eteam.team.name;
+                var pwEnterTypeEntries = this.pwEnterTypeEntries;
+                if(!pwEnterTypeEntries){
+                    return {}
+                }
+                var label = this.pwEnterTypeEntries[row.type];
+                var applicant = row.applicant;
+                if (type == '2') {
+                    name = row.ecompany.pwCompany.name;
+                }
+                return {
+                    label: label,
+                    name: name,
+                    href: this.frontOrAdmin + '/pw/pwEnter/view?id=' + row.id,
+                    officePro: applicant.officeName + (applicant.professional ? ('/' + this.officeEntries[applicant.professional]) : '')
+                }
+            },
+            getPwEnterTeamInfo: function (row) {
+                var eteam = row.eteam;
+                var applicant = row.applicant;
+                return {
+                    applicantName: applicant.name,
+                    snames: eteam.snames,
+                    tnames: eteam.tnames,
+                    teamName: eteam.team.name,
+                }
+            }
+
+        },
+        created: function () {
+            this.getPwEnterList();
+            this.getPwEnterTypes();
+        }
+    })
+
+</script>
+
 </body>
 </html>

@@ -7,8 +7,13 @@
     <%@include file="/WEB-INF/views/include/backcreative.jsp" %>
 </head>
 <body>
+<style>
+    .e-col-item .e-col-item_label{
+        color:#e9432d;
+    }
+</style>
 
-<div id="app" v-show="pageLoad" style="display: none" class="container-fluid pw-room-tree">
+<div id="app" v-show="pageLoad" style="display: none" class="container-fluid mgb-60 pw-room-tree">
     <edit-bar></edit-bar>
     <el-form ref="searchListForm" method="post" size="mini" :inline="true">
         <input name="pageNo" type="hidden" v-model.number="searchListForm.pageNo"/>
@@ -21,7 +26,8 @@
 
             <e-condition label="楼栋" :options="buildList">
 
-                <e-radio class="e-checkbox-all" name="build" v-model="buildId" label="" @change="handleChangeBuild">全部</e-radio>
+                <e-radio class="e-checkbox-all" name="build" v-model="buildId" label="" @change="handleChangeBuild">全部
+                </e-radio>
                 <e-radio-group class="e-radio-spaces" v-model="buildId" @change="handleChangeBuild">
                     <e-radio v-for="build in buildList" name="buildId" :class="{'is-siblings': build.isSiblings}"
                              :label="build.id" :key="build.id">{{build.name}}
@@ -32,7 +38,8 @@
             <e-condition label="楼层" type="radio" :options="floorList" v-model="floorId" @change="handleChangeFloor"
                          :default-props="{label: 'name', value: 'id'}"></e-condition>
 
-            <e-condition label="类型" type="radio" :options="pwRoomTypes" v-model="searchListForm.type" @change="getRoomList"></e-condition>
+            <e-condition label="类型" type="radio" :options="pwRoomTypes" v-model="searchListForm.type"
+                         @change="getRoomList"></e-condition>
 
         </div>
         <div class="search-block_bar clearfix">
@@ -42,18 +49,19 @@
                         <i class="el-icon-circle-plus el-icon--left"></i>创建房间
                     </el-button>
                 </shiro:hasPermission>
-                <el-button size="mini" :disabled="multipleSelectedId.length == 0" @click.stop.prevent="batchDelete(multipleSelectedId.join(','))"><i
+                <el-button size="mini" :disabled="multipleSelectedId.length == 0"
+                           @click.stop.prevent="batchDelete(multipleSelectedId.join(','))"><i
                         class="iconfont icon-delete"></i>批量删除
                 </el-button>
             </div>
             <div class="search-input">
                 <input type="text" style="display:none">
                 <el-input @keyup.enter.native="getRoomList"
-                        name="keys"
-                        placeholder="房间名/所属场地"
-                        v-model="searchListForm.keys"
-                        size="mini"
-                        class="w300">
+                          name="keys"
+                          placeholder="房间名/所属场地"
+                          v-model="searchListForm.keys"
+                          size="mini"
+                          class="w300">
                     <el-button slot="append" icon="el-icon-search"
                                @click.stop.prevent="getRoomList"></el-button>
                 </el-input>
@@ -61,10 +69,11 @@
         </div>
     </el-form>
     <div class="table-container" v-loading="loading">
-        <el-table size="mini" :data="roomList" class="table" @selection-change="handleSelectionChange" @sort-change="handleSortChange">
+        <el-table size="mini" :data="roomList" class="table" @selection-change="handleSelectionChange"
+                  @sort-change="handleSortChange">
             <el-table-column
                     type="selection"
-                    width="55">
+                    width="60">
             </el-table-column>
             <el-table-column align="left" label="房间信息">
                 <template slot-scope="scope">
@@ -78,7 +87,8 @@
             </el-table-column>
             <el-table-column align="left" prop="num" label="房间容量/占地面积">
                 <template slot-scope="scope">
-                    <div>{{scope.row.numtype | selectedFilter(numTypesEntries)}}：{{scope.row.num}}<span v-if="scope.row.numtype == '1'">人</span><span v-else>个</span></div>
+                    <div>{{scope.row.numtype | selectedFilter(numTypesEntries)}}：{{scope.row.num}}<span
+                            v-if="scope.row.numtype == '1'">人</span><span v-else>个</span></div>
                     <div>占地面积：{{scope.row.area}}平方米</div>
                 </template>
             </el-table-column>
@@ -100,32 +110,29 @@
             <el-table-column align="left" label="属性设置">
                 <template slot-scope="scope">
                     <div><span class="attribute-set-label">临时预约</span>
-                        <el-tooltip :disabled="scope.row.isUsable == 1" content="临时预约和定期租用不能同时开启" popper-class="white" placement="right">
-                            <el-switch
-                                    size="mini"
-                                    :disabled="scope.row.isAssign == 1"
-                                    v-model="scope.row.isUsable"
-                                    @change="handleIsUsableChange(scope.row)"
-                                    active-value="1"
-                                    inactive-value="0">
-                            </el-switch>
-                        </el-tooltip>
+                        <el-switch
+                                size="mini"
+                                :disabled="scope.row.numtype == 2"
+                                v-model="scope.row.isUsable"
+                                @change="handleIsUsableChange(scope.row)"
+                                active-value="1"
+                                inactive-value="0">
+                        </el-switch>
                     </div>
                     <div><span class="attribute-set-label">定期租用</span>
-                        <el-tooltip :disabled="scope.row.isAssign == 1" content="临时预约和定期租用不能同时开启" popper-class="white" placement="right">
-                            <el-switch
-                                    size="mini"
-                                    :disabled="scope.row.isUsable == 1"
-                                    v-model="scope.row.isAssign"
-                                    @change="handleIsAssignChange(scope.row)"
-                                    active-value="1"
-                                    inactive-value="0">
-                            </el-switch>
-                        </el-tooltip>
+                        <el-switch
+                                size="mini"
+                                :disabled="scope.row.numtype == 1"
+                                v-model="scope.row.isAssign"
+                                @change="handleIsAssignChange(scope.row)"
+                                active-value="1"
+                                inactive-value="0">
+                        </el-switch>
                     </div>
                     <div><span class="attribute-set-label">多团队共用</span>
                         <el-switch
                                 size="mini"
+                                :disabled="scope.row.numtype == 1"
                                 v-model="scope.row.isAllowm"
                                 @change="handleIsAllowmChange(scope.row)"
                                 active-value="1"
@@ -134,20 +141,17 @@
                     </div>
                 </template>
             </el-table-column>
-            <%--<el-table-column align="center" label="备注">--%>
-                <%--<template slot-scope="scope">--%>
-                    <%--<el-tooltip content="备注备注备注备注备注备注备注备注备注备注备注备注备注备注备注备注备注备注备注备注" popper-class="white" placement="right">--%>
-                        <%--<span class="break-ellipsis">备注备注备注备注备注备注备注备注备注备注备注备注备注备注备注备注备注备注备注备注备注备注备注备注备注</span>--%>
-                    <%--</el-tooltip>--%>
-                <%--</template>--%>
-            <%--</el-table-column>--%>
             <shiro:hasPermission name="pw:pwRoom:edit">
                 <el-table-column align="center" label="操作">
                     <template slot-scope="scope">
                         <div><a :href="frontOrAdmin+'/pw/pwRoom/formSetZC?id='+scope.row.id">资产分配</a></div>
-                        <div><a :href="frontOrAdmin+'/pw/pwRoom/form?id='+scope.row.id">编辑</a></div>
-                        <div><el-button type="text" size="mini" @click.stop.prevent="batchDelete(scope.row.id)">删除
-                        </el-button></div>
+                        <div>
+                            <el-button type="text" size="mini" @click.stop.prevent="isEdit(scope.row)">编辑</el-button>
+                        </div>
+                        <div>
+                            <el-button type="text" size="mini" @click.stop.prevent="batchDelete(scope.row.id)">删除
+                            </el-button>
+                        </div>
                     </template>
                 </el-table-column>
             </shiro:hasPermission>
@@ -161,11 +165,19 @@
                     :current-page.sync="searchListForm.pageNo"
                     :page-sizes="[5,10,20,50,100]"
                     :page-size="searchListForm.pageSize"
-                    layout="prev, pager, next, sizes"
+                    layout="total, prev, pager, next, sizes"
                     :total="total">
             </el-pagination>
         </div>
     </div>
+    <el-row :gutter="20" label-width="75px" style="color:#e9432d;margin-top: 10px;">
+        <el-col>
+            <e-col-item label="温馨提示：">
+                <div>1、房间容量为工位数的，只能进行定期租用</div>
+                <div>2、房间容量为容纳人数的，只能进行临时预约</div>
+            </e-col-item>
+        </el-col>
+    </el-row>
 </div>
 
 
@@ -176,18 +188,18 @@
     new Vue({
         el: '#app',
         data: function () {
-            var isAllowmList = JSON.parse('${fns: toJson(fns:getDictList('yes_no'))}');
-            var pwRoomTypes = JSON.parse('${fns: toJson(fns: getDictList('pw_room_type'))}');
+            var isAllowmList = JSON.parse(JSON.stringify(${fns: toJson(fns:getDictList('yes_no'))}));
+            var pwRoomTypes = JSON.parse(JSON.stringify(${fns: toJson(fns: getDictList('pw_room_type'))}));
             return {
-                numTypes:[],
+                numTypes: [],
                 searchListForm: {
                     pageNo: 1,
                     pageSize: 10,
                     orderBy: '',
                     orderByType: '',
                     'pwSpace.id': '',
-                    keys:'',
-                    type:''
+                    keys: '',
+                    type: ''
                 },
                 total: 0,
                 isAllowmList: isAllowmList,
@@ -198,8 +210,8 @@
                 roomList: [],
                 spaceList: [],
                 loading: true,
-                multipleSelectedId:[],
-                message:'${message}'
+                multipleSelectedId: [],
+                message: '${message}'
             }
         },
 
@@ -220,7 +232,7 @@
                 return this.getEntries(this.isAllowmList)
             },
 
-            numTypesEntries:function () {
+            numTypesEntries: function () {
                 return this.getEntries(this.numTypes);
             },
 
@@ -289,7 +301,7 @@
             },
 
             createRoom: function () {
-                 window.location.href = this.frontOrAdmin + '/pw/pwRoom/form'
+                window.location.href = this.frontOrAdmin + '/pw/pwRoom/form'
             },
 
             handleIsUsableChange: function (row) {
@@ -303,16 +315,16 @@
                     }
                 }).then(function (response) {
                     var data = response.data;
-                    if(data.status != '1'){
+                    if (data.status != '1') {
                         self.$message({
                             message: data.msg || '临时预约开启失败',
-                            type:'success'
+                            type: 'success'
                         })
                     }
                 }).catch(function () {
                     self.$message({
                         message: '请求失败',
-                        type:'error'
+                        type: 'error'
                     })
                 })
             },
@@ -329,15 +341,16 @@
                 }).then(function (response) {
                     var data = response.data;
                     if (data.status != '1') {
+                        self.getRoomList();
                         self.$message({
                             message: data.msg || '定期租用开启失败',
-                            type:'success'
-                        })
+                            type: 'success'
+                        });
                     }
                 }).catch(function () {
                     self.$message({
                         message: '请求失败',
-                        type:'error'
+                        type: 'error'
                     })
                 })
             },
@@ -357,18 +370,29 @@
                     if (data.status != '1') {
                         self.$message({
                             message: data.msg || '多团队共用开启失败',
-                            type:'success'
+                            type: 'success'
                         })
                     }
                 }).catch(function () {
                     self.$message({
                         message: '请求失败',
-                        type:'error'
+                        type: 'error'
                     })
                 })
             },
 
-            batchDelete:function (ids) {
+            isEdit: function (row) {
+                if (row.isEdit == '0') {
+                    this.$message({
+                        message: '房间被分配或预约,不能编辑该房间',
+                        type: 'warning'
+                    });
+                    return false;
+                }
+                window.location.href = this.frontOrAdmin + '/pw/pwRoom/form?id=' + row.id;
+            },
+
+            batchDelete: function (ids) {
                 var self = this;
                 this.$confirm('是否删除房间？', '提示', {
                     confirmButtonText: '确定',
@@ -376,10 +400,10 @@
                     type: 'warning'
                 }).then(function () {
                     self.$axios({
-                        method:'GET',
-                        url:'/pw/pwRoom/deleteRoom',
-                        params:{
-                            ids:ids
+                        method: 'GET',
+                        url: '/pw/pwRoom/deleteRoom',
+                        params: {
+                            ids: ids
                         }
                     }).then(function (response) {
                         var data = response.data;
@@ -393,7 +417,7 @@
                     }).catch(function (error) {
                         self.$message({
                             message: '请求失败',
-                            type:'error'
+                            type: 'error'
                         })
                     })
                 })
@@ -401,7 +425,7 @@
 
             handleChangeBuild: function () {
                 var buildId = this.buildId;
-                if(!buildId){
+                if (!buildId) {
                     this.floorId = '';
                     this.searchListForm['pwSpace.id'] = this.baseId;
                     this.getRoomList();
@@ -440,7 +464,7 @@
                 })
             },
 
-            getNumTypes:function () {
+            getNumTypes: function () {
                 var self = this;
                 this.$axios.post('/pw/pwRoom/pwRoomType').then(function (response) {
                     var data = response.data;

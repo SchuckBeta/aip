@@ -108,9 +108,14 @@
             return {
                 isUploading: false,
                 downTemps: [{label: '学生信息模板', value: '1'}, {label: '导师信息模板', value: '2'}, {
-                    label: '后台用户信息模板',
-                    value: '3'
-                }, {label: '机构信息模板', value: '4'}, {label: '项目信息模板', value: '5'}, {label: '互联网+大赛信息模板', value: '10'}],
+	                    label: '后台用户信息模板',
+	                    value: '3'
+                	},
+                	{label: '机构信息模板', value: '4'}
+                	/* ,
+                	{label: '项目信息模板', value: '5'},
+                	{label: '互联网+大赛信息模板', value: '10'} */
+                ],
                 tableLoading: true,
                 searchListForm: {
                     pageSize: 10,

@@ -139,6 +139,7 @@
 
             </div>
 
+            <div v-if="certList.length === 0" class="pdt-60 mgb-60 empty">暂无证书， 去创建证书吧</div>
 
         </div>
     </div>
@@ -350,7 +351,8 @@
                 bannerScale: 1,
                 controlEditings: {},
                 allRelatedNodes: [],
-                isClose:false
+                isClose:false,
+
 
             }
         },
@@ -486,7 +488,7 @@
                     self.searchListForm.pageSize = data.data.pageSize;
                     self.searchListForm.pageNo = data.data.pageNo;
                     self.allRelatedNodes = [];
-                    var list = data.data.list;
+                    var list = data.data.list || [];
                     list.forEach(function (item) {
                         item.relatedProjectIds = [];
                         item.selectedProjectId = '';

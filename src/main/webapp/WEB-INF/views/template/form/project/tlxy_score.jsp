@@ -150,7 +150,7 @@
                 <e-panel label="项目材料" v-if="projectTlxyApplyFiles.length > 0">
                     <ul class="timeline">
                         <li class="work" v-for="file in projectTlxyApplyFiles" :key="file.id">
-                            <span class="contest-date">{{file.createDate}}</span>
+                            <span class="contest-date">{{file.createDate | formatDateFilter('YYYY-MM-DD HH:mm')}}</span>
                             <img src="/images/time-line.png" alt="">
                             <div class="relative">
                                 <e-file-item :file="file" size="mini" :show="false"></e-file-item>
@@ -161,7 +161,7 @@
                 <e-panel :label="item.gnodeName" v-if="projectTlxyReports.length > 0" v-for="item in projectTlxyReports" :key="item.id">
                     <ul class="timeline">
                         <li class="work" v-for="file in item.files" :key="file.id">
-                            <span class="contest-date">{{file.createDate}}</span>
+                            <span class="contest-date">{{file.createDate | formatDateFilter('YYYY-MM-DD HH:mm')}}</span>
                             <img src="/images/time-line.png" alt="">
                             <div class="relative">
                                 <e-file-item :file="file" size="mini" :show="false"></e-file-item>

@@ -13,10 +13,10 @@
 <div id="app" v-show="pageLoad" style="display: none" class="container-fluid mgb-60">
     <div class="mgb-20">
         <shiro:hasPermission name="pw:pwSpace:edit">
-            <edit-bar :second-name="floorForm.id ? '楼层修改': '楼层添加'"></edit-bar>
+            <edit-bar :second-name="floorForm.id ? '楼层修改': '楼层添加'" href="/pw/pwSpace/list"></edit-bar>
         </shiro:hasPermission>
         <shiro:lacksPermission name="pw:pwSpace:edit">
-            <edit-bar :second-name="楼层查看"></edit-bar>
+            <edit-bar second-name="楼层查看" href="/pw/pwSpace/list"></edit-bar>
         </shiro:lacksPermission>
     </div>
 
@@ -57,7 +57,6 @@
                            @click.stop.prevent="saveForm('floorForm')">保存
                 </el-button>
             </shiro:hasPermission>
-            <el-button @click.stop.prevent="goToBack">返回</el-button>
         </el-form-item>
 
     </el-form>
@@ -73,7 +72,7 @@
     new Vue({
         el: '#app',
         data: function () {
-            var pwSpace = JSON.parse('${fns:toJson(pwSpace)}');
+            var pwSpace = JSON.parse(JSON.stringify(${fns:toJson(pwSpace)})) || [];
 
             var nameReg = /['"\s“”‘’]+/;
             var validateName = function (rule, value, callback) {

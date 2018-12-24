@@ -19,7 +19,7 @@
                     <div class="span3">
                         <div class="menu-item <c:if test="${not fns:checkMenu(menu.id)}">menu-item-qx</c:if> menu ${not empty firstMenu && firstMenu ? ' active' : ''}">
                             <c:if test="${empty menu.href}">
-                                <span style="text-align: center" class="topic-unread"></span>
+                                <span style="text-align: center;z-index:900" class="topic-unread"></span>
                                 <a data-id="${menu.id}" href="${ctx}/sys/menu/treePlus?parentId=${menu.id}">
                                     <img class="menu-pic" src="${fns:ftpImgUrl(menu.imgUrl)}" alt=""/>
                                     <span class="name">${menu.name}</span>
@@ -27,7 +27,7 @@
                                 <p class="desc">${menu.remarks}</p>
                             </c:if>
                             <c:if test="${not empty menu.href}">
-                                <span style="text-align: center" class="topic-unread"></span>
+                                <span style="text-align: center;z-index:900" class="topic-unread"></span>
                                 <a data-id="${menu.id}" href="${ctx}/sys/menu/treePlus?parentId=${menu.id}">
                                     <img class="menu-pic" src="${fns:ftpImgUrl(menu.imgUrl)}" alt=""/>
                                     <span class="name">${menu.name}</span>

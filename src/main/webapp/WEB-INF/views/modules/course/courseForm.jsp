@@ -199,8 +199,8 @@
         el: '#app',
         mixins: [Vue.collegesMixin],
         data: function () {
-            var courseForm = ${fns: toJson(course)};
-            var teacherList = JSON.parse('${fns:toJson(teachers)}');
+            var courseForm = JSON.parse(JSON.stringify(${fns: toJson(course)})) || {};
+            var teacherList = JSON.parse(JSON.stringify(${fns: toJson(teachers)})) || [];
             var categories = JSON.parse('${fns: toJson(fns: getDictList('0000000086'))}');
             var courseTypes = JSON.parse('${fns: toJson(fns: getDictList('0000000078'))}');
             var courseStatusList = JSON.parse('${fns: toJson(fns: getDictList('0000000082'))}');
@@ -208,6 +208,7 @@
             var courseTeachers = courseForm.teacherList || [];
             var videoList = [];
             var attachmentList = courseForm.attachmentList || [];
+            console.log(attachmentList)
             courseForm.video && videoList.push({
                 id: Date.now(),
                 video: courseForm.video

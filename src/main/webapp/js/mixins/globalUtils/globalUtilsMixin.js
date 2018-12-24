@@ -55,6 +55,10 @@ Vue.mixin({
             return this.ftpHttp + url.replace('/tool', '');
         },
 
+        getUserIsCompleted: function () {
+            return this.$axios.get('/cms/ajaxCheckUser')
+        },
+
 
         checkResponseCode: function (code, msg, showMessage) {
             var self = this;

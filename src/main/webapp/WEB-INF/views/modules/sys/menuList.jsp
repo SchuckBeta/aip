@@ -205,11 +205,11 @@
             },
 
             goChangeData:function (id) {
-                window.location.href = this.frontOrAdmin + '/sys/menu/form?id=' + id + '&secondName=修改';
+                window.location.href = this.frontOrAdmin + '/sys/menu/form?id=' + id;
             },
 
             goAddChild:function (id) {
-                window.location.href = this.frontOrAdmin + '/sys/menu/form?parent.id=' + id + '&secondName=添加下级菜单';
+                window.location.href = this.frontOrAdmin + '/sys/menu/form?parent.id=' + id;
             },
 
             singleDelete:function (id) {
@@ -320,10 +320,30 @@
                 var rootIds = this.setMenuRootIds(list);
                 this.menuTree = this.getMenuTreeTree(rootIds, this.menuProps, list);
                 this.flattenMenuList = this.getFlattenMenuList(1);
-            }
+            },
+
+            getMenuTree: function () {
+                var self = this;
+                this.loading = true;
+                this.$axios.get('/sys/menu/getMenuTree').then(function (response) {
+                    var data = response.data;
+                    if(data.status === 1){
+                        self.menuTree = data.data || [];
+                        self.flattenMenuList  = self.handleFlattenTree(self.menuTree);
+                    }
+                    self.loading = false;
+                }).catch(function () {
+                    self.$message({
+                        message: self.xhrErrorMsg,
+                        type: 'error'
+                    })
+                    self.loading = false;
+                })
+            },
+
         },
         created: function () {
-            this.getDataList();
+            this.getMenuTree();
             if (this.message) {
                 this.$message({
                     message: this.message,

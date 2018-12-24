@@ -47,7 +47,7 @@
     <div class="table-container">
         <el-table :data="tableData" class="table" size="mini" ref="multipleTable"
                   @selection-change="handleSelectionChange">
-            <%--<el-table-column type="selection" width="55"></el-table-column>--%>
+            <%--<el-table-column type="selection" width="60"></el-table-column>--%>
             <%--<el-table-column align="center" prop="sortid" label="序号">--%>
             <%--<template slot-scope="scope">{{scope.row.sortid}}</template>--%>
             <%--</el-table-column>--%>

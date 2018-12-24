@@ -20,7 +20,8 @@
                 <el-col :span="10">
                     <el-form-item prop="num" :label="numTypeLabel">
                         <el-col :span="6">
-                            <el-input :disabled="hasNum" v-model.number="assignRoomForm.num"></el-input>
+                            <input type="text" style="display: none">
+                            <el-input type="number" :disabled="hasNum" v-model.number="assignRoomForm.num"></el-input>
                         </el-col>
                         <el-col :span="8">
                             <el-checkbox v-model="hasNum" @change="assignRoomForm.num = ''">不限</el-checkbox>
@@ -29,12 +30,12 @@
                 </el-col>
                 <el-col :span="8">
                     <el-form-item prop="isAlone" label-width="0">
-                        <el-checkbox v-model="assignRoomForm.isAlone">是否与其他团队共用房间</el-checkbox>
+                        <el-checkbox v-model="assignRoomForm.isAlone" :true-label="0" :false-label="1">与其他团队共用房间</el-checkbox>
                     </el-form-item>
                 </el-col>
                 <el-col :span="4">
                     <el-form-item class="text-right">
-                        <el-button type="primary" @click.stop.prevent="searchRoomListAssigned">查询</el-button>
+                        <el-button type="primary" @click.stop.prevent="searchRoomListAssigned">搜索房间</el-button>
                     </el-form-item>
                 </el-col>
             </el-row>
@@ -42,62 +43,79 @@
         <div class="pw-assign-room-titlebar">
             <span>场地分配</span>
         </div>
-        <div class="base-tree-block">
-            <div class="conditions">
-                <e-condition label="基地" type="radio" :options="baseList" v-model="baseId" @change="handleChangeBase"
-                             :is-show-all="false"
-                             :default-props="{label: 'name', value: 'id'}"></e-condition>
+        <%--<div class="base-tree-block">--%>
+        <%--<div class="conditions">--%>
+        <%--<e-condition label="基地" type="radio" :options="baseList" v-model="baseId" @change="handleChangeBase"--%>
+        <%--:is-show-all="false"--%>
+        <%--:default-props="{label: 'name', value: 'id'}"></e-condition>--%>
 
-                <e-condition label="楼栋" :options="buildList">
-                    <e-radio-group class="e-radio-spaces" v-model="buildId" @change="handleChangeBuild">
-                        <e-radio v-for="build in buildList" name="buildId" :class="{'is-siblings': build.isSiblings}"
-                                 :label="build.id" :key="build.id">{{build.name}}
-                        </e-radio>
-                    </e-radio-group>
-                </e-condition>
+        <%--<e-condition label="楼栋" :options="buildList">--%>
+        <%--<e-radio-group class="e-radio-spaces" v-model="buildId" @change="handleChangeBuild">--%>
+        <%--<e-radio v-for="build in buildList" name="buildId" :class="{'is-siblings': build.isSiblings}"--%>
+        <%--:label="build.id" :key="build.id">{{build.name}}--%>
+        <%--</e-radio>--%>
+        <%--</e-radio-group>--%>
+        <%--</e-condition>--%>
 
-                <e-condition label="楼层" type="radio" :options="floorList" v-model="floorId" @change="handleChangeFloor"
-                             :is-show-all="false"
-                             :default-props="{label: 'name', value: 'id'}"></e-condition>
-            </div>
-        </div>
-        <div class="text-right">
-            <el-tooltip content="请选择场地至层后选择房间批量分配" :disabled="!!floorId && multipleSelectionRoom.length > 0"
-                        popper-class="white" placement="top">
+        <%--<e-condition label="楼层" type="radio" :options="floorList" v-model="floorId" @change="handleChangeFloor"--%>
+        <%--:is-show-all="false"--%>
+        <%--:default-props="{label: 'name', value: 'id'}"></e-condition>--%>
+        <%--</div>--%>
+        <%--</div>--%>
+        <div class="search-block_bar clearfix">
+            <div class="search-btns">
+                <el-tooltip content="请选择房间后批量分配" :disabled="multipleSelectionRoom.length > 0"
+                            popper-class="white" placement="top">
                 <span>
-                    <el-button type="primary" size="mini"  :disabled="!floorId ||  multipleSelectionRoom.length == 0" @click.stop.prevent="assignRooms">批量分配</el-button>
+                    <el-button type="primary" size="mini" :disabled="multipleSelectionRoom.length == 0"
+                               @click.stop.prevent="assignRooms">批量分配</el-button>
                 </span>
-            </el-tooltip>
-        </div>
-        <div class="assigned-room-block" style="min-height: 20px;">
-            <span class="assigned-room-label">分配到：</span>
-            <div class="assigned-rooms">
-                <span v-if="roomPath" class="assigned-room-item">{{roomPath}}</span>
-                <span v-else class="empty">无分配</span>
+                </el-tooltip>
+            </div>
+            <div class="search-input">
+                <input type="text" style="display: none">
+                <el-input
+                        placeholder="房间名称"
+                        size="mini"
+                        name="keys"
+                        v-model="searchRoomName"
+                        keyup.enter.native="getFilterRoomNameList"
+                        class="w300">
+                    <el-button slot="append" icon="el-icon-search"
+                               @click.stop.prevent="getFilterRoomNameList"></el-button>
+                </el-input>
             </div>
         </div>
-        <el-table v-loading="loading" :data="floorRoomList" size="small" class="table" style="margin-bottom: 20px;"
-                  border
+        <el-table v-loading="loading" :data="floorRoomList" size="small" class="table" ref="assignRoomTable"
+                  style="margin-bottom: 20px;"
                   ref="multipleTableRoomList"
+                  @sort-change="handleSortChange"
                   @selection-change="handleSelectionChangeRoom">
             <el-table-column
                     type="selection"
-                    width="55">
+                    :selectable="handleSelectable"
+                    width="60">
             </el-table-column>
-            <el-table-column prop="name" label="房间名称"></el-table-column>
-            <el-table-column prop="num" label="总工位数" align="center"></el-table-column>
-            <el-table-column prop="leftNum" label="剩余工位数" align="center">
+            <el-table-column prop="name" label="房间名称">
+                <template slot-scope="scope">
+                    {{scope.row.name}}({{scope.row.pwSpace.id | getRoomNames(baseTreeEntries)}})
+                </template>
+            </el-table-column>
+            <el-table-column prop="num" label="总工位数" align="center" sortable="custom"></el-table-column>
+            <el-table-column prop="remaindernum" label="剩余工位数" align="center" sortable="custom">
                 <template slot-scope="scope">
                     {{scope.row.remaindernum}}
                 </template>
             </el-table-column>
-            <el-table-column prop="leftNum" label="所需工位数" align="center">
+            <el-table-column prop="needNum" label="分配工位数" align="center">
                 <template slot-scope="scope">
                     <template v-if="scope.row.isAssigned === '1'">
                         {{scope.row.needNum}}
                     </template>
                     <template v-else>
-                        <el-input-number v-model="scope.row.num" :step="1" size="mini" :min="0" :max="10000"></el-input-number>
+                        <%--<el-input-number v-model.number="scope.row.needNum" :step="1" size="mini" :min="1"--%>
+                                         <%--:max="getMaxNum(scope.row)"></el-input-number>--%>
+                        <el-input type="number" v-model.number="scope.row.needNum" size="mini" style="width: 130px;"></el-input>
                     </template>
                 </template>
             </el-table-column>
@@ -109,14 +127,20 @@
             <el-table-column prop="status" label="操作" align="center">
                 <template slot-scope="scope">
                     <div class="table-btns-action">
-                        <el-tooltip v-if="scope.row.isAssigned != '1'" content="请选择场地至层后分配" :disabled="!!floorId"
-                                    popper-class="white" placement="top">
-                            <span>
-                               <el-button :disabled="!floorId" type="text" size="mini" @click.stop.prevent="assignRoom(scope.row)">分配</el-button>
-                            </span>
-                        </el-tooltip>
+                        <template v-if="scope.row.isAssigned != '1'">
+                            <el-button v-if="!scope.row.id" type="text" size="mini"
+                                       @click.stop.prevent="assignRoom(scope.row)">分配
+                            </el-button>
+                            <el-button v-else-if="scope.row.id" type="text" size="mini"
+                                       @click.stop.prevent="updateRoom(scope.row)">分配
+                            </el-button>
+                            <el-button v-if="scope.row.assignAble == '1'" type="text" size="mini"
+                                       @click.stop.prevent="cancelAbelRoom(scope.row)">取消分配
+                            </el-button>
+                        </template>
                         <template v-else>
-                            <el-button type="text" size="mini" >重新分配</el-button>
+                            <el-button type="text" size="mini" @click.stop.prevent="setAssignRoomAble(scope.row)">重新分配
+                            </el-button>
                             <el-button type="text" size="mini" @click.stop.prevent="confirmCancelRooms(scope.row)">取消分配
                             </el-button>
                         </template>
@@ -150,7 +174,7 @@
             return {
                 assignRoomForm: {
                     num: pwEnter.expectWorkNum,
-                    isAlone: false
+                    isAlone: 0
                 },
                 eid: pwEnter.id,
                 hasFloorSpaceNum: false,
@@ -160,7 +184,7 @@
                     num: [],
                 },
                 assignRoomList: [],
-                baseTreeEntries: [],
+                baseTreeEntries: {},
                 baseId: '',
                 buildId: '',
                 floorId: '',
@@ -171,7 +195,10 @@
                 searchListForm: {
                     pageNo: 1,
                     pageSize: 10
-                }
+                },
+                cacheRoom: {},
+                originRoomList: [],
+                searchRoomName: ''
             }
         },
         computed: {
@@ -235,7 +262,7 @@
                             buildIds.push(item.id);
                         }
                     });
-                     this.allFloorList.forEach(function (item) {
+                    this.allFloorList.forEach(function (item) {
                         if (buildIds.indexOf(item.pId) > -1) {
                             floorIds.push(item.id)
                         }
@@ -255,10 +282,10 @@
             floorRoomList: function () {
                 var pageNo = this.searchListForm.pageNo;
                 var pageSize = this.searchListForm.pageSize;
-                return this.allRoomList.slice((pageNo - 1) * pageSize, (pageNo) * pageSize)
+                return this.assignRoomList.slice((pageNo - 1) * pageSize, (pageNo) * pageSize)
             },
             pageCount: function () {
-                return this.allRoomList.length;
+                return this.assignRoomList.length;
             }
         },
         methods: {
@@ -271,20 +298,74 @@
 
             },
 
+            handleSortChange: function (row) {
+                var prop = row.prop;
+                var order = row.order;
+                if (!prop) {
+                    this.assignRoomList = this.originRoomList;
+                    return;
+                }
+                this.assignRoomList = this.assignRoomList.sort(function (item, item2) {
+                    var val1 = item[prop];
+                    var val2 = item2[prop];
+                    if (order !== 'ascending') {
+                        if (val1 > val2) {
+                            return -1
+                        } else if (val1 < val2) {
+                            return 1
+                        } else {
+                            return 0
+                        }
+                    } else {
+                        if (val1 < val2) {
+                            return -1
+                        } else if (val1 > val2) {
+                            return 1
+                        } else {
+                            return 0
+                        }
+                    }
+                })
+            },
+
+            getFilterRoomNameList: function () {
+                var searchRoomName = this.searchRoomName;
+                this.$refs.assignRoomTable.clearSort();
+                if(!searchRoomName){
+                    this.assignRoomList = this.originRoomList;
+                }
+                this.assignRoomList = this.assignRoomList.filter(function (item) {
+                    return item.name.indexOf(searchRoomName) > -1
+                })
+            },
+
+            getMaxNum: function (row) {
+                if (row.isAssigned != '1' && !row.id) {
+                    return row.remaindernum;
+                }
+                return row.remaindernum + row.originNeedNum;
+            },
+
+
             searchRoomListAssigned: function () {
                 this.baseId = '';
                 this.buildId = '';
                 this.floorId = '';
                 this.roomPath = '';
                 this.getRoomList();
+
             },
 
             handleChangeFloor: function (value) {
-                this.roomPath = this.getRoomNames(value);
+//                this.roomPath = this.getRoomNames(value);
             },
 
             handleSelectionChangeRoom: function (value) {
                 this.multipleSelectionRoom = value;
+            },
+
+            handleSelectable: function (row) {
+                return row.isAssigned != '1'
             },
 
             confirmCancelRooms: function (row) {
@@ -300,9 +381,65 @@
                 })
             },
 
+            setAssignRoomAble: function (row) {
+                var self = this;
+                this.$confirm("是否重新分配该房间？", "提示", {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(function () {
+                    self.cacheRoom = JSON.parse(JSON.stringify(row));
+                    Vue.set(row, 'assignAble', '1');
+                    row.isAssigned = '0';
+                }).catch(function () {
+
+                })
+            },
+
+            cancelAbelRoom: function (row) {
+                row.assignAble = '0';
+                row.isAssigned = this.cacheRoom.isAssigned;
+                row.needNum = this.cacheRoom.needNum;
+            },
+
             assignRoom: function (row) {
                 var params = this.getRoomParam(row);
+                var reg = /^[1-9][0-9]*$/;
+                var maxNum;
+                if(!reg.test(row.needNum)){
+                    this.$alert('请输入最小为1的整数值', '提示', {
+                        type: 'error'
+                    })
+                    return false;
+                }
+                maxNum = this.getMaxNum(row);
+                if(row.needNum > maxNum){
+                    this.$alert('请输入不大于'+maxNum+'的数', '提示', {
+                        type: 'error'
+                    })
+                    return false;
+                }
                 this.postAssignRooms(params);
+            },
+
+            updateRoom: function (row) {
+                var params = this.getRoomParam(row);
+                var reg = /^[1-9][0-9]*$/;
+                var maxNum;
+                if(!reg.test(row.needNum)){
+                    this.$alert('请输入最小为1的整数值', '提示', {
+                        type: 'error'
+                    })
+                    return false;
+                }
+                maxNum = this.getMaxNum(row);
+                if(row.needNum > maxNum){
+                    this.$alert('请输入不大于'+maxNum+'的数', '提示', {
+                        type: 'error'
+                    })
+                    return false;
+                }
+                this.updateAssignRooms(row.id, row.needNum);
             },
 
             assignRooms: function () {
@@ -311,7 +448,24 @@
                     var params = self.getRoomParam(item);
                     return params.erooms[0];
                 });
-
+                var reg = /^[1-9][0-9]*$/;
+                for(var i = 0; i <this.multipleSelectionRoom.length; i++){
+                    var needNum = this.multipleSelectionRoom[i].needNum;
+                    var maxNum;
+                    if(!reg.test(needNum)){
+                        this.$alert(this.multipleSelectionRoom[i].name+'房间请输入最小为1的整数值', '提示', {
+                            type: 'error'
+                        })
+                        return false;
+                    }
+                    maxNum = this.getMaxNum(this.multipleSelectionRoom[i]);
+                    if(needNum > maxNum){
+                        this.$alert(this.multipleSelectionRoom[i].name+'房间请输入不大于'+maxNum+'的数', '提示', {
+                            type: 'error'
+                        })
+                        return false;
+                    }
+                }
                 this.postAssignRooms({
                     id: this.eid,
                     erooms: params
@@ -323,8 +477,25 @@
                 this.$axios.post('/pw/pwEnterRoom/ajaxAssignRooms', params).then(function (response) {
                     var data = response.data;
                     if (data.status === 1) {
+                        window.parent.sideNavModule.changeStaticUnreadTag("/a/pw/pwEnter/getCountToFPCD");
                         self.getRoomList();
                         self.$message.success("分配成功")
+                    } else {
+                        self.$message.error(data.msg)
+                    }
+                }).catch(function (error) {
+                    self.$message.error(self.xhrErrorMsg);
+                })
+            },
+
+            updateAssignRooms: function (id, num) {
+                var self = this;
+                this.$axios.post('/pw/pwEnterRoom/ajaxReassigned/' + id + '?num=' + num).then(function (response) {
+                    var data = response.data;
+                    if (data.status) {
+                        window.parent.sideNavModule.changeStaticUnreadTag("/a/pw/pwEnter/getCountToFPCD");
+                        self.getRoomList();
+                        self.$message.success("重新分配成功")
                     } else {
                         self.$message.error(data.msg)
                     }
@@ -336,9 +507,10 @@
 
             cancelRooms: function (row) {
                 var self = this;
-                this.$axios.post('/pw/pwEnterRoom/ajaxCancelRooms', this.getRoomParam(row)).then(function (response) {
+                this.$axios.post('/pw/pwEnterRoom/ajaxCancelRooms', this.getRoomParam(row, true)).then(function (response) {
                     var data = response.data;
                     if (data.status === 1) {
+                        window.parent.sideNavModule.changeStaticUnreadTag("/a/pw/pwEnter/getCountToFPCD");
                         self.getRoomList();
                         self.$message.success("取消分配成功")
                     } else {
@@ -349,11 +521,11 @@
                 })
             },
 
-            getRoomParam: function (row) {
+            getRoomParam: function (row, isCancel) {
                 return {
                     id: this.eid,
                     erooms: [
-                        {id: row.id, num: row.num}
+                        {id: row.roomId, num: (isCancel ? 1 : row.needNum)}
                     ]
                 }
             },
@@ -372,7 +544,7 @@
 
             handleChangeBuild: function (value) {
                 var buildId = this.buildId;
-                this.roomPath = this.getRoomNames(value);
+//                this.roomPath = this.getRoomNames(value);
                 if (!buildId) {
 //                    this.baseId = '';
                     this.floorId = '';
@@ -391,24 +563,24 @@
                 buildList.forEach(function (item) {
                     Vue.set(item, 'isSiblings', !value ? true : item.pId === value);
                 });
-                this.roomPath = this.getRoomNames(value);
+//                this.roomPath = this.getRoomNames(value);
                 this.buildId = '';
                 this.floorId = '';
             },
 
-            getRoomNames: function (roomId) {
-                var names = [];
-                var parent = this.baseTreeEntries[roomId];
-                while (parent) {
-                    if (parent.pId === '1') {
-                        names.unshift(parent.name);
-                        break;
-                    }
-                    names.unshift(parent.name);
-                    parent = this.baseTreeEntries[parent.pId];
-                }
-                return names.join('/');
-            },
+//            getRoomNames: function (roomId) {
+//                var names = [];
+//                var parent = this.baseTreeEntries[roomId];
+//                while (parent) {
+//                    if (parent.pId === '1') {
+//                        names.unshift(parent.name);
+//                        break;
+//                    }
+//                    names.unshift(parent.name);
+//                    parent = this.baseTreeEntries[parent.pId];
+//                }
+//                return names.join('/');
+//            },
 
             getPwSpaceRooms: function () {
                 return this.$axios.post('/pw/pwEnterRoom/ajaxPwRooms', this.assignRoomForm)
@@ -421,31 +593,44 @@
             getRoomList: function () {
                 var self = this;
                 this.loading = true;
+                this.searchRoomName = '';
+
                 this.$axios.all([this.getPwSpaceRooms(), this.getPwRoomYfps()]).then(this.$axios.spread(function (responseRooms, responseRoomYfps) {
                     var dataRoom = responseRooms.data;
                     var dataYfps = responseRoomYfps.data;
                     var rooms = [];
-                    if (dataRoom.status === 1) {
-                        var roomNotAList = dataRoom.data || [];
-                        roomNotAList = roomNotAList.map(function (item) {
-                            item.needNum = 0;
-                            return item;
-                        });
-                        rooms = rooms.concat(roomNotAList)
-                    }
+                    var roomAssigned = {};
                     if (dataYfps.status === 1) {
                         var roomYfps = dataYfps.data || [];
                         roomYfps = roomYfps.map(function (item) {
                             var room = item.pwRoom;
                             room.needNum = item.num;
+                            room.originNeedNum = item.num;
                             room.isAssigned = '1';
+                            roomAssigned[room.id] = true;
+                            room.roomId = room.id;
+                            room.id = item.id;
                             return room;
                         });
                         rooms = rooms.concat(roomYfps)
                     }
-                    console.log(rooms)
+                    if (dataRoom.status === 1) {
+                        var roomNotAList = dataRoom.data || [];
+                        roomNotAList = roomNotAList.map(function (item) {
+                            item.needNum = '';
+                            item.roomId = item.id;
+                            item.id = '';
+                            return item;
+                        });
+                        roomNotAList = roomNotAList.filter(function (item) {
+                            return !roomAssigned[item.roomId]
+                        })
+                        rooms = rooms.concat(roomNotAList)
+                    }
                     self.assignRoomList = rooms;
+                    self.originRoomList = JSON.parse(JSON.stringify(rooms))
                     self.loading = false;
+                    self.$refs.assignRoomTable.clearSort();
                     // Both requests are now complete
                 })).catch(function (error) {
                     self.loading = false;

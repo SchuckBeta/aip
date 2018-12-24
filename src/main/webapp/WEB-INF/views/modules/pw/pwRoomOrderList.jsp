@@ -18,7 +18,7 @@
             <e-condition label="基地" type="radio" :options="baseList" v-model="baseId" @change="handleChangeBase"
                          :default-props="{label: 'name', value: 'id'}"></e-condition>
 
-            <e-condition label="楼栋">
+            <e-condition label="楼栋" :options="buildList">
                 <e-radio class="e-checkbox-all" name="build" v-model="buildId" label="" @change="handleChangeBuild">不限
                 </e-radio>
                 <e-radio-group class="e-radio-spaces" v-model="buildId" @change="handleChangeBuild">
@@ -31,19 +31,19 @@
             <e-condition label="楼层" type="radio" :options="floorList" v-model="floorId" @change="handleChangeFloor"
                          :default-props="{label: 'name', value: 'id'}"></e-condition>
 
-            <e-condition label="房间类型" type="radio" v-model="searchListForm.roomType"
-                         name="roomType" :options="roomTypes" @change="getDataList">
+            <e-condition label="房间类型" type="radio" v-model="searchListForm.type"
+                         name="type" :options="pwRoomTypes" @change="getDataList">
             </e-condition>
 
-            <e-condition label="房间状态" type="radio" v-model="searchListForm.roomState"
-                         name="roomState" :options="roomStates" @change="getDataList">
+            <e-condition label="房间状态" type="radio" v-model="searchListForm.querystatus" :default-props="{label:'statusname',value:'status'}"
+                         name="querystatus" :options="roomSearchStates" @change="getDataList">
             </e-condition>
 
         </div>
 
         <div class="search-block_bar clearfix mgt-20">
             <div class="search-input">
-                <el-select size="mini" v-model="searchListForm.condition" placeholder="请选择条件"
+                <el-select size="mini" v-model="condition" placeholder="请选择条件"
                            @change="handleChangeCondition" style="width:135px;">
                     <el-option
                             v-for="item in conditions"
@@ -53,26 +53,24 @@
                     </el-option>
                 </el-select>
 
-                <el-input name="numMin" size="mini" style="width:70px;" v-model="searchListForm.numMin"
-                          :disabled="!searchListForm.condition" @change="getDataList"
-                          @keyup.enter.native="getDataList">
+                <el-input name="numMin" size="mini" style="width:70px;" v-model="numMin"
+                          :disabled="!condition" @change="changeNum">
                 </el-input>
                 <span style="color:#dcdfe6;">-</span>
-                <el-input name="numMax" size="mini" style="width:70px;" v-model="searchListForm.numMax"
-                          :disabled="!searchListForm.numMin" @change="getDataList"
-                          @keyup.enter.native="getDataList">
+                <el-input name="numMax" size="mini" style="width:70px;" v-model="numMax"
+                          :disabled="!condition" @change="changeNum">
                 </el-input>
 
                 <input type="text" style="display:none">
 
-                <el-input name="queryStr" size="mini" class="w300" v-model="searchListForm.queryStr"
+                <el-input name="keys" size="mini" class="w300" v-model="searchListForm.keys"
                           placeholder="房间名称/所属场地" @keyup.enter.native="getDataList">
                     <el-button slot="append" class="el-icon-search" @click.stop.prevent="getDataList"></el-button>
                 </el-input>
 
-                <span class="count-label">共</span><span>50间</span>
-                <span class="count-label">已预约</span><span>30间</span>
-                <span class="count-label">未预约</span><span>20间</span>
+                <span class="count-label">共</span><span>{{numAll}} 间</span>
+                <span class="count-label">已预约</span><span>{{numYes}} 间</span>
+                <span class="count-label">未预约</span><span>{{numNo}} 间</span>
 
             </div>
         </div>
@@ -82,51 +80,58 @@
     <div class="table-container">
         <el-table :data="pageList" ref="pageList" class="table" size="mini" v-loading="loading"
                   @sort-change="handleTableSortChange">
-            <el-table-column label="房间信息" align="left" min-width="90" sortable="roomType">
+
+            <el-table-column label="房间信息" align="left" min-width="80" sortable="type">
                 <template slot-scope="scope">
                     <div>
-                        <el-tooltip :content="scope.row.place" popper-class="white" placement="right">
-                            <span class="break-ellipsis">{{scope.row.roomName}}</span>
+                        <el-tooltip :content="scope.row.name" popper-class="white" placement="right">
+                            <span class="break-ellipsis">{{scope.row.name}}</span>
                         </el-tooltip>
                     </div>
-                    <div>{{scope.row.roomType | selectedFilter(roomTypesEntries)}} {{scope.row.roomAttribute |
-                        selectedFilter(roomAttributesEntries)}}
+                    <div>
+                        <el-tooltip :content="scope.row.type | selectedFilter(pwRoomTypesEntries) + ' 定期租用'" popper-class="white" placement="right" v-if="scope.row.isAssign == '1'">
+                            <span class="break-ellipsis">{{scope.row.type | selectedFilter(pwRoomTypesEntries)}} 定期租用</span>
+                        </el-tooltip>
+                        <el-tooltip :content="scope.row.type | selectedFilter(pwRoomTypesEntries) + ' 临时预约'" popper-class="white" placement="right" v-if="scope.row.isUsable == '1'">
+                            <span class="break-ellipsis">{{scope.row.type | selectedFilter(pwRoomTypesEntries)}} 临时预约</span>
+                        </el-tooltip>
+                        <el-tooltip :content="scope.row.type | selectedFilter(pwRoomTypesEntries) + ' 其他'" popper-class="white" placement="right" v-if="scope.row.isAssign == '0' && scope.row.isUsable == '0'">
+                            <span class="break-ellipsis">{{scope.row.type | selectedFilter(pwRoomTypesEntries)}} 其他</span>
+                        </el-tooltip>
                     </div>
                 </template>
             </el-table-column>
-            <el-table-column label="房间容量" align="left" min-width="110">
+            <el-table-column label="房间容量" align="left" min-width="120">
                 <template slot-scope="scope">
-                    <div>{{scope.row.capacityLabel |
-                        selectedFilter(capacityLabelsEntries)}}：共{{scope.row.capacityTotal}}位
-                    </div>
-                    <div>占地面积：共{{scope.row.area}}平方米</div>
+                    <div>{{scope.row.numtype | selectedFilter(numTypesEntries)}}：共{{scope.row.num}}<span v-if="scope.row.numtype == '1'">人</span><span v-else>个</span></div>
+                    <div>占地面积：{{scope.row.area}}平方米</div>
                 </template>
             </el-table-column>
-            <el-table-column prop="roomState" label="当前房间状态" align="center" sortable="roomState" min-width="90">
+            <el-table-column prop="querystatus" label="当前房间状态" align="center" sortable="querystatus" min-width="100">
                 <template slot-scope="scope">
-                    {{scope.row.roomState | selectedFilter(roomStatesEntries)}}
-                    <%--<div>已预约</div>--%>
-                    <%--<div>（使用中）</div>--%>
+                    <span :class="{red:scope.row.querystatus == '4'}">{{scope.row.querystatus | selectedFilter(roomStatesEntries)}}</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="isShare" label="多团队共用" align="center" sortable="isShare" min-width="80">
+            <el-table-column prop="isAllowm" label="多团队共用" align="center" sortable="isAllowm" min-width="90">
                 <template slot-scope="scope">
-                    <span>{{scope.row.isShare | selectedFilter(yesOrNoEntries)}}</span>
+                    <span>{{scope.row.isAllowm | selectedFilter(yesOrNoEntries)}}</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="currentOrder" label="当前已预约数量" align="center" sortable="currentOrder" min-width="100">
+            <el-table-column prop="roomordercount" label="当前已预约数量" align="center" sortable="roomordercount" min-width="110">
             </el-table-column>
-            <el-table-column prop="orderTotal" label="预约总次数" align="center" sortable="orderTotal" min-width="80">
+            <el-table-column prop="hroomordercount" label="预约总次数" align="center" sortable="hroomordercount" min-width="90">
             </el-table-column>
             <el-table-column label="所属场地" align="center" min-width="80">
                 <template slot-scope="scope">
-                    {{scope.row.place}}</span>
+                    <el-tooltip :content="scope.row.pwSpace | filterPwRoomAddress(pwSpaceListEntries)" popper-class="white" placement="right">
+                        <span>{{scope.row.pwSpace | filterPwRoomAddress(pwSpaceListEntries)}}</span>
+                    </el-tooltip>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" align="center" min-width="70">
+            <el-table-column label="操作" align="center" min-width="80">
                 <template slot-scope="scope">
                     <div class="table-btns-action">
-                        <a href="#">查看预约详情</a>
+                        <a :href="frontOrAdmin + '/pw/pwRoom/orderRoomDetailTab1?rid=' + scope.row.id">查看预约详情</a>
                     </div>
                 </template>
             </el-table-column>
@@ -154,76 +159,17 @@
     new Vue({
         el: '#app',
         data: function () {
-            var yesOrNo = JSON.parse('${fns:toJson(fns:getDictList('yes_no'))}');
+            var yesOrNo = JSON.parse(JSON.stringify(${fns:toJson(fns:getDictList('yes_no'))}));
+            var pwRoomTypes = JSON.parse(JSON.stringify(${fns: toJson(fns: getDictList('pw_room_type'))}));
             return {
                 yesOrNo: yesOrNo,
-                roomTypes: [
-                    {
-                        id: '111',
-                        label: '实验室',
-                        value: '1'
-                    },
-                    {
-                        id: '222',
-                        label: '办公室',
-                        value: '2'
-                    },
-                    {
-                        id: '333',
-                        label: '会议室',
-                        value: '3'
-                    },
-                    {
-                        id: '444',
-                        label: '路演大厅',
-                        value: '4'
-                    },
-                    {
-                        id: '555',
-                        label: '接待室',
-                        value: '5'
-                    }
-                ],
-                roomAttributes: [
-                    {
-                        id: '111',
-                        label: '定期租用',
-                        value: '1'
-                    },
-                    {
-                        id: '222',
-                        label: '临时预约',
-                        value: '2'
-                    },
-                    {
-                        id: '333',
-                        label: '其他',
-                        value: '3'
-                    }
-                ],
-                roomStates: [
-                    {
-                        id: '111',
-                        label: '预约使用中(10间)',
-                        value: '1'
-                    },
-                    {
-                        id: '222',
-                        label: '预约待使用(15间)',
-                        value: '2'
-                    },
-                    {
-                        id: '333',
-                        label: '未预约(20间)',
-                        value: '3'
-                    }
-                ],
+                pwRoomTypes:pwRoomTypes,
+                roomSearchStates:[],
+                roomStates: [],
+                numAll:0,
+                numYes:0,
+                numNo:0,
                 conditions: [
-                    {
-                        id: '111',
-                        label: '工位数范围',
-                        value: '1'
-                    },
                     {
                         id: '222',
                         label: '容纳人数范围',
@@ -235,107 +181,53 @@
                         value: '3'
                     }
                 ],
-                capacityLabels: [
-                    {
-                        id: '111',
-                        label: '工位数',
-                        value: '1'
-                    },
-                    {
-                        id: '222',
-                        label: '容纳人数',
-                        value: '2'
-                    }
-                ],
                 pageCount: 0,
                 message: '${message}',
+                condition: '',
+                numMin: '',
+                numMax: '',
                 searchListForm: {
                     pageSize: 10,
                     pageNo: 1,
                     orderBy: '',
                     orderByType: '',
                     'pwSpace.id': '',
-                    roomType: '',
-                    roomState: '',
-                    condition: '',
-                    numMin: '',
-                    numMax: '',
-                    queryStr: ''
+                    type: '',
+                    querystatus: '',
+                    querypeoplebegin: '',
+                    querypeopleend: '',
+                    queryareabegin: '',
+                    queryareaend: '',
+                    keys: ''
                 },
                 loading: false,
-
+                numTypes: [],
                 baseId: '',
                 buildId: '',
                 floorId: '',
                 spaceList: [],
-
-                pageList: [
-                    {
-                        id: '111',
-                        roomName: '实验室001',
-                        roomType: '1',
-                        roomAttribute: '2',
-                        capacityLabel: '2',
-                        capacityTotal: '50',
-                        capacityRemain: '30',
-                        area: '500',
-                        areaRemain: '20',
-                        isShare: '1',
-                        roomState: '1',
-                        currentOrder:'10',
-                        orderTotal:'15',
-                        place: '创业基地/南栋/1层'
-                    },
-                    {
-                        id: '222',
-                        roomName: '会议室001',
-                        roomType: '2',
-                        roomAttribute: '2',
-                        capacityLabel: '1',
-                        capacityTotal: '60',
-                        capacityRemain: '2',
-                        area: '350',
-                        areaRemain: '50',
-                        roomState: '2',
-                        isShare: '0',
-                        currentOrder:'6',
-                        orderTotal:'8',
-                        place: '创业基地/南栋/2层'
-                    },
-                    {
-                        id: '333',
-                        roomName: '接待室1',
-                        roomType: '1',
-                        roomAttribute: '2',
-                        capacityLabel: '2',
-                        capacityTotal: '10',
-                        capacityRemain: '2',
-                        area: '100',
-                        areaRemain: '30',
-                        roomState: '2',
-                        isShare: '1',
-                        currentOrder:'4',
-                        orderTotal:'7',
-                        place: '创业基地/南栋/3层'
-                    }
-                ]
+                pageList: []
             }
         },
         computed: {
-            roomTypesEntries: function () {
-                return this.getEntries(this.roomTypes);
-            },
-            roomAttributesEntries: function () {
-                return this.getEntries(this.roomAttributes);
+            pwRoomTypesEntries: function () {
+                return this.getEntries(this.pwRoomTypes);
             },
             roomStatesEntries: function () {
-                return this.getEntries(this.roomStates);
+                return this.getEntries(this.roomStates,{label:'statusname',value:'status'});
             },
-            capacityLabelsEntries: function () {
-                return this.getEntries(this.capacityLabels);
+            numTypesEntries: function () {
+                return this.getEntries(this.numTypes);
             },
             yesOrNoEntries: function () {
                 return this.getEntries(this.yesOrNo);
+            },
+            pwSpaceListEntries: function () {
+                var entries = {};
+                this.spaceList.forEach(function (item) {
+                    entries[item.id] = item;
+                });
+                return entries;
             },
 
             baseList: {
@@ -371,45 +263,46 @@
             getDataList: function () {
                 var self = this;
 
-                if(this.searchListForm.numMin){
-                    var flagMin = this.getReg(this.searchListForm.numMin);
+                if(this.numMin){
+                    var flagMin = this.getReg(this.numMin);
                     if(!flagMin){
                         return false;
                     }
                 }
-                if(this.searchListForm.numMax){
-                    var flagMax = this.getReg(this.searchListForm.numMax);
+                if(this.numMax){
+                    var flagMax = this.getReg(this.numMax);
                     if(!flagMax){
                         return false;
                     }
-                    if(this.searchListForm.numMax < this.searchListForm.numMin){
+                    if(parseInt(this.numMax) < parseInt(this.numMin)){
                         this.$message({
-                            message: '最大值不能小于' + self.searchListForm.numMin + '，请修改后，再次查询！',
+                            message: '最大值不能小于' + self.numMin + '，请修改后，再次查询！',
                             type: 'warning'
                         });
                         return false;
                     }
                 }
 
-//                this.loading = true;
-//                this.$axios({
-//                    method: 'POST',
-//                    url: '/pw/ajaxListXQRZ?' + Object.toURLSearchParams(this.searchListForm)
-//                }).then(function (response) {
-//                    var data = response.data;
-//                    if (data.status == '1') {
-//                        self.pageCount = data.data.count;
-//                        self.searchListForm.pageSize = data.data.pageSize;
-//                        self.pageList = data.data.list || [];
-//                    }
-//                    self.loading = false;
-//                }).catch(function () {
-//                    self.loading = false;
-//                    self.$message({
-//                        message: '请求失败',
-//                        type: 'error'
-//                    })
-//                });
+                this.loading = true;
+                this.$axios({
+                    method: 'GET',
+                    url: '/pw/pwRoom/roomOrderList',
+                    params:Object.toURLSearchParams(this.searchListForm)
+                }).then(function (response) {
+                    var data = response.data;
+                    if (data.status == '1') {
+                        self.pageCount = data.data.count;
+                        self.searchListForm.pageSize = data.data.pageSize;
+                        self.pageList = data.data.list || [];
+                    }
+                    self.loading = false;
+                }).catch(function () {
+                    self.loading = false;
+                    self.$message({
+                        message: '请求失败',
+                        type: 'error'
+                    })
+                });
             },
             getReg:function (value) {
                 var reg = /^[1-9][0-9]*$/;
@@ -422,10 +315,29 @@
                 }
                 return true;
             },
-            handleChangeCondition: function () {
-                if (this.searchListForm.numMin || this.searchListForm.numMax) {
-                    this.getDataList();
+            setNumSearch:function () {
+                this.searchListForm.querypeoplebegin = '';
+                this.searchListForm.querypeopleend = '';
+                this.searchListForm.queryareabegin = '';
+                this.searchListForm.queryareaend = '';
+                if(this.condition == '2'){
+                    this.searchListForm.querypeoplebegin = this.numMin;
+                    this.searchListForm.querypeopleend = this.numMax;
+                }else if(this.condition == '3'){
+                    this.searchListForm.queryareabegin = this.numMin;
+                    this.searchListForm.queryareaend = this.numMax;
                 }
+            },
+            handleChangeCondition: function () {
+                if(!this.numMin && !this.numMax){
+                    return false;
+                }
+                this.setNumSearch();
+                this.getDataList();
+            },
+            changeNum:function () {
+                this.setNumSearch();
+                this.getDataList();
             },
             handleTableSortChange: function (row) {
                 this.searchListForm.orderBy = row.prop;
@@ -442,11 +354,9 @@
                 this.getDataList();
             },
 
-
             handleChangeBuild: function () {
                 var buildId = this.buildId;
                 if (!buildId) {
-//                    this.baseId = '';
                     this.floorId = '';
                     this.searchListForm['pwSpace.id'] = this.baseId;
                     this.getDataList();
@@ -480,14 +390,50 @@
             getSpaceList: function () {
                 var self = this;
                 return this.$axios.get('/pw/pwSpace/treeData').then(function (response) {
-                    self.spaceList = response.data;
+                    self.spaceList = response.data || [];
+                })
+            },
+            getNumTypes:function () {
+                var self = this;
+                this.$axios.post('/pw/pwRoom/pwRoomType').then(function (response) {
+                    var data = response.data;
+                    self.numTypes = data.data || [];
+                })
+            },
+            getRoomStates:function () {
+                var self = this;
+                this.$axios.get('/pw/pwRoom/roomUseType?num=2').then(function (response) {
+                    var data = response.data;
+                    self.roomStates = JSON.parse(JSON.stringify(data.data));
+                    var list = data.data.concat();
+                    list.forEach(function (item) {
+                        item.status = item.status.toString();
+                        if(item.roomnum){
+                            item.statusname = item.statusname + '(' + item.roomnum + ')';
+                        }
+                    });
+                    self.roomSearchStates = list;
+
+                    var numList = data.data.concat();
+                    numList.forEach(function (item) {
+                        if(item.roomnum){
+                            self.numAll += item.roomnum;
+                            if(item.status == '6'){
+                                self.numNo = item.roomnum;
+                            }
+                        }
+                    });
+                    self.numYes = self.numAll - self.numNo;
+
                 })
             }
 
         },
         created: function () {
             this.getSpaceList();
-//            this.getDataList();
+            this.getRoomStates();
+            this.getDataList();
+            this.getNumTypes();
             if (this.message) {
                 this.$message({
                     message: this.message,

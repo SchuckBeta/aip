@@ -122,7 +122,7 @@ Vue.component('enter-form-group', {
 
         promiseLinkProjectForm: function (item, componentName) {
             var self = this;
-            item.$refs[componentName].resetFields();
+            item.$refs[componentName] && item.$refs[componentName].resetFields();
             return new Promise(function (reslove, reject) {
                 if (item.$data.projectList.length === 0) {
                     reject({
@@ -155,6 +155,45 @@ Vue.component('enter-form-group', {
             })
         },
 
+        //保存不用验证
+        getEnterFormSave: function () {
+            var formGroups = this.formGroups;
+            var self = this;
+            var promises = [];
+            for (var i = 0; i < formGroups.length; i++) {
+                var item = formGroups[i];
+                var componentName = item.$options.componentName;
+                componentName = componentName.replace(/^[A-Z]+/, function ($1, $2) {
+                    return $1.toLowerCase();
+                });
+                if (componentName === 'linkProjectForm') {
+                    promises.push(self.promiseLinkProjectFormSave(item, componentName));
+                } else {
+                    promises.push(self.validateFormPromiseSave(item, componentName));
+                }
+            }
+            return Promise.all(promises)
+        },
+
+        promiseLinkProjectFormSave: function (item, componentName) {
+            var self = this;
+            item.$refs[componentName] && item.$refs[componentName].resetFields();
+            return new Promise(function (reslove, reject) {
+                var formGroupData = self.getFormGroupDataByName(item, componentName);
+                reslove(formGroupData);
+            })
+        },
+
+        validateFormPromiseSave: function (item, componentName) {
+            var formGroupData;
+            var self = this;
+            item.$refs[componentName] && item.$refs[componentName].clearValidate();
+            return new Promise(function (resolve, reject) {
+                formGroupData = self.getFormGroupDataByName(item, componentName);
+                resolve(formGroupData);
+            })
+        },
+
         getFormGroupDataByName: function (item, componentName) {
             var formGroupData = {};
             switch (componentName) {
@@ -166,28 +205,33 @@ Vue.component('enter-form-group', {
                             id: id,
                             name: item.name,
                             remarks: item.remarks,
-                            sysAttachmentList: item.attachMentEntity,
+                            sysAttachmentList: item.attachMentEntity.map(function (item) {
+                                item.id = '';
+                                return item;
+                            }),
                         }
                     });
                     break;
                 case "linkTeamForm":
                     formGroupData["teamId"] = this.getEnterFormData(item, componentName).teamId;
-                    formGroupData['stus'] = item.teamData.studentList;
-                    formGroupData['teas'] = item.teamData.teacherList;
+                    formGroupData['stus'] = item.teamData.studentList || [];
+                    formGroupData['teas'] = item.teamData.teacherList || [];
                     break;
                 case "enterpriseForm":
                     var pwCompany = JSON.parse(JSON.stringify(this.getEnterFormData(item, componentName)));
                     var pwCompanySysAttachmentList = pwCompany.sysAttachmentList;
+                    pwCompany.regMoney = parseInt(pwCompany.regMoney);
                     pwCompany.sysAttachmentList = pwCompanySysAttachmentList.map(function (item) {
                         return {
                             "uid": item.response ? '' : item.uid,
-                            "fileName": item.title,
-                            "name": item.title,
-                            "suffix": item.type,
+                            "fileName": item.title || item.name,
+                            "name": item.title || item.name,
+                            "suffix": item.suffix,
                             "url": item.url,
                             "ftpUrl": item.ftpUrl,
                             "fielSize": item.fielSize,
-                            "imgType": item.type,
+                            "tempUrl": item.tempUrl,
+                            "tempFtpUrl": item.tempFtpUrl,
                         }
                     });
                     formGroupData['pwCompany'] = pwCompany
@@ -198,54 +242,14 @@ Vue.component('enter-form-group', {
             return formGroupData;
         },
 
-        getFormGroupData: function () {
-            var formGroups = this.formGroups;
-            var formGroupData = {};
-            for (var i = 0; i < formGroups.length; i++) {
-                var item = formGroups[i];
-                var componentName = item.$options.componentName;
-                componentName = componentName.replace(/^[A-Z]+/, function ($1, $2) {
-                    return $1.toLowerCase();
-                });
-                if (componentName === 'linkProjectForm') {
-                    formGroupData['pwProjectList'] = item.projectList.map(function (item) {
-                        var id = item.id.indexOf('temp') > -1 ? '' : item.id;
-                        return {
-                            // eid: eid,
-                            id: id,
-                            name: item.name,
-                            remarks: item.remarks,
-                            sysAttachmentList: item.attachMentEntity,
-                        }
-                    });
-                } else if (componentName === 'linkTeamForm') {
-                    Object.assign(formGroupData, this.getEnterFormData(item, componentName));
-                    formGroupData['stus'] = item.teamData.studentList;
-                    formGroupData['teas'] = item.teamData.teacherList;
-                } else {
-                    var pwCompany = JSON.parse(JSON.stringify(this.getEnterFormData(item, componentName)));
-                    var pwCompanySysAttachmentList = pwCompany.sysAttachmentList;
-                    pwCompany.sysAttachmentList = pwCompanySysAttachmentList.map(function (item) {
-                        return {
-                            "uid": item.response ? '' : item.uid,
-                            "fileName": item.title,
-                            "name": item.title,
-                            "suffix": item.type,
-                            "url": item.url,
-                            "ftpUrl": item.ftpUrl,
-                            "fielSize": item.fielSize,
-                            "imgType": item.type,
-                        }
-                    });
-                    formGroupData['pwCompany'] = pwCompany
-                }
-            }
-            return formGroupData;
-        },
 
         saveEnterForm: function () {
             var self = this;
             return this.getEnterFormValidatePromise()
+        },
+
+        noValidateForm: function () {
+            return this.getEnterFormSave()
         }
     }
 })
@@ -254,13 +258,13 @@ Vue.component('enterprise-form', {
     template: '<el-form :model="enterpriseForm" :disabled="isDisabled" ref="enterpriseForm" :rules="enterpriseRules" size="mini" label-width="110px"\n' +
     '                 autocomplete="off">\n' +
     '            <el-form-item prop="name" label="企业名称：">\n' +
-    '                <el-input name="name" v-model="enterpriseForm.name"></el-input>\n' +
+    '                <el-input name="name" :disabled="isDisabledName" v-model="enterpriseForm.name"></el-input>\n' +
     '            </el-form-item>\n' +
     '            <el-form-item prop="no" label="工商注册号：">\n' +
-    '                <el-input name="no" v-model="enterpriseForm.no"></el-input>\n' +
+    '                <el-input name="no" :disabled="isDisabledName" v-model="enterpriseForm.no"></el-input>\n' +
     '            </el-form-item>\n' +
     '            <el-form-item prop="regMoney" label="注册资金：">\n' +
-    '                <el-input name="regMoney" v-model.number="enterpriseForm.regMoney" class="w300">\n' +
+    '                <el-input name="regMoney" v-model="enterpriseForm.regMoney" maxlength="10" class="w300">\n' +
     '                    <template slot="prepend">￥</template>\n' +
     '                    <template slot="append">万元</template>\n' +
     '                </el-input>\n' +
@@ -278,16 +282,21 @@ Vue.component('enterprise-form', {
     '                <el-input name="remarks" type="textarea" :rows="4" v-model="enterpriseForm.remarks"></el-input>\n' +
     '            </el-form-item>\n' +
     '            <el-form-item prop="sysAttachmentList" label="附件：">\n' +
-    '                <e-upload-file v-model="enterpriseForm.sysAttachmentList"  @change="handleChangeFiles"\n' +
-    '                               action="/ftp/ueditorUpload/uploadTemp?folder=project"\n' +
-    '                               :upload-file-vars="{}" tip="上传企业营业执照等证明文件"></e-upload-file>\n' +
+    '                <e-pw-upload-file v-model="enterpriseForm.sysAttachmentList"  @change="handleChangeFiles"\n' +
+    '                               action="/ftp/ueditorUpload/uploadPwTemp?folder=pwEnter"\n' +
+    '                               :upload-file-vars="{}" tip="上传企业营业执照等证明文件"></e-pw-upload-file>\n' +
     '            </el-form-item>\n' +
     '        </el-form>',
-    props: {},
+    props: {
+        appType: String,
+        enterType: String,
+        isAdmin: Boolean
+    },
     mixins: [Vue.pwApplyRules],
     componentName: 'EnterpriseForm',
     data: function () {
         var validateEnterpriseName = this.validateEnterpriseName;
+        var validateEnterpriseNo = this.validateEnterpriseNo;
         var validateRegMoney = this.validateRegMoney;
         return {
             enterpriseForm: {
@@ -309,10 +318,11 @@ Vue.component('enterprise-form', {
                 no: [
                     {required: true, message: '请输入工商注册号', trigger: 'blur'},
                     {min: 13, max: 18, message: '请输入13至18位间字符', trigger: 'blur'},
-                    {validator: validateEnterpriseName, trigger: 'blur'}
+                    {validator: validateEnterpriseNo, trigger: 'blur'}
                 ],
                 regMoney: [
                     {required: true, message: '请输入注册资金', trigger: 'blur'},
+                    {max: 7, message: '请输入不超过7位数的金额', trigger: 'change'},
                     {validator: validateRegMoney, trigger: 'blur'}
                 ],
                 regMtypes: [
@@ -352,6 +362,12 @@ Vue.component('enterprise-form', {
         },
         pwEnterId: function () {
             return this._enterFormGroup.pwEnterId;
+        },
+        isDisabledName: function () {
+            if (this.isAdmin) {
+                return false;
+            }
+            return this.pwEnterId && this.appType === '2' && this.enterType === '2'
         }
     },
     methods: {
@@ -370,11 +386,14 @@ Vue.component('enterprise-form', {
                 var data = response.data;
                 if (data.status === 1) {
                     var pageData = data.data || {};
-                    var pwCompany = pageData.pwCompany;
-                    pwCompany.sysAttachmentList = pwCompany.fileInfo;
-                    delete  pwCompany.fileInfo;
-                    delete pwCompany.regMtype;
-                    Object.assign(self.enterpriseForm, pwCompany);
+                    if (pageData.pwCompany) {
+                        var pwCompany = pageData.pwCompany;
+                        pwCompany.regMoney = pwCompany.regMoney.toString();
+                        pwCompany.sysAttachmentList = pwCompany.fileInfo || [];
+                        delete  pwCompany.fileInfo;
+                        delete pwCompany.regMtype;
+                        Object.assign(self.enterpriseForm, pwCompany);
+                    }
                     return false;
                 }
                 self.$message.error(data.msg)
@@ -402,7 +421,7 @@ Vue.component('enterprise-form', {
 
 Vue.component('link-project-form', {
     template: '<div class="pw-apply-project">\n' +
-    '            <el-form :model="linkProjectForm" ref="linkProjectForm" :rules="linkProjectRules" size="mini" :disabled="isDisabled"\n' +
+    '            <el-collapse-transition v-if="renderForm"><div v-show="collapseShow"><div class="table-container mgb-20" style="padding-top: 20px;padding-right: 20px;"><el-form :model="linkProjectForm" ref="linkProjectForm" :rules="linkProjectRules" size="mini" :disabled="isDisabled"\n' +
     '                     label-width="110px" autocomplete="off">\n' +
     '                <el-row>\n' +
     '                    <el-col :span="12">\n' +
@@ -424,16 +443,13 @@ Vue.component('link-project-form', {
     '                    <el-input name="remarks"  type="textarea" :rows="4" v-model="linkProjectForm.remarks"></el-input>\n' +
     '                </el-form-item>\n' +
     '                <el-form-item prop="attachMentEntity" label="附件：">\n' +
-    '                    <e-upload-file v-model="linkProjectForm.attachMentEntity"  @change="changeLinkProjectFile"\n' +
-    '                                   action="/ftp/ueditorUpload/uploadTemp?folder=project"\n' +
-    '                                   :upload-file-vars="{}"></e-upload-file>\n' +
-    '                </el-form-item>\n' +
-    '            </el-form>\n' +
-    '            <div class="action-bar">\n' +
-    '                <el-button class="btn-add" type="primary" :disabled="isDisabled" size="mini" @click.stop.prevent="addProjectToList"><i class="el-icon-circle-plus el-icon--left"></i>添加项目到列表\n' +
-    '                </el-button>\n' +
-    '                <span class="pro-table-label">项目列表：</span>\n' +
-    '            </div>\n' +
+    '                    <e-pw-upload-file v-model="linkProjectForm.attachMentEntity"  @change="changeLinkProjectFile"\n' +
+    '                                   action="/ftp/ueditorUpload/uploadPwTemp?folder=pwEnter"\n' +
+    '                                   :upload-file-vars="{}"></e-pw-upload-file>\n' +
+    '                </el-form-item><el-form-item class="text-right"><el-button type="primary" @click.stop.prevent="addProjectToList">保存</el-button><el-button @click.stop.prevent="cancel">取消</el-button></el-form-item>\n' +
+    '            </el-form></div></div></el-collapse-transition>\n' +
+    '            <div class="mgb-20 text-right"><el-button class="btn-add" type="primary" :disabled="isDisabled" size="mini" @click.stop.prevent="openLinkProjectForm">创建项目\n' +
+    '                </el-button></div><e-col-item label-width="110px" label="项目列表：">\n' +
     '            <div class="table-container"><el-table :data="projectList" border size="mini" class="table">\n' +
     '                <el-table-column prop="name" label="项目名称" width="300">\n' +
     '                    <template slot-scope="scope">\n' +
@@ -452,12 +468,13 @@ Vue.component('link-project-form', {
     '                    <template slot-scope="scope"> <e-file-item v-for="item in scope.row.attachMentEntity" :key="item.uid" :file="item" size="mini" :show="false"></e-file-item></template>\n' +
     '                </el-table-column>\n' +
     '                <el-table-column label="操作" align="center" width="128">\n' +
-    '                    <template slot-scope="scope"><el-button  v-if="isAdmin" :disabled="isDisabled || (scope.row.status && scope.row.status !== \'0\')" icon="el-icon-edit" size="mini" @click.stop.prevent="editProject(scope.row, scope.$index)"></el-button>\n' +
-    '                        <el-button :disabled="isDisabled  || (scope.row.status && scope.row.status !== \'0\')" icon="el-icon-delete" size="mini"\n' +
+    '                    <template slot-scope="scope"><el-button  v-if="isAdmin || scope.row.status == \'0\'" :disabled="isDisabled" icon="el-icon-edit" size="mini" @click.stop.prevent="editProject(scope.row, scope.$index)"></el-button>\n' +
+    '                        <el-button :disabled="isDisabled  || (scope.row.status && scope.row.status !== \'0\') && !isAdmin" icon="el-icon-delete" size="mini"\n' +
     '                                   @click.stop.prevent="projectList.splice(scope.row.index, 1)"></el-button>\n' +
     '                    </template>\n' +
     '                </el-table-column>\n' +
     '            </el-table></div>\n' +
+    '            </e-col-item>\n' +
     '        </div>',
     mixins: [Vue.pwApplyRules],
     componentName: 'LinkProjectForm',
@@ -471,10 +488,20 @@ Vue.component('link-project-form', {
             if (value) {
                 if (self.specificSymbol.test(value)) {
                     return callback(new Error("请不要输入特殊符号"))
+                }else if(self.editId){
+                    return callback();
                 } else if (self.projectListNames.indexOf(value) > -1 && self.projectListIds.indexOf(self.linkProjectForm.id) === -1) {
                     return callback(new Error("项目名称已经存在"))
+                } else {
+                    return self.$axios.post('/pw/pwEnter/checkPwEnterProject', {name: value}).then(function (response) {
+                        if (response.data) {
+                            return callback();
+                        }
+                        return callback(new Error("项目名称已经存在"))
+                    }).catch(function (error) {
+                        return callback(new Error("请求失败"))
+                    })
                 }
-                return callback();
             }
             return callback();
         };
@@ -489,12 +516,12 @@ Vue.component('link-project-form', {
             linkProjectRules: {
                 name: [
                     {required: true, message: '请输入项目名称', trigger: 'blur'},
-                    {max: 128, message: '请输入不大于128位间字符', trigger: 'blur'},
+                    {max: 128, message: '请输入不大于128位字符', trigger: 'blur'},
                     {validator: validateNames, trigger: 'blur'}
                 ],
                 remarks: [
-                    {required: true, message: '请输入公司主营业务', trigger: 'blur'},
-                    {max: 200, message: '请输入不大于200位字符', trigger: 'blur'},
+                    {required: true, message: '请输入项目简介', trigger: 'blur'},
+                    {max: 2000, message: '请输入不大于2000位字符', trigger: 'blur'},
                 ],
                 attachMentEntity: [
                     {required: true, message: '请上传附件', trigger: 'change'},
@@ -505,7 +532,10 @@ Vue.component('link-project-form', {
             linkProjectDisabled: false,
             projectMines: [],
             editId: '',
-            editIndex: -1
+            editIndex: -1,
+            disabledStatus: ['0', ''],
+            collapseShow: false,
+            renderForm: false
         }
     },
     computed: {
@@ -555,6 +585,38 @@ Vue.component('link-project-form', {
         },
     },
     methods: {
+
+        cancel: function () {
+            this.$refs.linkProjectForm.resetFields();
+            this.editId = '';
+            this.collapseShow = false;
+        },
+
+        openLinkProjectForm: function () {
+            this.openLinkProPromise();
+        },
+
+        openLinkProPromise: function () {
+            var self = this;
+            return new Promise(function (resolve, reject) {
+                if (!self.renderForm) {
+                    self.renderForm = true;
+                    self.$nextTick(function () {
+                        self.collapseShow = true;
+                        self.$nextTick(function () {
+                            resolve()
+                        })
+                    })
+                } else {
+                    self.collapseShow = true;
+                    self.$nextTick(function () {
+                        resolve()
+                    })
+                }
+            })
+        },
+
+
         getProject: function (value) {
             var self = this;
             var projectMine = this.getProjectMine(value);
@@ -599,7 +661,11 @@ Vue.component('link-project-form', {
 
         getProjectMines: function () {
             var self = this;
-            this.$axios.get('/pw/pwEnter/ajaxGetProjects').then(function (response) {
+            var url = '/pw/pwEnter/ajaxGetProjects';
+            if (this.isAdmin) {
+                url += ('?pwEnterId=' + this.pwEnterId);
+            }
+            this.$axios.get(url).then(function (response) {
                 var data = response.data;
                 if (data.status === 1) {
                     var projectMines = data.data || [];
@@ -635,10 +701,27 @@ Vue.component('link-project-form', {
 
         addProjectToList: function () {
             var self = this;
+            var ftpHttp = this.ftpHttp;
             this.$refs.linkProjectForm.validate(function (valid) {
                 if (valid) {
                     if (self.editId) {
-                        self.projectList.splice(self.editIndex, 1, JSON.parse(JSON.stringify(self.linkProjectForm)));
+                        var linkProjectForm = JSON.parse(JSON.stringify(self.linkProjectForm));
+                        var attachMentEntity = linkProjectForm.attachMentEntity;
+                        linkProjectForm.attachMentEntity = attachMentEntity.map(function (item) {
+                            return {
+                                fileName: item.name,
+                                name: item.name,
+                                "suffix": item.suffix,
+                                "uid": item.response ? '' : item.uid,
+                                url: item.url,
+                                ftpUrl: item.ftpUrl,
+                                fielSize: item.size,
+                                tempUrl: item.tempUrl,
+                                tempFtpUrl: item.tempFtpUrl,
+                                viewUrl: item.viewUrl || (['jpg', 'jpeg', 'png', 'JPG', 'PDF'].indexOf(item.type) > -1 ? (ftpHttp + item.ftpUrl.replace('/tool', '')) : '')
+                            }
+                        });
+                        self.projectList.splice(self.editIndex, 1, linkProjectForm);
                         self.$refs.linkProjectForm.resetFields();
                         self.editId = '';
                         self.editIndex = -1;
@@ -654,19 +737,22 @@ Vue.component('link-project-form', {
             this.linkProjectDisabled = true;
             var linkProjectForm = JSON.parse(JSON.stringify(this.linkProjectForm));
             var attachMentEntity = linkProjectForm.attachMentEntity;
+            var ftpHttp = this.ftpHttp;
             linkProjectForm.attachMentEntity = attachMentEntity.map(function (item) {
                 return {
                     fileName: item.name,
                     name: item.name,
-                    suffix: item.type,
+                    "suffix": item.suffix,
                     "uid": item.response ? '' : item.uid,
                     url: item.url,
                     ftpUrl: item.ftpUrl,
                     fielSize: item.size,
+                    tempUrl: item.tempUrl,
+                    tempFtpUrl: item.tempFtpUrl,
+                    viewUrl: ['jpg', 'jpeg', 'png', 'JPG', 'PDF'].indexOf(item.type) > -1 ? (ftpHttp + item.ftpUrl.replace('/tool', '')) : '',
                     // fielTitle: item.name,
                     // fielType: item.type,
                     // fielFtpUrl: item.ftpUrl,
-                    imgType: item.type,
                     // fileTypeEnum: '13',
                     // fileStepEnum: '1301',
                     // gnodeId: ''
@@ -685,13 +771,19 @@ Vue.component('link-project-form', {
         },
 
         editProject: function (row, $index) {
-            this.editId = row.id;
-            this.editIndex = $index;
-            Object.assign(this.linkProjectForm, row);
+            var self = this;
+            this.openLinkProPromise().then(function () {
+                self.editId = row.id;
+                self.editIndex = $index;
+                Object.assign(self.linkProjectForm, row);
+            })
         }
     },
     created: function () {
-
+        // if(!this.isAdmin){
+        //     this.renderForm = true;
+        //     this.collapseShow = true;
+        // }
     },
     mounted: function () {
         if (this._enterFormGroup) {
@@ -708,11 +800,11 @@ Vue.component('link-project-form', {
 Vue.component('link-team-form', {
     template: '<div class="link-team-form"><el-form :model="linkTeamForm" ref="linkTeamForm" :rules="linkTeamRules" size="mini" label-width="110px" :disabled="isDisabled">' +
     '<template v-if="!isAdmin"><el-form-item  prop="teamId" label="选择团队：">' +
-    '<el-select v-model="linkTeamForm.teamId" clearable>' +
+    '<el-select v-model="linkTeamForm.teamId" clearable @change="handleChangeTeamId">' +
     '<el-option v-for="item in teamList" :key="item.id" :value="item.id" :label="item.name"></el-option>' +
     '</el-select><template v-if="teamList.length === 0" style="display: none"><span class="el-form-item-expository">暂无团队，请去<a href="/f/team/indexMyTeamList">创建团队</a>吧</span></template></el-form-item></template>' +
     '<template v-else><el-form-item label="团队名称：">{{linkTeamForm.name}}</el-form-item><el-form-item label="团队介绍：">{{linkTeamForm.summary}}</el-form-item></template></el-form>' +
-    '<update-member :is-admin="isAdmin" :declare-id="declareId" v-if="(teamList.length > 0 && linkTeamForm.teamId) || isAdmin" :disabled="isDisabled" :team-id="linkTeamForm.teamId" :saved-team-url="savedTeamUrl" @change="handleChangeTeam"></update-member></div>',
+    '<div v-if="isAdmin || isRenderMember"><update-member :is-admin="isAdmin" :declare-id="declareId"  v-show="linkTeamForm.teamId" :disabled="isDisabled" :team-id="linkTeamForm.teamId" :saved-team-url="savedTeamUrl" @change="handleChangeTeam"></update-member></div></div>',
     props: {
         isAdmin: Boolean
     },
@@ -752,17 +844,19 @@ Vue.component('link-team-form', {
                 ]
             },
             teamList: [],
-            teamData: {}
+            teamData: {},
+            savedTeamUrl: '',
+            isRenderMember: false
         }
     },
     componentName: 'LinkTeamForm',
     computed: {
-        savedTeamUrl: function () {
-            if(this.pwEnterId){
-                return '/pw/pwEnter/ajaxFindPwEnterTeam?pwEnterId='+ this.pwEnterId;
-            }
-            return false;
-        },
+        // savedTeamUrl: function () {
+        //     if (this.pwEnterId && this.linkTeamForm.teamId) {
+        //         return '/pw/pwEnter/ajaxFindPwEnterTeam?pwEnterId=' + this.pwEnterId;
+        //     }
+        //     return false;
+        // },
         isDisabled: function () {
             return this.isGroup ? (this._enterFormGroup.disabled || this.linkProjectDisabled) : this.disabled
         },
@@ -798,11 +892,21 @@ Vue.component('link-team-form', {
         }
     },
     methods: {
+
+
+        handleChangeTeamId: function (value) {
+            this.teamData = {};
+            if(value){
+                this.isRenderMember = true;
+            }
+        },
+
         getTeamList: function () {
             var self = this;
             this.$axios.get('/pw/pwEnter/ajaxGetTeams').then(function (response) {
                 var data = response.data;
                 self.teamList = data.data || []
+
             })
         },
 
@@ -812,14 +916,18 @@ Vue.component('link-team-form', {
             this.$axios.get('/pw/pwEnter/ajaxFindPwEnterTeam?pwEnterId=' + this.pwEnterId).then(function (response) {
                 var data = response.data;
                 if (data.status === 1) {
-                    var team = data.data.team;
-                    self.linkTeamForm.teamId = team.id;
-                    self.linkTeamForm.name = team.name;
-                    self.linkTeamForm.summary = team.summary;
-                    self.linkTeamForm.sponsor = team.sponsor;
-                    return false;
+                    if(data.data){
+                        var team = data.data.team || {};
+                        self.linkTeamForm.teamId = team.id;
+                        self.linkTeamForm.name = team.name;
+                        self.linkTeamForm.summary = team.summary;
+                        self.linkTeamForm.sponsor = team.sponsor;
+                        self.savedTeamUrl = '/pw/pwEnter/ajaxFindPwEnterTeam?pwEnterId=' + self.pwEnterId;
+                        self.isRenderMember = true;
+                    }
+                }else {
+                    self.$message.error(data.msg)
                 }
-                self.$message.error(data.msg)
             }).catch(function (error) {
                 self.$message.error(self.xhrErrorMsg);
             })
@@ -848,7 +956,7 @@ Vue.component('pw-site-form', {
     template: '<el-form :model="pwSiteForm" ref="pwSiteForm" :disabled="isDisabled" :rules="pwSiteRules" size="mini" autocomplete="off" label-width="120px">\n' +
     '            <el-form-item prop="expectWorkNum" label="是否需要工位：">\n' +
     '                <el-col :span="15">\n' +
-    '                    <el-input type="number" :disabled="!hasExpectWorkNum" v-model.number="pwSiteForm.expectWorkNum">\n' +
+    '                    <el-input type="number" :disabled="!pwSiteForm.isShowWorkNum" v-model.number="pwSiteForm.expectWorkNum">\n' +
     '                        <template slot="append">位</template>\n' +
     '                    </el-input>\n' +
     '                </el-col>\n' +
@@ -856,23 +964,52 @@ Vue.component('pw-site-form', {
     '                    <div style="min-height: 1px"></div>\n' +
     '                </el-col>\n' +
     '                <el-col :span="7">\n' +
-    '                    <el-checkbox v-model="hasExpectWorkNum" @change="handleChangeHasExpectWorkNum">是</el-checkbox>\n' +
+    '                    <el-checkbox v-model="pwSiteForm.isShowWorkNum" @change="handleChangeHasExpectWorkNum" true-label="1" false-label="0">是</el-checkbox>\n' +
     '                </el-col>\n' +
     '            </el-form-item>\n' +
-    '            <el-form-item prop="expectTerm" label="预计孵化期：">\n' +
-    '                <el-input type="number" v-model.number="pwSiteForm.expectTerm" style="width: 224px;">\n' +
-    '                    <template slot="append">年</template>\n' +
-    '                </el-input>\n' +
+    '            <el-form-item v-if="hasExpectTerm" prop="expectTerm" label="预计孵化期：">\n' +
+    '               <el-select size="mini" v-model="pwSiteForm.termDate" placeholder="变更预计孵化期" clearable style="width: 170px;" @change="handleChangeTermDate">\n' +
+    '                   <el-option\n' +
+    '                           v-for="item in yearOptions"\n' +
+    '                           :key="item.num"\n' +
+    '                           :label="item.remarks"\n' +
+    '                           :value="item.num">\n' +
+    '                   </el-option>\n' +
+    '               </el-select>\n' +
     '            </el-form-item>\n' +
+    '            <el-form-item prop="termDefinedDate" v-if="hasExpectTerm && pwSiteForm.termDate == \'-1\'">\n' +
+    '               <el-date-picker clearable style="width: 170px;"\n' +
+    '                       v-model="pwSiteForm.termDefinedDate"\n' +
+    '                       @change="handleChangeTermDefinedDate"\n' +
+    '                       type="date"\n' +
+    '                       :default-value="sysDateAfter"\n' +
+    '                       :picker-options="pickerOptions"\n' +
+    '                       placeholder="选择日期">\n' +
+    '               </el-date-picker>\n' +
+    '           </el-form-item>\n' +
     '            <el-form-item prop="expectRemark" label="备注：">\n' +
     '                <el-input :rows="3" type="textarea" v-model="pwSiteForm.expectRemark"></el-input>\n' +
     '            </el-form-item>\n' +
     '        </el-form>',
     componentName: 'PwSiteForm',
     props: {
-        isAdmin: Boolean
+        isAdmin: Boolean,
+        appType: String
     },
     computed: {
+
+        hasExpectTerm: function () {
+            if (this.isAdmin) {
+                return true;
+            }
+            return this.appType !== '2'
+        },
+
+        expectTermLabel: function () {
+            var label = this.pwSiteForm.expectTerm == -1 ? '' : this.pwSiteForm.expectTerm;
+            return !!label ? label + '天' : '？天';
+        },
+
         isDisabled: function () {
             return this.isGroup ? (this._enterFormGroup.disabled || this.linkProjectDisabled) : this.disabled
         },
@@ -890,49 +1027,75 @@ Vue.component('pw-site-form', {
         },
         pwEnterId: function () {
             return this._enterFormGroup.pwEnterId;
-        }
-    },
-    data: function () {
-        var self = this;
-        var validateExpectWorkNum = function (rules, value, callback) {
-            if (value > -1 && value <= 20000 && !(/\./.test(value))) {
+        },
+        pwSiteRules: function () {
+            var self = this;
+            var validateExpectWorkNum = function (rules, value, callback) {
+                if (typeof value !== 'undefined' && value !== '') {
+                    if (value > 0 && value <= 20000 && !(/\./.test(value))) {
+                        return callback();
+                    }
+                    return callback(new Error("请输入不小于0不大于20000的正整数"))
+                }
                 return callback();
-            }
-            return callback(new Error("请输入不大于20000的正整数"))
-        };
-        var validateExpectTerm = function (rules, value, callback) {
-            if (value > -1 && value <= 10) {
-                return callback();
-            }
-            return callback(new Error("请输入不大于10的数值"))
-        }
-        return {
-            pwSiteForm: {
-                expectWorkNum: 0,
-                expectTerm: 0,
-                expectRemark: ''
-            },
-            pwSiteRules: {
+            };
+            var isShowWorkNum = this.pwSiteForm.isShowWorkNum;
+            return {
                 expectWorkNum: [
-                    {required: true, message: '请输入需要工位数', trigger: 'blur'},
+                    {required: isShowWorkNum === '1', message: '请输入需要工位数', trigger: 'blur'},
                     {validator: validateExpectWorkNum, trigger: 'blur'}
                 ],
                 expectTerm: [
-                    {required: true, message: '请输入预计孵化期年数', trigger: 'blur'},
-                    {validator: validateExpectTerm, trigger: 'blur'}
+                    {required: true, message: '预计孵化期不能为空', trigger: 'change'}
+                ],
+                termDefinedDate: [
+                    {required: true, message: '请选择自定义时间', trigger: 'change'}
                 ],
                 expectRemark: [
-                    {max: 125, message: '请输入不大于125个字符', trigger: 'blur'}
+                    {max: 125, message: '请输入不大于125个字符', trigger: 'change'}
                 ]
+            }
+        },
+        sysDateAfter: function () {
+            var date = new Date();
+            if (this.sysDate) {
+                date = new Date(this.sysDate);
+                date.setDate(date.getDate() + 1);
+            }
+            return moment(date).format('YYYY-MM-DD');
+        },
+        pickerOptions: {
+            get: function () {
+                var self = this;
+                return {
+                    disabledDate: function (time) {
+                        return time.getTime() < new Date(self.sysDate);
+                    }
+                };
+            }
+        }
+    },
+    data: function () {
+        return {
+            pwSiteForm: {
+                expectWorkNum: '',
+                termDate: '',
+                termDefinedDate: '',
+                expectTerm: '',
+                expectRemark: '',
+                isShowWorkNum: '1'
             },
-            hasExpectWorkNum: true
+            pwEnter: {},
+            yearOptions: [],
+            sysDate: ''
         }
     },
     methods: {
         handleChangeHasExpectWorkNum: function (value) {
-            if (!value) {
-                this.pwSiteForm.expectWorkNum = 0;
+            if (value === '0') {
+                this.pwSiteForm.expectWorkNum = '';
             }
+            this.$refs.pwSiteForm.validateField('expectWorkNum')
         },
         getPwEnterSpace: function () {
             var self = this;
@@ -943,15 +1106,51 @@ Vue.component('pw-site-form', {
                     self.pwSiteForm = {
                         expectWorkNum: pwEnter.expectWorkNum,
                         expectTerm: pwEnter.expectTerm,
-                        expectRemark: pwEnter.expectRemark
-                    }
+                        expectRemark: pwEnter.expectRemark,
+                        isShowWorkNum: pwEnter.isShowWorkNum
+                    };
+                    self.pwEnter = pwEnter;
                 }
             }).catch(function () {
                 self.$message.error(self.xhrErrorMsg);
             })
+        },
+        handleChangeTermDate: function (value) {
+            this.pwSiteForm.expectTerm = value;
+            if(!value){
+                this.pwSiteForm.expectTerm = '';
+            }
+            if(this.pwSiteForm.termDefinedDate){
+                this.pwSiteForm.termDefinedDate = '';
+            }
+        },
+        handleChangeTermDefinedDate: function (value) {
+            if(!value){
+                this.pwSiteForm.expectTerm = '';
+                return false;
+            }
+            this.pwSiteForm.expectTerm = Math.ceil((new Date(this.pwSiteForm.termDefinedDate).getTime() - new Date(this.sysDate).getTime()) / 24 / 3600 / 1000).toString();
+        },
+        getSysDate: function () {
+            var self = this;
+            this.$axios.get('/sys/sysCurDateYmdHms').then(function (response) {
+                self.sysDate = moment(response.data).format('YYYY-MM-DD');
+                self.getYearOptions();
+            })
+        },
+        getYearOptions: function () {
+            var self = this;
+            this.$axios.get('/pw/pwEnter/ajaxDtypeTerms?isAll=false').then(function (response) {
+                var data = response.data;
+                if (data.status === 1) {
+                    self.yearOptions = JSON.parse(data.data) || [];
+                    self.yearOptions.push({remarks: '自定义', num: '-1'});
+                }
+            })
         }
     },
     mounted: function () {
+        this.getSysDate();
         if (this.pwEnterId) {
             this.getPwEnterSpace();
         }
@@ -959,4 +1158,4 @@ Vue.component('pw-site-form', {
             this._enterFormGroup.updateFormGroups();
         }
     }
-})
+});

@@ -147,7 +147,7 @@
         data: function () {
             var pwRoomTypes = JSON.parse('${fns:toJson(fns:getDictList('pw_room_type'))}');
             var pwAppointmentStatuses = JSON.parse('${fns: toJson(fns:getDictList('pw_appointment_status'))}');
-            var appList = JSON.parse('${fns:toJson(list)}') || [];
+            var appList = JSON.parse(JSON.stringify(${fns:toJson(list)})) || [];
             var validatorNumber = function (rule, value, callback) {
                 if (value) {
                     if (!(/^\d{1,}$/.test(value))) {
@@ -164,12 +164,12 @@
 
             return {
                 appList: appList,
-                appRule: JSON.parse('${fns:toJson(appRule)}'),
-                user: JSON.parse('${fns:toJson(fns:getUser())}'),
+                appRule: JSON.parse(JSON.stringify(${fns:toJson(appRule)})),
+                user: JSON.parse(JSON.stringify(${fns:toJson(fns:getUser())})),
                 pwRoomTypes: pwRoomTypes,
                 now: '${now}',
                 pwAppointmentStatuses: pwAppointmentStatuses,
-                rooms: JSON.parse('${fns:toJson(rooms)}'),
+                rooms: JSON.parse(JSON.stringify(${fns:toJson(rooms)})),
                 loadingCalendar: false,
                 pwSpaceList: [],
                 fullCalendar: {},
@@ -210,14 +210,35 @@
                     })
                 }
             },
+
+            floorIds: function () {
+                var floorId = this.searchListForm.floorId;
+                var buildingId = this.searchListForm.buildingId;
+                if (floorId) {
+                    return [floorId];
+                }
+                if (buildingId) {
+                    return this.floorList.map(function (item) {
+                        return item.id;
+                    });
+                }
+                return []
+            },
+
             roomList: {
                 get: function () {
-                    var floorId = this.searchListForm.floorId;
-                    if (!floorId) {
+                    var floorIds = this.floorIds;
+                    var roomTypes = this.searchListForm.roomTypes;
+                    if (floorIds.length === 0 && roomTypes.length === 0) {
                         return this.rooms;
                     }
                     return this.rooms.filter(function (item) {
-                        return item.pwSpace.id === floorId;
+                        if (roomTypes.length > 0 && floorIds.length === 0) {
+                            return roomTypes.indexOf(item.type) > -1
+                        } else if (roomTypes.length === 0 && floorIds.length > 0) {
+                            return floorIds.indexOf(item.pwSpace.id) > -1
+                        }
+                        return floorIds.indexOf(item.pwSpace.id)> -1 && roomTypes.indexOf(item.type) > -1;
                     })
                 }
             },

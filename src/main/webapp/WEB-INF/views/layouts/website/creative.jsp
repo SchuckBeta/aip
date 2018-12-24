@@ -12,7 +12,7 @@
     <meta name="renderer" content="webkit">
     <script type="text/javascript">
         $frontOrAdmin = "${frontOrAdmin_2ed8fe6ddd034cffa47a41e42a694948}";
-        var ftpHttp= '${ftpHttp}'; //修复bug使用
+        var ftpHttp = '${ftpHttp}'; //修复bug使用
         var webMaxUpFileSize = "${fns:getMaxUpFileSize()}";//修复bug使用
     </script>
     <title><sitemesh:title/></title>
@@ -56,14 +56,14 @@
     <link rel="stylesheet" href="/css/frontCyjd/frontCreative.bundle.css">
 
 
-
+    <script src="/js/cityData/citydataNew.js?version=${fns: getVevison()}"></script>
     <script src="${ctxStatic}/vue/vue.js"></script>
     <script src="${ctxStatic}/moment/moment.min.js"></script>
     <script src="/js/globalUtils/bluebird.min.js"></script> <!--兼容promise对象-->
     <script src="${ctxStatic}/element@2.3.8/index.js"></script>
     <script src="${ctxStatic}/axios/axios.min.js"></script>
-    <script src="/js/filters/filters.js"></script>
-    <script src="/js/mixins/globalUtils/globalUtilsMixin.js"></script> <!--全局entire-->
+    <script src="/js/filters/filters.js?version=${fns: getVevison()}"></script>
+    <script src="/js/mixins/globalUtils/globalUtilsMixin.js?version=${fns: getVevison()}"></script> <!--全局entire-->
     <script src="/js/globalUtils/globalUtils.js"></script> <!--全局工具函数-->
     <script src="/js/mixins/colleges/collegesMixin.js"></script> <!--所有学院混合宏-->
     <script src="/js/mixins/uploadFileMixin/uploadFileMixin.js"></script><!--element 上传文件函数-->
@@ -82,6 +82,7 @@
     <script src="/js/components/panel/e-panel.js"></script>
     <script src="/js/components/eFileItem/eFileItem.js"></script>
     <script src="/js/components/uploadFile/uploadFile.component.js?version=${fns: getVevison()}"></script>
+    <script src="/js/components/uploadFile/uploadFile.pw.component.js?version=${fns: getVevison()}"></script>
     <script src="/js/components/cropperPic/ePicFIle.js"></script>
     <script src="/js/components/eColItem/eColItem.js"></script>
     <script src="/js/components/stuTea/stuTea.js"></script>
@@ -95,12 +96,17 @@
     <link rel="stylesheet" type="text/css" href="${ctxStatic}/cropper/cropper.min.css">
     <script type="text/javascript" src="${ctxStatic}/cropper/cropper.min.js"></script>
 
-    <script src="/js/components/passwordForm/passwordForm.js"></script><!---修改密码-->
+    <script src="/js/components/passwordForm/passwordForm.js?version=${fns: getVevison()}"></script><!---修改密码-->
 
     <script src="/other/jquery.form.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="/js/directives/globalDirectives.js?version=${fns: getVevison()}"></script>
     <script src="/js/components/common/commonComponents.js?version=${fns: getVevison()}"></script>
-    <script src="/js/components/updateMember/updateMember.js?version=${fns: getVevison()}"></script>
+    <script type="text/javascript" src="/js/components/pwEnter/pwEnterMixin.js?version=${fns: getVevison()}"></script>
+    <script type="text/javascript" src="/js/components/updateMember/updateMember.js?version=${fns: getVevison()}"></script>
+    <script type="text/javascript" src="/js/components/pwEnter/pwEnterApplyRules.js?version=${fns: getVevison()}"></script>
+    <script type="text/javascript" src="/js/components/pwEnter/pwEnterApplyForm.js?version=${fns: getVevison()}"></script>
+    <script type="text/javascript" src="/js/components/pwEnter/pwEnterList.js?version=${fns: getVevison()}"></script>
+    <script type="text/javascript" src="/js/components/pwEnter/pwEnterView.js?version=${fns: getVevison()}"></script>
     <script>
 
 
@@ -116,7 +122,6 @@
             })();
 
 
-
             Vue.mixin({
                 data: function () {
                     return {
@@ -126,7 +131,16 @@
                         frontOrAdmin: "${frontOrAdmin_2ed8fe6ddd034cffa47a41e42a694948}",
                         domainPrefix: '${frontOrAdmin_2ed8fe6ddd034cffa47a41e42a694948}',
                         webMaxUpFileSize: parseInt(webMaxUpFileSize),
-                        xhrErrorMsg: '请求失败'
+                        xhrErrorMsg: '请求失败',
+                        loginCurUser: JSON.parse(JSON.stringify(${fns: toJson(user)})) || {},
+                    }
+                },
+                computed: {
+                    isStudent: function () {
+                        return this.loginCurUser.userType === '1';
+                    },
+                    isTeacher: function () {
+                        return this.loginCurUser.userType === '2';
                     }
                 },
                 methods: {
@@ -141,10 +155,14 @@
                             center: true,
                             message: msg
                         })
-                    }
+                    },
                 },
                 created: function () {
                     this.pageLoad = true;
+
+//                    this.$message({
+//                        duration: 1000
+//                    })
                 }
             });
 
@@ -153,17 +171,17 @@
             axios.defaults.baseURL = '${ctxFront}';
             axios.defaults.timeout = 60 * 1000;
             axios.interceptors.request.use(function (config) {
-                if(config.url.indexOf('?') == -1){
+                if (config.url.indexOf('?') == -1) {
                     config.url += '?';
-                }else {
+                } else {
                     config.url += '&';
                 }
-                config.url += 't=' + Date.parse(new Date())/1000;
+                config.url += 't=' + Date.parse(new Date()) / 1000;
                 return config
-            },function(error){
+            }, function (error) {
                 try {
                     return Promise.reject(error)
-                }catch (e){
+                } catch (e) {
 
                 }
             })
@@ -173,7 +191,7 @@
                 var data = response;
                 try {
                     data.data = JSON.parse(data.data);
-                }catch (e){
+                } catch (e) {
 
                 }
                 return data;
@@ -181,7 +199,7 @@
                 // Do something with response error
                 try {
                     return Promise.reject(error);
-                }catch (e){
+                } catch (e) {
 
                 }
             });
@@ -223,11 +241,11 @@
                 if (data === undefined || data === null) {
                     throw new TypeError('Cannot convert undefined or null to object');
                 }
-                if(typeof URLSearchParams === 'function'){
+                if (typeof URLSearchParams === 'function') {
                     var params = new URLSearchParams();
-                    for(var k in data){
-                        if(data.hasOwnProperty(k)){
-                            if(data[k]){
+                    for (var k in data) {
+                        if (data.hasOwnProperty(k)) {
+                            if (data[k]) {
                                 params.append(k, data[k]);
                             }
                         }
@@ -236,16 +254,16 @@
                 }
                 var str = [];
                 var strObj = {};
-                for(var k2 in data){
-                    if(data.hasOwnProperty(k2)){
-                        if({}.toString.call(data[k2]) === '[object Array]'){
+                for (var k2 in data) {
+                    if (data.hasOwnProperty(k2)) {
+                        if ({}.toString.call(data[k2]) === '[object Array]') {
                             var vStr = data[k2].join(',');
-                            if(vStr){
-                                strObj[k2] = (k2 + '='+ encodeURI(vStr))
+                            if (vStr) {
+                                strObj[k2] = (k2 + '=' + encodeURI(vStr))
                             }
-                        }else {
-                            if(data[k2] != undefined){
-                                strObj[k2] = (k2 + '='+encodeURI(data[k2]))
+                        } else {
+                            if (data[k2] != undefined) {
+                                strObj[k2] = (k2 + '=' + encodeURI(data[k2]))
                             }
                         }
 

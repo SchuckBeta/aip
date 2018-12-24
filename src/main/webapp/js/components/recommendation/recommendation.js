@@ -47,7 +47,7 @@ Vue.component('recommendation', {
     '                      @selection-change="handleChangeSelection">\n' +
     '                <el-table-column\n' +
     '                        type="selection"\n' +
-    '                        width="55">\n' +
+    '                        width="60">\n' +
     '                </el-table-column>\n' +
     '                <el-table-column label="项目名称" prop="name" align="center"></el-table-column>\n' +
     '                <el-table-column label="所属栏目" prop="module" align="center"></el-table-column>\n' +

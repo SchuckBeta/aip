@@ -12,7 +12,7 @@
 
 <div id="app" v-show="pageLoad" style="display: none" class="container-fluid mgb-60">
     <div class="mgb-20">
-        <edit-bar second-name="基地查看"></edit-bar>
+        <edit-bar second-name="基地查看" href="/pw/pwSpace/list"></edit-bar>
     </div>
 
     <el-row :gutter="20" label-width="120px">
@@ -34,12 +34,7 @@
             </e-col-item>
         </el-col>
         <el-col :span="20">
-            <e-col-item label="备注：">{{pwSpace.remarks}}</e-col-item>
-        </el-col>
-        <el-col :span="20">
-            <e-col-item>
-                <el-button size="mini" @click.stop.prevent="goToBack">返回</el-button>
-            </e-col-item>
+            <e-col-item label="备注：" class="white-space-pre-static">{{pwSpace.remarks}}</e-col-item>
         </el-col>
     </el-row>
 
@@ -52,7 +47,7 @@
     new Vue({
         el: '#app',
         data: function () {
-            var pwSpace = JSON.parse('${fns:toJson(pwSpace)}');
+            var pwSpace = JSON.parse(JSON.stringify(${fns:toJson(pwSpace)})) || [];
             return {
                 pwSpace: pwSpace,
                 school:'${school}',

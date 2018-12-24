@@ -242,7 +242,7 @@
             var colleges = JSON.parse('${fns: getOfficeListJson()}') || [];
             var currentStates = JSON.parse('${fns: getDictListJson("current_sate")}') || [];
             var teacherTypes = JSON.parse('${fns: getDictListJson('master_type')}') || [];
-            console.log(teamInfo, teamDetails)
+
             return {
                 teamInfo: teamInfo || [],
                 dutyFirstTeamStu: [],

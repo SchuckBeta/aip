@@ -213,7 +213,7 @@
                         <tr userid="${item.userId}">
                             <input class="custindex" type="hidden" name="studentList[${status.index}].userId"
                                    value="${item.userId}">
-                            <input class="custindex" type="hidden" name="studentList[${status.index}].utype"
+                            <input class="custindex" type="hidden" name="studentList[${status.index}].userType"
                                    value="1">
                             <td>${item.name}</td>
                             <td>${item.no}</td>
@@ -258,7 +258,7 @@
                         <tr userid="${item.userId}">
                             <input class="custindex" type="hidden" name="teacherList[${status.index}].userId"
                                    value="${item.userId}">
-                            <input class="custindex" type="hidden" name="teacherList[${status.index}].utype" value="2">
+                            <input class="custindex" type="hidden" name="teacherList[${status.index}].userType" value="2">
                             <td>${item.name}</td>
                             <td>${item.no}</td>
                             <td>${item.teacherType}</td>
@@ -623,7 +623,7 @@
 <script type="text/template" id="tpl_st">
     <tr userid="{{userId}}">
         <input type="hidden" class="custindex" name="studentList[custindex].userId" value="{{userId}}">
-        <input type="hidden" class="custindex" name="studentList[custindex].utype" value="1">
+        <input type="hidden" class="custindex" name="studentList[custindex].userType" value="1">
         <td>{{name}}</td>
         <td>{{no}}</td>
         <td>{{mobile}}</td>
@@ -645,7 +645,7 @@
 <script type="text/template" id="tpl_tea">
     <tr userid="{{userId}}">
         <input type="hidden" class="custindex" name="teacherList[custindex].userId" value="{{userId}}">
-        <input type="hidden" class="custindex" name="teacherList[custindex].utype" value="2">
+        <input type="hidden" class="custindex" name="teacherList[custindex].userType" value="2">
         <td>{{name}}</td>
         <td>{{no}}</td>
         <td>{{teacherType}}</td>

@@ -41,7 +41,7 @@
 			<div class="control-group">
 				<label class="control-label">成员类型：1、学生，2、导师：</label>
 				<div class="controls">
-					<form:select path="utype" class="input-xlarge ">
+					<form:select path="userType" class="input-xlarge ">
 						<form:option value="" label="--请选择--"/>
 						<form:options items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 					</form:select>

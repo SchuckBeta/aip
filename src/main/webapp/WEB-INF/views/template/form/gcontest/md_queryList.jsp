@@ -94,7 +94,7 @@
                   @selection-change="handleTableSelectionChange">
             <el-table-column
                     type="selection"
-                    width="55">
+                    width="60">
             </el-table-column>
             <el-table-column label="项目信息" align="left" prop="competitionNumber" width="240" sortable="competitionNumber">
                 <template slot-scope="scope">
@@ -319,7 +319,7 @@
             },
 
             goToChangeCharge: function (row) {
-                location.href = this.frontOrAdmin + '/promodel/proModel/gcontestEdit?id=' + row.id + '&secondName=变更'
+                location.href = this.frontOrAdmin + '/promodel/proModel/gcontestEdit?id=' + row.id + '&secondName='+encodeURI("变更")
             },
 
 

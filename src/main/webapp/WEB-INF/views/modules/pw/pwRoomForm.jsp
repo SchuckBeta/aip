@@ -10,14 +10,13 @@
 
 <body>
 
-
 <div id="app" v-show="pageLoad" style="display: none" class="container-fluid mgb-60 space-room-form">
     <div class="mgb-20">
         <shiro:hasPermission name="pw:pwRoom:edit">
-            <edit-bar :second-name="roomForm.id ? '修改': '添加'"></edit-bar>
+            <edit-bar :second-name="roomForm.id ? '修改': '添加'" href="/pw/pwRoom/tree"></edit-bar>
         </shiro:hasPermission>
         <shiro:lacksPermission name="pw:pwRoom:edit">
-            <edit-bar second-name="查看"></edit-bar>
+            <edit-bar second-name="查看" href="/pw/pwRoom/tree"></edit-bar>
         </shiro:lacksPermission>
     </div>
 
@@ -29,6 +28,7 @@
                          :props="cascaderProps"
                          change-on-select
                          @change="handleChangePlace"
+                         @blur="handleBlurPlace"
                          v-model="cascaderList">
             </el-cascader>
         </el-form-item>
@@ -48,7 +48,7 @@
         </el-form-item>
         <el-form-item prop="num" label="选填房间容量：">
 
-            <el-input type="number" v-model.number="roomForm.num" class="input-with-select w300" placeholder="请输入房间容量">
+            <el-input v-model="roomForm.num" class="input-with-select w300" placeholder="请输入房间容量">
                 <el-select v-model="roomForm.numtype" slot="prepend" placeholder="请选择">
                     <el-option v-for="item in numTypes" :key="item.id" :label="item.label"
                                :value="item.value"></el-option>
@@ -58,7 +58,7 @@
 
         </el-form-item>
         <el-form-item prop="area" label="占地面积：">
-            <el-input type="number" v-model.number="roomForm.area" class="w300">
+            <el-input v-model="roomForm.area" class="w300">
                 <template slot="append">平方米</template>
             </el-input>
         </el-form-item>
@@ -85,7 +85,6 @@
                            @click.stop.prevent="saveRoomForm('roomForm')">保存
                 </el-button>
             </shiro:hasPermission>
-            <el-button @click.stop.prevent="goToBack">返回</el-button>
         </el-form-item>
 
     </el-form>
@@ -116,15 +115,13 @@
         el: '#app',
         mixins: [Vue.collegesMixin,Vue.roomFormMixin],
         data: function () {
-            var pwRoom = JSON.parse(JSON.stringify(${fns:toJson(pwRoom)}));
+            var pwRoom = JSON.parse(JSON.stringify(${fns:toJson(pwRoom)})) || [];
             pwRoom.color = '#' + pwRoom.color;
             var pwSpace = pwRoom.pwSpace || {};
-            var pwRoomTypes = JSON.parse('${fns: toJson(fns: getDictList('pw_room_type'))}');
             return {
                 pwRoom: pwRoom,
-                pwRoomTypes: pwRoomTypes,
+                pwRoomTypes: [],
                 numTypes: [],
-                numLabel:'位',
                 predefineColors: [
                     '#e9432d',
                     '#ff8c00',
@@ -155,7 +152,7 @@
                 cascaderProps: {
                     label: 'name',
                     value: 'id',
-                    childern: 'children'
+                    children: 'children'
                 },
                 cascaderList: [],
                 collegesProps: {
@@ -170,22 +167,13 @@
                 },
                 dialogFormRules: {
                     name: [
-                        {required: true, message: '请输入名称', trigger: 'blur'},
-                        {min: 1, max: 15, message: '长度在 1 到 15 个字符', trigger: 'blur'}
+                        {required: true, message: '请输入名称', trigger: 'change'},
+                        {min: 1, max: 15, message: '长度在 1 到 15 个字符', trigger: 'change'}
                     ]
                 },
                 dialogFormDisabled:false,
                 roomFormDisabled:false
 
-            }
-        },
-        watch: {
-            'roomForm.numtype':function (value) {
-                if(value == '2'){
-                    this.numLabel = '位';
-                }else{
-                    this.numLabel = '人';
-                }
             }
         },
         computed:{
@@ -195,10 +183,15 @@
                     entries[item.id] = item;
                 });
                 return entries;
+            },
+            numLabel:function () {
+                if(this.roomForm.numtype == '2'){
+                    return '位';
+                }
+                return '人';
             }
         },
         methods: {
-
             getTree: function () {
                 var self = this;
                 this.$axios.get('/pw/pwSpace/treeData').then(function (response) {
@@ -217,6 +210,11 @@
             },
             handleChangePlace:function (value) {
                 this.roomForm.pwSpace.id = value[value.length - 1];
+            },
+            handleBlurPlace:function () {
+                if(this.roomForm.name){
+                    this.$refs.roomForm.validateField('name');
+                }
             },
             saveRoomForm:function (formName) {
                 var self = this;
@@ -275,7 +273,7 @@
                 }).then(function (response) {
                     var data = response.data;
                     if(data.ret == '1'){
-                        window.location.reload();
+                        self.getPwRoomTypes();
                         self.handleClose();
                     }
                     self.dialogFormDisabled = false;
@@ -291,6 +289,12 @@
                     })
                 });
             },
+            getPwRoomTypes:function () {
+                var self = this;
+                this.$axios.get('/sys/dict/getDictList?type=pw_room_type').then(function (response) {
+                    self.pwRoomTypes = response.data;
+                })
+            },
             getNumTypes:function () {
                 var self = this;
                 this.$axios.post('/pw/pwRoom/pwRoomType').then(function (response) {
@@ -303,6 +307,7 @@
             }
         },
         created: function () {
+            this.getPwRoomTypes();
             this.getCascaderList();
             this.getTree();
             this.getNumTypes();

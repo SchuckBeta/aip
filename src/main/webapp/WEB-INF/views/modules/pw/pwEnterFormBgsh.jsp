@@ -5,8 +5,7 @@
 <head>
     <title>${backgroundTitle}</title>
     <%@include file="/WEB-INF/views/include/backcreative.jsp" %>
-    <script type="text/javascript" src="/js/components/pwEnter/pwEnterMixin.js?version=${fns: getVevison()}"></script>
-    <script type="text/javascript" src="/js/components/pwEnter/pwEnterView.js?version=${fns: getVevison()}"></script>
+
 
 </head>
 <body>
@@ -55,7 +54,7 @@
                     <pw-enter-result-list :pw-enter-id="pwEnterId"></pw-enter-result-list>
                 </tab-pane-content>
             </el-tab-pane>
-            <el-tab-pane v-if="pwEnter.status != '0'" label="审核记录" name="sevenPwEnterTab">
+            <el-tab-pane label="审核记录" name="sevenPwEnterTab">
                 <tab-pane-content>
                     <pw-enter-result :pw-enter="pwEnter"></pw-enter-result>
                 </tab-pane-content>
@@ -76,6 +75,9 @@
                     <el-option value="1" label="通过"></el-option>
                     <el-option value="2" label="不通过"></el-option>
                 </el-select>
+            </el-form-item>
+            <el-form-item label="备注：" prop="remarks">
+               <el-input type="textarea" :rows="3" v-model="pwEnterAuditForm.remarks"></el-input>
             </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
@@ -121,7 +123,7 @@
             },
             pwEnterAuditRules: function () {
                 var pwEnterAuditForm = this.pwEnterAuditForm;
-                var isRequired = pwEnterAuditForm.atype === '0';
+                var isRequired = pwEnterAuditForm.isPass === '2';
                 return {
                     isPass: [
                         {required: true, message: '请选择审核', trigger: 'change'}
@@ -133,16 +135,16 @@
                         {required: pwEnterAuditForm.hasTerm === '-1', message: '请选择自定义时间', trigger: 'change'}
                     ],
                     remarks: [
-                        {required: isRequired, message: '请填写不通过理由', trigger: 'blur'},
+                        {required: isRequired, message: '请填写不通过建议及意见', trigger: 'blur'},
                         {max: 200, message: '请输入不大于200字建议及意见', trigger: 'blur'}
                     ]
                 }
             },
-            pickerOptions: {
-                disabledDate: function (time) {
-                    return time.getTime() < (Date.now() + 24 * 3600 * 1000);
-                }
-            },
+//            pickerOptions: {
+//                disabledDate: function (time) {
+//                    return time.getTime() < (Date.now() + 24 * 3600 * 1000);
+//                }
+//            },
         },
         methods: {
             handleCloseAudit: function () {
@@ -195,6 +197,7 @@
                 return {
                     id: pwEnterAuditForm.id,
                     isPass: pwEnterAuditForm.isPass,
+                    remarks: pwEnterAuditForm.remarks
                 }
             },
 
@@ -219,6 +222,7 @@
                     var data = response.data;
                     if (data.status === 1) {
                         self.dialogVisibleAudit = false;
+                        window.parent.sideNavModule.changeStaticUnreadTag("/a/pw/pwEnter/ajaxCountToAudit");
                         self.$msgbox({
                             type: 'success',
                             title: '提示',

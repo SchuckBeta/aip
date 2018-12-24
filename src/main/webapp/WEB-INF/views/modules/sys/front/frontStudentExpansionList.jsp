@@ -116,7 +116,7 @@
     <el-dialog title="邀请" :visible.sync="dialogVisible" width="60%" :close-on-click-modal="isClose">
         <div class="table-container">
             <el-table :data="teams" size="mini" class="table" @selection-change="handleSelectionChange" style="margin-bottom:0;">
-                <el-table-column type="selection" width="55" :selectable="selectable"></el-table-column>
+                <el-table-column type="selection" width="60" :selectable="selectable"></el-table-column>
                 <el-table-column prop="number" label="团队编号" align="center">
                 </el-table-column>
                 <el-table-column prop="name" label="团队名称" align="center">

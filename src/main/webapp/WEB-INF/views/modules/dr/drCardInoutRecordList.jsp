@@ -55,7 +55,7 @@
     <div class="table-container">
         <el-table :data="tableData" size="mini" ref="multipleTable" @selection-change="handleSelectionChange" class="table"
                   style="width: 100%">
-            <el-table-column type="selection" width="55"></el-table-column>
+            <el-table-column type="selection" width="60"></el-table-column>
             <el-table-column align="center" prop="cardNo" label="卡号" width="120">
             	<template slot-scope="scope">
             		{{scope.row.cardNo || '-'}}

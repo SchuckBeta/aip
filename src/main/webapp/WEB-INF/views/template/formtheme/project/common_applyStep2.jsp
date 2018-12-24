@@ -244,7 +244,7 @@
                         <textarea class="form-control required fill" oldv="${proModel.introduction }"
                                   name="introduction"
                                   rows="3"
-                                  maxlength="512" placeholder="最多512个字符">${proModel.introduction }</textarea>
+                                  maxlength="2000" placeholder="最多2000个字符">${proModel.introduction }</textarea>
                     </div>
                 </div>
                 <div class="form-group" style="position:relative;left:45px;margin-top:30px;">

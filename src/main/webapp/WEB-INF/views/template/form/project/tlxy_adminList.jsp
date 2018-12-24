@@ -92,7 +92,7 @@
                   @selection-change="handleTableSelectionChange">
             <el-table-column
                     type="selection"
-                    width="55">
+                    width="60">
             </el-table-column>
             <el-table-column label="项目信息" align="left" prop="competitionNumber" width="240" sortable="competitionNumber">
                 <template slot-scope="scope">
@@ -163,7 +163,7 @@
                     <el-button v-if="scope.row.state == '1'" type="text" size="small" disabled>审核</el-button>
                     <div v-else style="display: inline-block">
                         <a v-if="scope.row.auditMap.status == 'todo'"
-                           :href="frontOrAdmin+'/act/task/auditform?gnodeId='+scope.row.auditMap.gnodeId+'&proModelId='+scope.row.auditMap.proModelId+'&pathUrl=${actionUrl}&taskName='+scope.row.auditMap.taskName">审核</a>
+                           href="javascript: void(0);" @click.stop.prevent="goToAudit(scope.row)">审核</a>
                         <el-button v-else type="text" size="small" disabled>审核</el-button>
                     </div>
                 </template>
@@ -469,6 +469,9 @@
                 for (var i = 0; i < projectList.length; i++) {
                     Vue.set(this.controlEditings, projectList[i].proModel.id, false);
                 }
+            },
+            goToAudit: function (row) {
+                location.href = this.frontOrAdmin+'/act/task/auditform?gnodeId='+row.auditMap.gnodeId+'&proModelId='+row.auditMap.proModelId+'&pathUrl=${actionUrl}&taskName='+encodeURI(row.auditMap.taskName);
             }
         },
         created: function () {

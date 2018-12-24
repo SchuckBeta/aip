@@ -40,7 +40,7 @@
             <el-input name="code" v-model="officeForm.code"></el-input>
         </el-form-item>
         <template v-if="officeForm.id == '1'">
-            <el-form-item prop="cityIds" label="城市编码：">
+            <el-form-item prop="cityIds" label="所属区域：">
                 <input type="hidden" name="cityCode" :value="officeForm.cityCode">
                 <el-cascader
                         style="width: 100%"
@@ -80,10 +80,18 @@
             var officeForm = JSON.parse('${fns: toJson(office)}');
             var colleges = [];
             var self = this;
+            var cityIds = [];
             if(officeForm.id != '1'){
                 colleges = JSON.parse('${fns: toJson(fns: getOfficeList())}') || [];
             }
-
+            if(officeForm.area && officeForm.area.parentIds){
+                cityIds = officeForm.area.parentIds.replace(/\,$/, '');
+                cityIds = cityIds.split(',');
+                if(cityIds.indexOf('0')>-1){
+                    cityIds = cityIds.slice(1);
+                }
+                cityIds.push(officeForm.area.id)
+            }
             var validateOfficeName = function (rule, value, callback) {
                 if (value) {
                     if (/[@#\$%\^&\*\s]+/g.test(value)) {
@@ -122,7 +130,7 @@
                 officeForm: {
                     id: officeForm.id,
                     officeIds: [],
-                    cityIds: [],
+                    cityIds:cityIds,
                     parentId: officeForm.parentId,
                     name: officeForm.name,
                     code: officeForm.code,
@@ -138,7 +146,7 @@
                         {required: true, message: '请输入机构名称', trigger: 'blur'},
                         {validator: validateOfficeName, trigger: 'blur'}
                     ],
-                    cityIds: [{required: true, message: '请选择城市编码', trigger: 'change'}],
+                    cityIds: [{required: true, message: '请选择所属区域', trigger: 'change'}],
                     code: [{validator: validateOfficeCode, trigger: 'blur'}],
                     schoolCode: [{validator: validateOfficeCode, trigger: 'blur'}],
                 },
@@ -206,16 +214,11 @@
 
             getCities: function () {
                 var self = this;
-                var date1 = Date.now();
-                this.$axios.get('/sys/area/treeData').then(function (response) {
-                    self.cities = response.data;
-                    var date2 = Date.now()
-                    console.log('1:'+ (date2 - date1))
-                    self.cityEntries = self.getCityEntries(self.cities);
-//                    var cityRootIds = self.getCityRootIds(self.cities, {'parentKey': 'pId', 'id': 'id'});
-                    self.cityTree = self.getCityTree(["110000", "120000", "130000", "140000", "150000", "210000", "220000", "230000", "310000", "320000", "330000", "340000", "350000", "360000", "370000", "410000", "420000", "430000", "440000", "450000", "460000", "500000", "510000", "520000", "530000", "540000", "610000", "620000", "630000", "640000", "650000", "710000", "810000", "820000"], {'parentKey': 'pId', 'id': 'id'});
-                    self.officeForm.cityIds = self.getCityIds();
-                    console.log('2:'+ (Date.now() - date2))
+                this.$axios.get('/sys/area/listpage').then(function (response) {
+                    var data = response.data;
+                    if(data.status === 1){
+                        self.cityTree = data.data || [];
+                    }
                 }).catch(function (error) {
 
                 })

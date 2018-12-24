@@ -202,6 +202,11 @@
             },
             getSessionNavIndex: function () {
                 return sessionStorage.getItem('navIndex') || 0;
+            },
+
+            topReload: function (url) {
+//                location.href = url;
+                window.location.reload();
             }
         }
         sideNavModule.navLinkEvent();

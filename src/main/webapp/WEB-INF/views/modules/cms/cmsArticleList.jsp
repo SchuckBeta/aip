@@ -61,7 +61,7 @@
         <el-table :data="baseContentList" size="small" class="table" @selection-change="handleSelectionBCList">
             <el-table-column
                     type="selection"
-                    width="55">
+                    width="60">
             </el-table-column>
             <el-table-column label="标题" min-width="100">
                 <template slot-scope="scope">

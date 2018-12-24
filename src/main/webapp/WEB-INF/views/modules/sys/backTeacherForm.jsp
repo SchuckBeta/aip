@@ -798,10 +798,7 @@
                 var formData = new FormData();
 
                 if (data.x < 0 || data.y < 0) {
-                    this.show$message({
-                        status: false,
-                        msg: '超出边界，请缩小裁剪框，点击上传'
-                    });
+                    this.$message.error('超出边界，请缩小裁剪框，点击上传');
                     return false;
                 }
 
@@ -845,13 +842,15 @@
                 var self = this;
                 return this.$axios.post('/sys/backTeacherExpansion/ajaxUpdatePhoto?photo=' + url + "&userId=" + this.teacherForm.userid).then(function (response) {
                     var data = response.data;
-                    self.show$message(data);
                     if (data.status) {
                         data = data.datas;
                         self.dialogVisibleChangeUserPic = false;
                         self.userAvatar = self.addFtpHttp(data.photo);
                         self.userPhoto = data.photo;
                         self.userPicFile = null;
+                        self.$message.success(response.data.msg);
+                    } else {
+                        self.$message.error(data.msg);
                     }
                     self.isUpdating = false;
 

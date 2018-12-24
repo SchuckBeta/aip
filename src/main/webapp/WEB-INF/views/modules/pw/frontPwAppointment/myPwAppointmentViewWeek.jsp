@@ -75,6 +75,7 @@
     <el-dialog
             :title="appointmentDialogTitle"
             :visible.sync="appointmentDialogVisible"
+            :close-on-click-modal="false"
             width="540px"
             :before-close="handleCloseAppointmentDialog">
         <el-form :model="appointmentForm" ref="appointmentForm" :rules="appointmentRules" size="mini" label-width="96px"
@@ -94,6 +95,13 @@
             <el-form-item label="预约时间段：">
                 <p class="el-form-item-content_static">
                     {{appointmentForm.startTimeStr}}至{{appointmentForm.endTimeStr}}</p>
+            </el-form-item>
+            <el-form-item v-if="!isAdmin" prop="appointmentstyle" label="预约形式：">
+                <el-select v-model="appointmentForm.appointmentstyle">
+                    <el-option value="1" label="个人"></el-option>
+                    <el-option value="2" label="团队"></el-option>
+                    <el-option value="3" label="企业"></el-option>
+                </el-select>
             </el-form-item>
             <el-form-item v-if="!isAdmin" prop="personNum" label="参与人数：">
                 <el-input-number v-model="appointmentForm.personNum" :min="1" :max="100000"></el-input-number>
@@ -194,8 +202,8 @@
             data: function () {
                 var pwRoomTypes = JSON.parse('${fns:toJson(fns:getDictList('pw_room_type'))}');
                 var pwAppointmentStatuses = JSON.parse('${fns: toJson(fns:getDictList('pw_appointment_status'))}');
-                var appList = JSON.parse('${fns:toJson(list)}') || [];
-                var appRule = JSON.parse('${fns:toJson(appRule)}') || {};
+                var appList = JSON.parse(JSON.stringify(${fns:toJson(list)})) || [];
+                var appRule = JSON.parse(JSON.stringify(${fns:toJson(appRule)})) || {};
                 var validatorNumber = function (rule, value, callback) {
                     if (value) {
                         if (!(/^\d{1,}$/.test(value))) {
@@ -214,12 +222,12 @@
                 return {
                     appList: appList,
                     appRule: appRule,
-                    user: JSON.parse('${fns:toJson(fns:getUser())}'),
+                    user: JSON.parse(JSON.stringify(${fns:toJson(fns:getUser())})),
                     isAdmin: ${isAdmin},
                     now: '${now}',
                     pwRoomTypes: pwRoomTypes,
                     pwAppointmentStatuses: pwAppointmentStatuses,
-                    rooms: JSON.parse('${fns:toJson(rooms)}'),
+                    rooms: JSON.parse(JSON.stringify(${fns:toJson(rooms)})),
                     isUserComplete: ${fns:isUserinfoComplete()},
                     appointmentForm: {
                         startDate: '',
@@ -232,14 +240,18 @@
                         remarks: '',
                         day: '',
                         startTimeStr: '',
-                        endTimeStr: ''
+                        endTimeStr: '',
+                        appointmentstyle: ''
                     },
                     appointmentRules: {
                         subject: [
                             {required: true, message: '请输入用途', trigger: 'blur'},
                             {max: 50, message: '请输入1-50之间字符', trigger: 'blur'}
                         ],
-                        personNum: [{required: true, message: '请输入参与人数', trigger: 'change'}]
+                        personNum: [{required: true, message: '请输入参与人数', trigger: 'change'}],
+                        appointmentstyle: [
+                            {required: true, message: '请选择预约形式', trigger: 'change'}
+                        ]
                     },
                     appointmentDialogVisible: false,
                     appointmentDisabled: false,
@@ -286,14 +298,34 @@
                         })
                     }
                 },
+                floorIds: function () {
+                    var floorId = this.searchListForm.floorId;
+                    var buildingId = this.searchListForm.buildingId;
+                    if (floorId) {
+                        return [floorId];
+                    }
+                    if (buildingId) {
+                        return this.floorList.map(function (item) {
+                            return item.id;
+                        });
+                    }
+                    return []
+                },
+
                 roomList: {
                     get: function () {
-                        var floorId = this.searchListForm.floorId;
-                        if (!floorId) {
+                        var floorIds = this.floorIds;
+                        var roomTypes = this.searchListForm.roomTypes;
+                        if (floorIds.length === 0 && roomTypes.length === 0) {
                             return this.rooms;
                         }
                         return this.rooms.filter(function (item) {
-                            return item.pwSpace.id === floorId;
+                            if (roomTypes.length > 0 && floorIds.length === 0) {
+                                return roomTypes.indexOf(item.type) > -1
+                            } else if (roomTypes.length === 0 && floorIds.length > 0) {
+                                return floorIds.indexOf(item.pwSpace.id) > -1
+                            }
+                            return floorIds.indexOf(item.pwSpace.id)> -1 && roomTypes.indexOf(item.type) > -1;
                         })
                     }
                 },

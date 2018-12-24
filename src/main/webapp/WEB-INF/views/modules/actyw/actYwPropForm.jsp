@@ -1,236 +1,184 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ include file="/WEB-INF/views/include/taglib.jsp" %>
-<!DOCTYPE html>
 <html>
 <head>
-    <%@include file="/WEB-INF/views/include/backcyjd.jsp" %>
-    <script src="/other/jquery.form.min.js" type="text/javascript" charset="utf-8"></script>
-
-
+    <title>${backgroundTitle}</title>
+    <meta charset="UTF-8">
+    <%@include file="/WEB-INF/views/include/backcreative.jsp" %>
 </head>
 <body>
-<div class="container-fluid">
-    <div class="edit-bar clearfix">
-        <div class="edit-bar-left">
-            <span><c:if test="${not empty flowProjectTypes[0]}">${flowProjectTypes[0].name }</c:if><c:if
-                    test="${empty flowProjectTypes[0]}">项目流程</c:if></span>
-            <i class="line weight-line"></i>
-        </div>
+<div id="app" v-show="pageLoad" style="display: none" class="container-fluid mgb-60">
+    <div class="mgb-20">
+        <edit-bar :second-name="secondName"></edit-bar>
     </div>
-    <form:form id="inputForm" modelAttribute="actYw"
-               action="${ctx}/actyw/actYw/ajaxProp?group.flowType=${actYw.group.flowType}&isUpdateYw=false"
-               method="post"
-               class="form-horizontal">
-        <form:hidden path="id"/>
-        <form:hidden path="isPreRelease"/>
-        <form:hidden path="keyType"/>
-        <sys:message content="${message}"/>
-        <form:hidden path="proProject.id"/>
-        <form:hidden path="proProject.menu.id"/>
-        <form:hidden path="proProject.category.id"/>
-        <form:hidden id="proProjectProjectName" path="proProject.projectName"></form:hidden>
-        <input name="fpkey" value="${fpType.key }" type="hidden"/>
-        <input type="hidden" name="proProject.imgUrl" value="/images/upload.png"/>
-        <div class="control-group">
-            <label class="control-label"> 功能类型：</label>
-            <div class="controls">
-                <p class="control-static">${fpType.name }</p>
-            </div>
-        </div>
-        <%--<div class="control-group">
-            <label class="control-label"><font color="red">*&nbsp;</font> 名&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;称：</label>
-            <div class="controls">
-                <form:input id="proProjectProjectName" path="proProject.projectName" htmlEscape="false" maxlength="64" class="input-xlarge "/>
-                <span id="yazheng"></span>
-            </div>
-        </div>--%>
-        <c:if test="${!showFlow}">
-            <input name="actYw.groupId" value="${flowYwId.id }" type="hidden"/>
-        </c:if>
-        <c:if test="${showFlow}">
-            <div class="control-group">
-                <label class="control-label">关联流程：</label>
-                <div class="controls">
-                    <form:select path="groupId" class="input-xlarge required">
-                        <form:option value="" label="--请选择--"/>
-                        <c:forEach var="actYwGroup" items="${actYwGroups }">
-                            <c:if test="${curActYw.id eq actYw.id}">
-                                <c:if test="${curActYw.groupId eq actYwGroup.id}">
-                                    <option value="${actYwGroup.id}" data-type="${actYwGroup.flowType}"
-                                            selected="selected">${actYwGroup.name}</option>
-                                </c:if>
-                            </c:if>
-                            <c:if test="${curActYw.id ne actYw.id}">
-                                <c:if test="${actYw.groupId eq actYwGroup.id}">
-                                    <option value="${actYwGroup.id}" data-type="${actYwGroup.flowType}"
-                                            selected="selected">${actYwGroup.name}</option>
-                                </c:if><c:if test="${actYw.groupId ne actYwGroup.id}">
-                                <option value="${actYwGroup.id}"
-                                        data-type="${actYwGroup.flowType}">${actYwGroup.name}</option>
-                            </c:if>
-                            </c:if>
-                        </c:forEach>
-                    </form:select>
-                    <span class="help-inline">更换流程需要重新发布项目才能生效</span>
-                </div>
-            </div>
-        </c:if>
+    <el-form :model="actYwGroupForm" ref="actYwGroupForm" :rules="actYwGroupRules" size="mini" label-width="120px"
+             autocomplete="off" :disabled="disabled" style="max-width: 960px">
+        <el-form-item label="功能类型：">
+            ${fpType.name }
+        </el-form-item>
+        <el-form-item label="关联流程：">
+            <%--<el-select v-model="actYwGroupForm.groupId" filterable clearable placeholder="请选择">--%>
+                <%--<el-option v-for="item in actYwGroups" :key="item.id" :value="item.id" :label="item.name"></el-option>--%>
+            <%--</el-select>--%>
+            <%--<span class="el-form-item-expository">更换流程需要重新发布项目才能生效</span>--%>
+            {{actYwGroupForm.groupId | selectedFilter(actYwGroupEntries)}}
+        </el-form-item>
         <c:if test="${not empty fpType.type.key }">
-            <form:hidden id="proProjectType" path="proProject.type"/>
-            <div class="control-group">
-                <label class="control-label"> ${fpType.type.name}：</label>
-                <div class="controls">
-                    <p class="control-static"><c:forEach var="item" items="${fns:getDictList(fpType.type.key)}">
-                        <c:if test="${actYw.proProject.type eq item.value}">
-                            ${item.label}
-                        </c:if>
-                    </c:forEach></p>
-                        <%-- <form:radiobuttons id="proProjectType" path="proProject.type"
-                                             items="${fns:getDictList(fpType.type.key)}" itemLabel="label"
-                                             itemValue="value" htmlEscape="false" class="required" onchange="updateProjectName(this)"/> --%>
-                </div>
-            </div>
+            <el-form-item :label="ftpTypeName+'：'">
+                {{proProject.type | selectedFilter(fpTypeKeyEntries)}}
+            </el-form-item>
         </c:if>
         <c:if test="${not empty fpType.category.key }">
-            <div class="control-group ">
-                <label class="control-label"><i>*</i> ${fpType.category.name}：</label>
-                <div class="controls controls-checkbox">
-                    <form:checkboxes path="proProject.proCategorys" items="${fns:getDictList(fpType.category.key)}"
-                                     itemLabel="label" itemValue="value" htmlEscape="false" class="required"/>
-                </div>
-            </div>
+            <el-form-item prop="proCategorys" :label="categoryName+'：'">
+                <el-select
+                        v-model="actYwGroupForm.proCategorys"
+                        multiple
+                        filterable
+                        default-first-option
+                        style="width: 500px;"
+                        placeholder="请选择">
+                    <el-option
+                            v-for="item in fpCategoryKeys" :key="item.value" :value="item.value" :label="item.label">
+                    </el-option>
+                </el-select>
+            </el-form-item>
         </c:if>
-        <%-- <c:if test="${not empty fpType.level.key }">
-            <div class="control-group ">
-                <label class="control-label"><font color="red">*&nbsp;</font> ${fpType.level.name}：</label>
-                <div class="controls">
-                    <form:checkboxes path="proProject.levels" items="${fns:getDictList(fpType.level.key)}"
-                                     itemLabel="label" itemValue="value" htmlEscape="false" class="required"/>
-                    <span class="help-inline">项目属于哪一级别</span>
-                </div>
-            </div>
-        </c:if>
-        <c:if test="${not empty fpType.status.key }">
-            <div class="control-group ">
-                <label class="control-label"><font color="red">*&nbsp;</font> ${fpType.status.name}：</label>
-                <div class="controls">
-                    <form:checkboxes path="proProject.finalStatuss"
-                                     items="${fns:getDictList(fpType.status.key)}" itemLabel="label"
-                                     itemValue="value" htmlEscape="false" class="required"/>
-                    <span class="help-inline">项目有哪几项审核结果状态</span>
-                </div>
-            </div>
-        </c:if> --%>
-        <script type="text/javascript">
-            function updateProjectName(dom) {
-                if ($(dom).is(':checked')) {
-                    $("#proProjectProjectName").val($(dom).parent().find("label").html());
-                }
-            }
-        </script>
-        <div class="control-group">
-            <label class="control-label">开始时间：</label>
-            <div class="controls">
-                <p class="control-static"><fmt:formatDate value="${actYw.proProject.startDate}"
-                                                          pattern="yyyy-MM-dd"/></p>
-            </div>
-        </div>
-        <div class="control-group">
-            <label class="control-label">结束时间：</label>
-            <div class="controls">
-                <p class="control-static"><fmt:formatDate value="${actYw.proProject.endDate}" pattern="yyyy-MM-dd"/></p>
-            </div>
-        </div>
-        <%--<div class="control-group">--%>
-            <%--<label class="control-label"><i>*</i>项目年份：</label>--%>
-            <%--<div class="controls">--%>
-                <%--<form:input path="proProject.year" class="Wdate required" readonly="true"--%>
-                            <%--onclick="WdatePicker({isShowToday: false, dateFmt:'yyyy',isShowClear:true});"/>--%>
-            <%--</div>--%>
-        <%--</div>--%>
-        <div class="control-group" style="display: none;">
-            <label class="control-label">重置栏目：</label>
-            <div class="controls controls-radio">
-                <form:radiobuttons path="proProject.restCategory"
-                                   items="${fns:getDictList('yes_no')}" itemLabel="label"
-                                   itemValue="value" htmlEscape="false" class="required"/>
-                <span class="help-inline gray-color">该前台栏目子栏目是否恢复到初始状态</span>
-            </div>
-        </div>
-        <div class="control-group" style="display: none;">
-            <label class="control-label">重置菜单：</label>
-            <div class="controls controls-radio">
-                <form:radiobuttons path="proProject.restMenu"
-                                   items="${fns:getDictList('yes_no')}" itemLabel="label"
-                                   itemValue="value" htmlEscape="false" class="required"/>
-                <span class="help-inline gray-color">该后台菜单子菜单是否恢复到初始状态</span>
-            </div>
-        </div>
-        <div class="form-actions">
-                <%--<c:forEach items="${actYwGtimeList}" var="actYwGtime">--%>
-                <%--<input type="hidden" disabled  value="${actYwGtime.beginDate}">--%>
-                <%--</c:forEach>--%>
-            <shiro:hasPermission name="actyw:actYw:edit">
-                <button type="submit" class="btn btn-primary">保存</button>
-            </shiro:hasPermission>
-
-            <button type="button" class="btn btn-default" onclick="history.go(-1)">返回</button>
-        </div>
-
-    </form:form>
-</div>
-
-
-<div id="dialog-message" title="信息">
-    <p id="dialog-content"></p>
+        <el-form-item label="开始时间：">
+            {{proProject.startDate | formatDateFilter('YYYY-MM-DD')}}
+        </el-form-item>
+        <el-form-item label="结束时间：">
+            {{proProject.endDate | formatDateFilter('YYYY-MM-DD')}}
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" @click.stop.prevent="validActYwGroupForm">保存</el-button>
+            <el-button @click.stop.prevent="goToBack">返回</el-button>
+        </el-form-item>
+    </el-form>
 </div>
 
 <script type="text/javascript">
 
-    $(document).ready(function () {
-        //$("#name").focus();
-        var $inputForm = $("#inputForm");
+    'use strict';
 
-
-        var inputFormValidate = $inputForm.validate({
-            submitHandler: function (form) {
-                var data;
-                loading('正在提交，请稍等...');
-                data = $inputForm.serialize();
-                $.ajax({
-                    type: 'POST',
-                    url: '${ctx}/actyw/actYw/ajaxProp?group.flowType=${actYw.group.flowType}&isUpdateYw=false',
-                    data: data,
-                    dataType: 'JSON',
-                    success: function (data) {
-                        if (data.status) {
-                            showTip(data.msg, 'success', 300)
-                        } else {
-                            showTip(data.msg, 'fail', 300)
-                        }
-                        closeLoading();
-                    },
-                    error: function () {
-                        showTip('保存失败', 'fail', 300);
-                        closeLoading();
+    new Vue({
+        el: '#app',
+        data: function () {
+            var actYw = JSON.parse(JSON.stringify(${fns: toJson(actYw)})) || {};
+            var fpType = JSON.parse(JSON.stringify(${fns: toJson(fpType)})) || {};
+            var fpTypeKeys = JSON.parse(JSON.stringify(${fns: toJson(fns:getDictList(fpType.type.key))}));
+            var fpCategoryKeys = JSON.parse(JSON.stringify(${fns: toJson(fns:getDictList(fpType.category.key))}));
+            var actYwGroups = JSON.parse(JSON.stringify(${fns: toJson(actYwGroups)}));
+            var proProject = actYw.proProject || {};
+            var menu = proProject.menu || {};
+            var category = proProject.category || {};
+            var showFlow = '${showFlow}';
+            showFlow = showFlow === 'true';
+            return {
+                actYwGroupForm: {
+                    id: actYw.id,
+                    isPreRelease: actYw.isPreRelease,
+                    keyType: actYw.keyType,
+                    'proProject.id': proProject.id,
+                    'proProject.menu.id': menu.id,
+                    'proProject.category.id': category.id,
+                    'proProject.projectName': proProject.name,
+                    fpkey: '${fpType.key}',
+                    'proProject.imgUrl': '/images/upload.png',
+                    'actYw.groupId': actYw.groupId,
+                    'proProject.type': proProject.type,
+                    proCategorys: proProject.proCategorys || [],
+                    'group.flowType': '${actYw.group.flowType}',
+                    groupId: actYw.groupId,
+                    isUpdateYw: false
+                },
+                actYwGroupRules: {
+                    proCategorys: [
+                        {required: true, message: '请选择${fpType.category.name}', trigger: 'change'}
+                    ]
+                },
+                proProject: proProject,
+                disabled: false,
+                showFlow: showFlow,
+                actYwGroupId: '${flowYwId.id }',
+                ftpTypeName: '${fpType.type.name}',
+                categoryName: '${fpType.category.name}',
+                fpTypeKeys: fpTypeKeys,
+                fpCategoryKeys: fpCategoryKeys,
+                actYwGroups: actYwGroups
+            }
+        },
+        computed: {
+            secondName: function () {
+                return this.actYwGroupForm.id ? '修改' : '添加'
+            },
+            fpTypeKeyEntries: function () {
+                return this.getEntries(this.fpTypeKeys)
+            },
+            actYwGroupEntries: function () {
+                return this.getEntries(this.actYwGroups, {
+                    value: 'id',
+                    label: 'name'
+                })
+            }
+        },
+        methods: {
+            validActYwGroupForm: function () {
+                var self = this;
+                this.$refs.actYwGroupForm.validate(function (valid) {
+                    if(valid){
+                        self.submitActYwGroup();
                     }
                 })
-                return false;
             },
-            errorPlacement: function (error, element) {
-                $("#messageBox").text("输入有误，请先更正。");
-                if (element.is(":checkbox") || element.is(":radio") || element.parent().is(".input-append")) {
-                    error.appendTo(element.parent().parent());
-                } else if (element.parent().hasClass('controls-rate')) {
-                    error.appendTo(element.parent())
-                } else {
-                    error.insertAfter(element);
-                }
+            goToBack: function () {
+                history.go(-1);
+            },
+
+            getActYwGroupParams: function () {
+                var actYwGroupForm = JSON.parse(JSON.stringify(this.actYwGroupForm));
+                var proCategorys = actYwGroupForm.proCategorys;
+                var params;
+                proCategorys = proCategorys.map(function (item) {
+                    return ['proProject.proCategorys='+item]
+                });
+                delete actYwGroupForm.proCategorys;
+                params = Object.toURLSearchParams(actYwGroupForm);
+                params += '&'+ proCategorys.join('&');
+                return params;
+            },
+
+            submitActYwGroup: function () {
+                var self = this;
+                this.disabled = true;
+                this.$axios({
+                    method: 'POST',
+                    url: '/actyw/actYw/ajaxProp?'+ this.getActYwGroupParams()
+                }).then(function (response) {
+                    var data = response.data;
+                    if(data.status){
+                        self.$alert(data.msg, "提示", {
+                            type: 'success'
+                        }).then(function () {
+                            location.href = '${ctx}/actyw/actYw/list?group.flowType=${actYw.group.flowType}'
+                        }).catch(function () {
+                            
+                        })
+                    }else {
+                        self.$message.error(data.msg);
+                    }
+                    self.disabled = false;
+                }).catch(function () {
+                    self.disabled = false;
+                    self.$message.error(self.xhrErrorMsg);
+                })
             }
-        });
-
-
-    });
+        },
+        created: function () {
+            if (this.showFlow) {
+                this.actYwGroupForm['actYw.groupId'] = this.actYwGroupId;
+            }
+        }
+    })
 
 </script>
 </body>

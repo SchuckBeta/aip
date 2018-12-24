@@ -934,11 +934,14 @@
                         self.teacherForm.userMobile = mobileForm.mobile;
                         self.teacherStaticDetail.userMobile = mobileForm.mobile;
                         self.dialogVisibleChangeMobile = false;
+                        self.$message.success('修改手机号成功');
+                    }else {
+                        self.$message.error(data.msg);
                     }
-                    self.show$message(data);
                     self.isUpdating = false;
                 }).catch(function () {
                     self.isUpdating = false;
+                    self.$message.error(self.xhrErrorMsg);
                 })
             },
 
@@ -988,10 +991,7 @@
                 var formData = new FormData();
 
                 if (data.x < 0 || data.y < 0) {
-                    this.show$message({
-                        status: false,
-                        msg: '超出边界，请缩小裁剪框，点击上传'
-                    });
+                    this.$message.error('超出边界，请缩小裁剪框，点击上传');
                     return false;
                 }
 
@@ -1009,10 +1009,7 @@
                         self.userPicFile = null;
                         self.isUpdating = false;
                         self.dialogVisibleChangeUserPic = false;
-                        self.$message({
-                            type: 'error',
-                            message: data.msg
-                        })
+                        self.$message.error(data.msg);
                     }
                 }).catch(function (error) {
 
@@ -1023,7 +1020,6 @@
                 var self = this;
                 return this.$axios.post('/sys/user/ajaxUpdatePhoto?photo=' + url + "&userId=" + this.teacherForm.userid).then(function (response) {
                     var data = response.data;
-                    self.show$message(data);
                     if (data.status) {
                         data = data.datas;
                         self.dialogVisibleChangeUserPic = false;
@@ -1031,6 +1027,9 @@
                         self.userPhoto = data.photo;
                         self.userPicFile = null;
                         $('#headerUserBlock .user-small-pic,#headerUserBlock .user-info-pic img').attr('src', self.userAvatar)
+                        self.$message.success(response.data.msg);
+                    }else {
+                        self.$message.error(data.msg);
                     }
                     self.isUpdating = false;
 

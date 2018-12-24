@@ -7,7 +7,6 @@
     <meta charset="UTF-8">
     <title>${backgroundTitle}</title>
     <%@include file="/WEB-INF/views/include/backcreative.jsp" %>
-
 <body>
 
 
@@ -16,29 +15,13 @@
     <el-form :model="searchListForm" ref="searchListForm" size="mini">
         <div class="conditions">
 
-            <e-condition label="基地" type="radio" :options="baseList" v-model="baseId" @change="handleChangeBase"
-                         :default-props="{label: 'name', value: 'id'}"></e-condition>
-
-            <e-condition label="楼栋">
-                <e-radio class="e-checkbox-all" name="build" v-model="buildId" label="" @change="handleChangeBuild">不限
-                </e-radio>
-                <e-radio-group class="e-radio-spaces" v-model="buildId" @change="handleChangeBuild">
-                    <e-radio v-for="build in buildList" name="buildId" :class="{'is-siblings': build.isSiblings}"
-                             :label="build.id" :key="build.id">{{build.name}}
-                    </e-radio>
-                </e-radio-group>
+            <e-condition label="学院" type="radio" v-model="searchListForm['applicant.office.id']" :default-props="defaultProps"
+                         name="officeId" :options="collegeList" @change="getDataList">
+            </e-condition>
+            <e-condition label="入驻状态" type="radio" v-model="searchListForm.status" :default-props="{label:'name',value:'key'}"
+                         name="status" :options="enterStates" @change="getDataList">
             </e-condition>
 
-            <e-condition label="楼层" type="radio" :options="floorList" v-model="floorId" @change="handleChangeFloor"
-                         :default-props="{label: 'name', value: 'id'}"></e-condition>
-
-
-            <e-condition label="学院" type="radio" v-model="searchListForm.localCollege" :default-props="defaultProps"
-                         name="localCollege" :options="collegeList" @change="getDataList">
-            </e-condition>
-            <e-condition label="入驻状态" type="radio" v-model="searchListForm.enterState"
-                         name="enterState" :options="enterStates" @change="getDataList">
-            </e-condition>
         </div>
 
         <div class="list-type-tab">
@@ -53,22 +36,22 @@
             <div class="tab-cell active" @click.stop.prevent="goApply">
                 <span>审核退孵申请</span>
                 <div class="arrow-right"></div>
-                <div class="bubble-num"><span>5</span></div>
+                <div class="bubble-num" v-if="applyRecordNum"><span>{{applyRecordNum}}</span></div>
             </div>
         </div>
 
         <div class="search-block_bar clearfix mgt-20">
             <div class="search-input">
-                <el-select size="mini" v-model="searchListForm.condition" placeholder="请选择查询条件"
+                <el-select size="mini" v-model="condition" placeholder="请选择查询条件"
                            @change="handleChangeCondition" style="width:135px;">
                     <el-option
                             v-for="item in conditions"
-                            :key="item.id"
+                            :key="item.value"
                             :label="item.label"
                             :value="item.value">
                     </el-option>
                 </el-select>
-                <el-date-picker :disabled="!searchListForm.condition"
+                <el-date-picker :disabled="!condition"
                                 v-model="applyDate"
                                 type="daterange"
                                 size="mini"
@@ -78,11 +61,12 @@
                                 range-separator="至"
                                 start-placeholder="开始日期"
                                 end-placeholder="结束日期"
-                                value-format="yyyy-MM-dd"
+                                value-format="yyyy-MM-dd HH:mm:ss"
+                                :default-time="searchDefaultTime"
                                 style="width: 270px;">
                 </el-date-picker>
                 <input type="text" style="display:none">
-                <el-input name="queryStr" size="mini" class="w300" v-model="searchListForm.queryStr"
+                <el-input name="keys" size="mini" class="w300" v-model="searchListForm.keys"
                           placeholder="企业/团队名称/负责人/组成员/导师" @keyup.enter.native="getDataList">
                     <el-button slot="append" class="el-icon-search" @click.stop.prevent="getDataList"></el-button>
                 </el-input>
@@ -92,48 +76,38 @@
     </el-form>
 
     <div class="table-container">
-        <el-table :data="pageList" ref="pageList" class="table" size="mini" v-loading="loading"
-                  @sort-change="handleTableSortChange">
-            <el-table-column label="企业/团队名称" align="left" min-width="140">
+        <el-table :data="pageList" ref="pageList" class="table" size="mini" v-loading="loading" @sort-change="handleTableSortChange">
+            <el-table-column label="企业/团队名称" align="left" min-width="130">
                 <template slot-scope="scope">
-                    <%--链接到详情--%>
-                    <div>企业/团队：{{scope.row.teamName}}</div>
-                    <div>{{scope.row.academy}}/{{scope.row.major}}</div>
+                    <table-thing-info :row="getPwEnterInfo(scope.row)"></table-thing-info>
                 </template>
             </el-table-column>
-            <el-table-column label="团队成员" align="left" min-width="140">
+            <el-table-column label="团队成员" align="left" min-width="130">
                 <template slot-scope="scope">
-                    <div>负责人：{{scope.row.duty}}</div>
-                    <div>组成员：{{scope.row.member}}</div>
-                    <div>导师：{{scope.row.teacher}}</div>
+                    <table-team-member :row="getPwEnterTeamInfo(scope.row)"></table-team-member>
                 </template>
             </el-table-column>
-            <el-table-column prop="validEnd" label="入驻有效期" align="center" sortable="validEnd" min-width="140">
+            <el-table-column prop="startDate" label="入驻有效期" align="center" sortable="startDate" min-width="150">
                 <template slot-scope="scope">
-                    <span>{{scope.row.validStart}} 至 {{scope.row.validEnd}}</span>
+                    <span>{{scope.row.startDate | formatDateFilter('YYYY-MM-DD')}} 至 {{scope.row.endDate | formatDateFilter('YYYY-MM-DD')}}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="所属场地" align="center" min-width="110">
+            <el-table-column prop="status" label="入驻状态" align="center" sortable="status" min-width="100">
                 <template slot-scope="scope">
-                    <span>创业基地/南栋/1层 实验室001</span>
+                    <span :class="{red:scope.row.status == '30'}">{{scope.row.status | selectedFilter(enterStatesEntries)}}</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="enterState" label="入驻状态" align="center" sortable="enterState" min-width="100">
+            <el-table-column label="状态" align="center" min-width="60">
                 <template slot-scope="scope">
-                    <span :class="{red:scope.row.enterState == '4'}">{{scope.row.enterState | selectedFilter(enterStatesEntries)}}</span>
-                </template>
-            </el-table-column>
-            <el-table-column prop="checkState" label="状态" align="center" min-width="80">
-                <template slot-scope="scope">
-                    <span v-if="scope.row.checkState == '0'">待审核</span>
+                    <span v-if="scope.row.applyRecord">{{scope.row.applyRecord.status | selectedFilter(checkStatesEntries)}}</span>
                 </template>
             </el-table-column>
 
             <shiro:hasPermission name="pw:pwEnter:edit">
-                <el-table-column label="操作" align="center" min-width="70">
+                <el-table-column label="操作" align="center" min-width="60">
                     <template slot-scope="scope">
                         <div class="table-btns-action">
-                            <el-button size="mini" type="text" @click.stop.prevent="checkApply(scope.row.id)">审核
+                            <el-button size="mini" type="text" @click.stop.prevent="checkApply(scope.row)">审核
                             </el-button>
                         </div>
                     </template>
@@ -156,22 +130,23 @@
         </div>
     </div>
 
-    <el-dialog title="审核退孵" :visible.sync="dialogVisible" :close-on-click-modal="isClose"
-               :before-close="handleCloseDialog" width="500px">
+
+    <el-dialog title="退孵审核" :visible.sync="dialogVisible" :close-on-click-modal="isClose"
+               :before-close="handleCloseDialog" width="600px">
         <el-form size="mini" :model="dialogForm" :rules="dialogFormRules" ref="dialogForm" :disabled="formDisabled"
-                 label-width="120px">
-            <el-form-item prop="resultType" label="审核：">
-                <el-select size="mini" v-model="dialogForm.resultType" placeholder="请选择" style="width: 170px;">
+                 label-width="120px" class="user-share">
+            <el-form-item prop="atype" label="审核：">
+                <el-select size="mini" v-model="dialogForm.atype" placeholder="请选择" style="width: 170px;">
                     <el-option
                             v-for="item in resultTypes"
-                            :key="item.id"
+                            :key="item.value"
                             :label="item.label"
                             :value="item.value">
                     </el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item prop="suggest" label="建议及意见：">
-                <el-input type="textarea" :rows="3" v-model="dialogForm.suggest" maxlength="200"
+            <el-form-item prop="remarks" label="建议及意见：">
+                <el-input type="textarea" :rows="3" v-model="dialogForm.remarks" maxlength="200"
                           style="width:300px;"></el-input>
             </el-form-item>
         </el-form>
@@ -181,7 +156,6 @@
         </div>
     </el-dialog>
 
-
 </div>
 
 
@@ -189,67 +163,46 @@
     new Vue({
         el: '#app',
         data: function () {
-            var professionals = JSON.parse('${fns:getOfficeListJson()}') || [];
+            var professionals = JSON.parse(JSON.stringify(${fns: toJson(fns: getOfficeList())}));
             return {
                 professionals: professionals,
-                enterStates: [
-                    {
-                        id: '111',
-                        label: '入驻成功',
-                        value: '1'
-                    },
-                    {
-                        id: '222',
-                        label: '即将到期',
-                        value: '2'
-                    },
-                    {
-                        id: '333',
-                        label: '已续期',
-                        value: '3'
-                    },
-                    {
-                        id: '444',
-                        label: '已到期',
-                        value: '4'
-                    },
-                    {
-                        id: '444',
-                        label: '已退孵',
-                        value: '4'
-                    }
-                ],
+                enterStates: [],
+                checkStates:[],
                 conditions: [
                     {
-                        id: '111',
                         label: '入驻日期',
                         value: '1'
                     },
                     {
-                        id: '222',
                         label: '到期日期',
                         value: '2'
+                    }
+                ],
+                resultTypes: [
+                    {
+                        label: '通过',
+                        value: '1'
                     },
                     {
-                        id: '333',
-                        label: '续期日期',
-                        value: '3'
+                        label: '不通过',
+                        value: '0'
                     }
                 ],
                 pageCount: 0,
                 message: '${message}',
+                condition:'',
                 searchListForm: {
                     pageSize: 10,
                     pageNo: 1,
                     orderBy: '',
                     orderByType: '',
-                    'pwSpace.id':'',
-                    localCollege: '',
-                    enterState: '',
-                    condition: '',
+                    'applicant.office.id': '',
+                    status: '',
                     startDate: '',
+                    startQDate: '',
                     endDate: '',
-                    queryStr: ''
+                    endQDate: '',
+                    keys: ''
                 },
                 defaultProps: {
                     label: 'name',
@@ -259,71 +212,19 @@
                 applyDate: [],
                 dialogForm: {
                     id: '',
-                    resultType: '',
-                    suggest: ''
+                    type: '40',
+                    atype: '',
+                    remarks: ''
                 },
-                resultTypes: [
-                    {
-                        id: '222',
-                        label: '通过',
-                        value: '1'
-                    },
-                    {
-                        id: '111',
-                        label: '不通过',
-                        value: '0'
-                    }
-                ],
+                dialogAction: '',
                 dialogVisible: false,
                 isClose: false,
                 formDisabled: false,
 
-                baseId: '',
-                buildId: '',
-                floorId: '',
-                spaceList: [],
-
-                pageList: [
-                    {
-                        id: '111',
-                        teamName: '快递师傅团队',
-                        academy: '新闻传播学院',
-                        major: '播音主持专业',
-                        duty: '王俊杰',
-                        member: '吴磊、张金芳、魏宇凡',
-                        teacher: '大姐夫，华东师，地方',
-                        validStart: '2018.03.01',
-                        validEnd: '2019.03.01',
-                        checkState: '0',
-                        enterState: '4'
-                    },
-                    {
-                        id: '222',
-                        teamName: '快递师傅团队',
-                        academy: '新闻传播学院',
-                        major: '播音主持专业',
-                        duty: '王俊杰',
-                        member: '吴磊、张金芳、魏宇凡',
-                        teacher: '大姐夫，华东师，地方',
-                        validStart: '2018.03.01',
-                        validEnd: '2019.03.01',
-                        checkState: '0',
-                        enterState: '2'
-                    },
-                    {
-                        id: '333',
-                        teamName: '快递师傅团队',
-                        academy: '新闻传播学院',
-                        major: '播音主持专业',
-                        duty: '王俊杰',
-                        member: '吴磊、张金芳、魏宇凡',
-                        teacher: '大姐夫，华东师，地方',
-                        validStart: '2018.03.01',
-                        validEnd: '2019.03.01',
-                        checkState: '0',
-                        enterState: '4'
-                    }
-                ]
+                pageList: [],
+                pwEnterTypes: [],
+                applyRecordNum:0,
+                searchDefaultTime: ['00:00:00','23:59:59']
             }
         },
         computed: {
@@ -335,90 +236,125 @@
                 }
             },
             enterStatesEntries: function () {
-                return this.getEntries(this.enterStates);
+                return this.getEntries(this.enterStates,{value: 'key', label: 'name'});
+            },
+            checkStatesEntries: function () {
+                return this.getEntries(this.checkStates);
+            },
+            pwEnterTypeEntries: function () {
+                return this.getEntries(this.pwEnterTypes)
+            },
+            officeEntries: function () {
+                return this.getEntries(this.professionals, {label: 'name', value: 'id'})
             },
             dialogFormRules: {
                 get: function () {
                     return {
-                        resultType: [
-                            {required: true, message: '请选择审核结果', trigger: 'blur'}
+                        atype: [
+                            {required: true, message: '请选择审核结果', trigger: 'change'}
                         ],
-                        suggest: [
-                            {required: this.dialogForm.resultType == '0', message: '请提出建议及意见', trigger: 'blur'}
+                        remarks: [
+                            {required: this.dialogForm.atype == '0', message: '请提出建议及意见', trigger: 'change'}
                         ]
                     }
                 }
-            },
-            baseList: {
-                get: function () {
-                    return this.spaceList.filter(function (item) {
-                        return item.type === '2'
-                    })
-                }
-            },
-
-            buildList: {
-                get: function () {
-                    var buildList = [];
-                    this.spaceList.forEach(function (item) {
-                        if (item.type === '3') {
-                            Vue.set(item, 'isSiblings', true);
-                            buildList.push(item);
-                        }
-                    });
-                    return buildList;
-                }
-            },
-
-            floorList: function () {
-                var self = this;
-                if (!this.buildId) return [];
-                return this.spaceList.filter(function (item) {
-                    return item.pId === self.buildId;
-                })
             }
         },
         methods: {
             getDataList: function () {
-//                var self = this;
-//                this.loading = true;
-//                this.$axios({
-//                    method: 'POST',
-//                    url: '/pw/ajaxListXQRZ?' + Object.toURLSearchParams(this.searchListForm)
-//                }).then(function (response) {
-//                    var data = response.data;
-//                    if (data.status == '1') {
-//                        self.pageCount = data.data.count;
-//                        self.searchListForm.pageSize = data.data.pageSize;
-//                        self.pageList = data.data.list || [];
-//                    }
-//                    self.loading = false;
-//                }).catch(function () {
-//                    self.loading = false;
-//                    self.$message({
-//                        message: '请求失败',
-//                        type: 'error'
-//                    })
-//                });
+                var self = this;
+                this.loading = true;
+                this.$axios({
+                    method: 'GET',
+                    url: '/pw/pwEnter/ajaxListQXRZRecord?isCopy=1&' + Object.toURLSearchParams(this.searchListForm)
+                }).then(function (response) {
+                    var data = response.data;
+                    if (data.status == '1') {
+                        self.pageCount = data.data.count;
+                        self.searchListForm.pageSize = data.data.pageSize;
+                        self.pageList = data.data.list || [];
+                    }
+                    self.loading = false;
+                }).catch(function (error) {
+                    self.loading = false;
+                    self.$message({
+                        message: self.xhrErrorMsg,
+                        type: 'error'
+                    })
+                });
             },
-            handleChangeCondition: function () {
-                if (this.searchListForm.endDate) {
-                    this.getDataList();
+            setDateSearch:function () {
+                this.searchListForm.startDate = '';
+                this.searchListForm.startQDate = '';
+                this.searchListForm.endDate = '';
+                this.searchListForm.endQDate = '';
+                if(this.condition == '1'){
+                    this.searchListForm.startDate = this.applyDate[0];
+                    this.searchListForm.startQDate = this.applyDate[1];
+                }else if(this.condition == '2'){
+                    this.searchListForm.endDate = this.applyDate[0];
+                    this.searchListForm.endQDate = this.applyDate[1];
                 }
             },
-            handleChangeDate: function (value) {
-                value = value || [];
-                this.searchListForm.startDate = value[0];
-                this.searchListForm.endDate = value[1];
+            handleChangeCondition: function () {
+                if(this.applyDate.length == 0){
+                    return false;
+                }
+                this.setDateSearch();
                 this.getDataList();
             },
+            handleChangeDate: function (value) {
+                this.applyDate = value || [];
+                this.setDateSearch();
+                this.getDataList();
+            },
+
+            getEnterStates:function () {
+                var self = this;
+                this.$axios.get('/pw/pwEnter/ajaxPwEnterStatus?type=30').then(function (response) {
+                    var data = response.data;
+                    self.enterStates = JSON.parse(data.data) || [];
+                });
+            },
+            getCheckStates:function () {
+                var self = this;
+                this.$axios.get('/pw/pwEnter/getPwEnterAuditList').then(function (response) {
+                    self.checkStates = response.data || [];
+                });
+            },
+            getPwEnterInfo: function (row) {
+                var type = row.type;
+                var name = row.eteam ? row.eteam.team.name : '';
+                var label = this.pwEnterTypeEntries[row.type];
+                var applicant = row.applicant;
+                if (type == '2') {
+                    name = row.ecompany ? row.ecompany.pwCompany.name : '';
+                }
+                return {
+                    label: label,
+                    name: name,
+                    href: this.frontOrAdmin + '/pw/pwEnter/view?id=' + row.id,
+                    officePro: applicant.officeName + '/' + (applicant.professional && this.officeEntries[applicant.professional] ? this.officeEntries[applicant.professional] : '-')
+                }
+            },
+            getPwEnterTeamInfo: function (row) {
+                var eteam = row.eteam || {};
+                var applicant = row.applicant;
+                return {
+                    applicantName: applicant.name,
+                    snames: eteam.snames || '',
+                    tnames: eteam.tnames || ''
+                }
+            },
+
             handleCloseDialog: function () {
                 this.dialogVisible = false;
                 this.$refs.dialogForm.resetFields();
                 this.dialogForm.id = '';
+                this.dialogForm.type = '40';
             },
-            checkApply: function (id) {
-                this.dialogForm.id = id;
+            checkApply: function (row) {
+                this.dialogForm.id = row.id;
                 this.dialogVisible = true;
             },
             saveDialog: function (formName) {
@@ -430,37 +366,35 @@
                 })
             },
             saveAjax: function () {
-                console.log(this.dialogForm);
-                this.dialogVisible = true;
-//                this.handleCloseDialog();
-
-//                this.loading = true;
-//                this.formDisabled = true;
-//                var self = this;
-//                this.$axios({
-//                    method: 'POST',
-//                    url: '',
-//                    data: this.dialogForm
-//                }).then(function (response) {
-//                    var data = response.data;
-//                    if (data.ret == '1') {
-//                        self.getDataList();
-//                        self.handleCloseDialog();
-//                    }
-//                    self.loading = false;
-//                    self.formDisabled = false;
-//                    self.$message({
-//                        message: data.status == '1' ? '审核成功' : '审核失败',
-//                        type: data.status == '1' ? 'success' : 'error'
-//                    });
-//                }).catch(function () {
-//                    self.loading = false;
-//                    self.formDisabled = false;
-//                    self.$message({
-//                        message: '请求失败',
-//                        type: 'error'
-//                    });
-//                });
+                this.loading = true;
+                this.formDisabled = true;
+                var self = this;
+                this.$axios({
+                    method: 'GET',
+                    url: '/pw/pwEnter/ajaxAuditRecored',
+                    params: this.dialogForm
+                }).then(function (response) {
+                    var data = response.data;
+                    if (data.status == '1') {
+                        self.getDataList();
+                        self.handleCloseDialog();
+                        self.getApplyRecordNum();
+                        window.parent.sideNavModule.changeStaticUnreadTag("/a/pw/pwEnter/listQXRZCompany",  self.applyRecordNum);
+                    }
+                    self.loading = false;
+                    self.formDisabled = false;
+                    self.$message({
+                        message: data.status == '1' ? '审核成功' : data.msg || '审核失败',
+                        type: data.status == '1' ? 'success' : 'error'
+                    });
+                }).catch(function (error) {
+                    self.loading = false;
+                    self.formDisabled = false;
+                    self.$message({
+                        message:self.xhrErrorMsg,
+                        type: 'error'
+                    });
+                });
             },
             handleTableSortChange: function (row) {
                 this.searchListForm.orderBy = row.prop;
@@ -476,59 +410,38 @@
                 this.searchListForm.pageNo = value;
                 this.getDataList();
             },
-            goCompany: function () {
-
+            goCompany:function () {
+                window.location.href = this.frontOrAdmin + '/pw/pwEnter/listQXRZCompany'
             },
-            goTeam: function () {
-
+            goTeam:function () {
+                window.location.href = this.frontOrAdmin + '/pw/pwEnter/listQXRZTeam'
             },
-            goApply: function () {
-
-            },
-            handleChangeBuild: function () {
-                var buildId = this.buildId;
-                if(!buildId){
-//                    this.baseId = '';
-                    this.floorId = '';
-                    this.searchListForm['pwSpace.id'] = this.baseId;
-                    this.getDataList();
-                    return false;
-                }
-                var build = this.buildList.filter(function (item) {
-                    return item.id === buildId;
-                });
-                this.baseId = build[0].pId;
-                this.floorId = '';
-                this.searchListForm['pwSpace.id'] = buildId;
-                this.getDataList();
+            goApply:function () {
+                window.location.href = this.frontOrAdmin + '/pw/pwEnter/listQXRZ'
             },
 
-            handleChangeBase: function () {
-                var buildList = this.buildList;
-                var value = this.baseId;
-                buildList.forEach(function (item) {
-                    Vue.set(item, 'isSiblings', !value ? true : item.pId === value);
-                });
-                this.buildId = '';
-                this.floorId = '';
-                this.searchListForm['pwSpace.id'] = value;
-                this.getDataList();
-            },
-
-            handleChangeFloor: function () {
-                this.searchListForm['pwSpace.id'] = this.floorId;
-                this.getDataList();
-            },
-            getSpaceList: function () {
+            getPwEnterTypes: function () {
                 var self = this;
-                return this.$axios.get('/pw/pwSpace/treeData').then(function (response) {
-                    self.spaceList = response.data;
+                this.$axios.get('/pw/pwEnter/getPwEnterTypes').then(function (response) {
+                    var data = response.data;
+                    self.pwEnterTypes = data || [];
+                })
+            },
+            getApplyRecordNum:function () {
+                var self = this;
+                this.$axios.get('/pw/pwApplyRecord/ajaxCountByType?type=40').then(function (response) {
+                    var data = response.data;
+                    self.applyRecordNum = data.data || 0;
                 })
             }
+
         },
         created: function () {
-            this.getSpaceList();
-//            this.getDataList();
+            this.getApplyRecordNum();
+            this.getEnterStates();
+            this.getCheckStates();
+            this.getPwEnterTypes();
+            this.getDataList();
             if (this.message) {
                 this.$message({
                     message: this.message,

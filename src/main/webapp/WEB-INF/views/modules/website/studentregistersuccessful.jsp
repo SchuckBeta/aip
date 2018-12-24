@@ -39,15 +39,16 @@
             var userId = '${fns:getUser().id}';
             return {
                 'userType': '${userType}',
-                userId: userId
+                userId: userId,
+                registerSucForm: {}
             }
         },
         computed:  {
             action: function () {
-                return this.frontOrAdmin + (this.userType === '1' ? '/sys/frontStudentExpansion/findUserInfoById?id=' : '/sys/frontTeacherExpansion/findUserInfoById?userId=')+this.userId;
+                return this.frontOrAdmin + (this.loginCurUser.userType === '1' ? '/sys/frontStudentExpansion/findUserInfoById?id=' : '/sys/frontTeacherExpansion/findUserInfoById?userId=')+this.loginCurUser.id;
             },
             tip: function () {
-                return this.userType === '1' ? '学生注册账号' : '导师注册账号'
+                return this.loginCurUser.userType === '1' ? '学生注册账号' : '导师注册账号'
             }
         },
         methods: {

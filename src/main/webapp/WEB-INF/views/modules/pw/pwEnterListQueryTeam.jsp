@@ -18,14 +18,15 @@
                          name="officeId" :default-props="officeProps" @change="getPwEnterListBGSH"></e-condition>
             <e-condition type="radio" v-model="searchListForm.status" label="入驻状态" :options="pwEnterStatues"
                          name="status" @change="getPwEnterListBGSH" :default-props="roomStatusProps"></e-condition>
-            <e-condition type="radio" v-model="searchListForm['restatus']" label="房间分配" :options="roomStatus"
-                         name="restatus" @change="getPwEnterListBGSH" :default-props="roomStatusProps"></e-condition>
+            <e-condition type="radio" v-model="searchListForm['assignStatus']" label="房间分配" :options="roomStatus"
+                         name="restatus" @change="handleChangeReStatus" :default-props="roomStatusProps"></e-condition>
         </div>
         <div class="search-block_bar clearfix">
             <div class="search-btns">
                 <el-button type="primary" size="mini" :disabled="disabled" @click.stop.prevent="exportTeamFiles">
                     {{disabled? '导出中...' : '导出'}}
                 </el-button>
+                <el-button type="primary" size="mini" :disabled="disabled" @click.stop.prevent="confirmDelList">批量删除</el-button>
             </div>
             <div class="search-input">
                 <el-select size="mini" v-model="condition" placeholder="请选择查询条件" clearable
@@ -50,14 +51,15 @@
                         start-placeholder="开始日期"
                         end-placeholder="结束日期"
                         value-format="yyyy-MM-dd HH:mm:ss"
+                        :default-time="searchDefaultTime"
                         style="width: 270px; vertical-align: top">
                 </el-date-picker>
                 <el-input
-                        placeholder="企业或团队名称/负责人/组成员/导师/场地"
+                        placeholder="企业或团队名称/负责人/组成员/导师"
                         size="mini"
                         name="keys"
                         v-model="searchListForm.keys"
-                        keyup.enter.native="getPwEnterListBGSH"
+                        @keyup.enter.native="getPwEnterListBGSH"
                         class="w300" style="vertical-align: top">
                     <el-button slot="append" icon="el-icon-search"
                                @click.stop.prevent="getPwEnterListBGSH"></el-button>
@@ -66,7 +68,12 @@
         </div>
     </el-form>
     <div class="table-container">
-        <el-table :data="pwEnterListBGSH" size="mini" class="table" @sort-change="sortChange">
+        <el-table :data="pwEnterListBGSH" size="mini" class="table" @sort-change="sortChange"  @selection-change="handleSelectionChange">
+            <el-table-column
+                    type="selection"
+                    :selectable="selectable"
+                    width="60">
+            </el-table-column>
             <el-table-column label="入驻信息">
                 <template slot-scope="scope">
                     <table-thing-info :row="getPwEnterInfo(scope.row)"></table-thing-info>
@@ -82,13 +89,17 @@
                     {{scope.row.eprojects ? scope.row.eprojects.length : '0'}}
                 </template>
             </el-table-column>
-            <el-table-column label="入驻场地" align="center">
+            <el-table-column label="入驻场地（工位数）" align="center">
                 <template slot-scope="scope">
                     <template v-if="scope.row.erooms">
-                            <span v-for="room in scope.row.erooms">
-                            {{room.pwRoom.pwSpace.id | getRoomNames(baseTreeEntries)}}/{{room.pwRoom.name}}
+                        <el-tooltip v-for="room in scope.row.erooms" :key="room.id"
+                                    :content="room.pwRoom.pwSpace.id | getRoomNames(baseTreeEntries, 'pId', room.pwRoom.name, room.num)"
+                                    popper-class="white" placement="right">
+                            <span class="break-ellipsis">
+                            {{room.pwRoom.pwSpace.id | getRoomNames(baseTreeEntries, 'pId', room.pwRoom.name, room.num)}}
                                 <br>
-                        </span>
+                            </span>
+                        </el-tooltip>
                     </template>
                     <template v-else>-</template>
                 </template>
@@ -99,9 +110,12 @@
                 </template>
             </el-table-column>
             <el-table-column label=" 入驻有效期" align="center" prop="endDate" sortable="endDate">
-                <template slot-scope="scope">
-                    {{scope.row.startDate | formatDateFilter('YYYY-MM-DD')}}至{{scope.row.endDate |
-                    formatDateFilter('YYYY-MM-DD')}}
+                    <template slot-scope="scope">
+                        <span>{{scope.row.startDate | formatDateFilter('YYYY-MM-DD')}}<br></span>
+                        <template v-if="scope.row.endDate">
+                            <span>至<br></span>
+                            <span>{{scope.row.endDate | formatDateFilter('YYYY-MM-DD')}}</span>
+                        </template>
                 </template>
             </el-table-column>
             <el-table-column label="入驻状态" align="center" prop="status" sortable="status">
@@ -117,9 +131,11 @@
             <el-table-column label="操作" align="center">
                 <template slot-scope="scope">
                     <div class="table-btns-action">
-                        <el-button type="text" size="mini"
-                                   :disabled="disabledStatus.indexOf(scope.row.status) > -1"
+                        <el-button v-if="disabledStatus.indexOf(scope.row.status) == -1" type="text" size="mini"
                                    @click.stop.prevent="goToChange(scope.row)">变更
+                        </el-button>
+                        <el-button v-else type="text" size="mini"
+                                   @click.stop.prevent="confirmDelPwEnterApply(scope.row)">删除
                         </el-button>
                     </div>
                 </template>
@@ -166,7 +182,10 @@
                     exitQDate: '',
                     keys: '',
                     status: '',
+                    assignStatus: '',
                     'restatus': '',
+                    hasYfp: '',
+                    isShow: '',
                     'applicant.office.id': ''
                 },
                 pwEnterApplyDate: [],
@@ -189,7 +208,9 @@
                 condition: '',
                 baseTreeEntries: {},
                 disabled: false,
-                disabledStatus: ['0','20','60']
+                disabledStatus: ['0','20','60'],
+                multipleSelection: [],
+                searchDefaultTime: ['00:00:00','23:59:59']
             }
         },
         computed: {
@@ -212,6 +233,59 @@
             }
         },
         methods: {
+            handleChangeReStatus: function (value) {
+                if (value !== 'tempNotAssign') {
+                    this.searchListForm.restatus = value;
+                    this.searchListForm.hasYfp = '';
+                    this.searchListForm.isShow = '';
+                } else {
+                    this.searchListForm.restatus = '';
+                    this.searchListForm.hasYfp = '0';
+                    this.searchListForm.isShow = '0';
+                }
+                this.getPwEnterListBGSH()
+            },
+
+            handleSelectionChange: function (value) {
+                this.multipleSelection = value;
+            },
+
+            selectable: function (row) {
+                return this.disabledStatus.indexOf(row.status) > -1
+            },
+
+            confirmDelList: function () {
+                var self = this;
+                this.$confirm("确认删除选中的入驻记录吗？", '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(function () {
+                    self.delPwEnterApplyList();
+                }).catch(function () {
+
+                })
+            },
+            delPwEnterApplyList: function () {
+                var self = this;
+                var ids = this.multipleSelection.map(function (item) {
+                    return item.id;
+                });
+                this.disabled = true;
+                this.$axios.post('/pw/pwEnter/ajaxDeletePL?ids=' + ids.join(',')).then(function (response) {
+                    var data = response.data;
+                    if (data.status === 1) {
+                        self.getPwEnterListBGSH();
+                        self.$message.success("删除成功")
+                    } else {
+                        self.$message.error(data.msg)
+                    }
+                    self.disabled = false;
+                }).catch(function (error) {
+                    self.disabled = false;
+                    self.$message.error(self.xhrErrorMsg)
+                })
+            },
             sortChange: function (row) {
                 this.searchListForm.orderBy = row.prop;
                 this.searchListForm.orderByType = row.order ? (row.order.indexOf('asc') ? 'asc' : 'desc') : '';
@@ -291,7 +365,7 @@
             },
             getPwEnterTypes: function () {
                 var self = this;
-                this.$axios.get('/pw/pwEnter/getPwEnterTypes').then(function (response) {
+                this.$axios.get('/pw/pwEnter/getPwEnterTypes?type=90').then(function (response) {
                     var data = response.data;
                     self.pwEnterTypes = data || [];
                 }).catch(function () {
@@ -321,7 +395,6 @@
             getPwEnterInfo: function (row) {
                 var type = row.type;
                 var name = row.eteam.team.name;
-                var label = this.pwEnterTypeEntries[row.type];
                 var applicant = row.applicant;
                 if (type == '2') {
                     name = row.ecompany.pwCompany.name;
@@ -347,7 +420,11 @@
                 var self = this;
                 this.$axios.get('/pw/pwEnter/ajaxPwEroomStatus').then(function (response) {
                     var data = response.data;
-                    self.roomStatus = JSON.parse(data.data) || []
+                    self.roomStatus = JSON.parse(data.data) || [];
+                    self.roomStatus.push({
+                        key: 'tempNotAssign',
+                        name: '未分配'
+                    })
                 }).catch(function (error) {
 
                 })
@@ -356,7 +433,7 @@
                 var self = this;
                 this.$axios.get('/pw/pwEnter/ajaxPwEnterStatus').then(function (response) {
                     var data = response.data;
-                    self.pwEnterStatues = JSON.parse(data.data) || []
+                    self.pwEnterStatues = JSON.parse(data.data) || [];
                 }).catch(function (error) {
 
                 })
@@ -372,7 +449,34 @@
                     self.baseTreeEntries = entries;
                 })
             },
+            confirmDelPwEnterApply: function (row) {
+                var self = this;
+                this.$confirm("确认删除这条入驻记录吗？", '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(function () {
+                    self.delPwEnterApply(row);
+                }).catch(function () {
 
+                })
+            },
+
+            //删除入驻记录
+            delPwEnterApply: function (row) {
+                var self = this;
+                this.$axios.get('/pw/pwEnter/ajaxDelPwEnterApply?id=' + row.id).then(function (response) {
+                    var data = response.data;
+                    if (data.status === 1) {
+                        self.getPwEnterListBGSH();
+                        self.$message.success("删除成功")
+                    } else {
+                        self.$message.error(data.msg)
+                    }
+                }).catch(function (error) {
+                    self.$message.error(self.xhrErrorMsg)
+                })
+            }
         },
         created: function () {
             this.getPwEnterListBGSH();

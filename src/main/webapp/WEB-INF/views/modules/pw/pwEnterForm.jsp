@@ -5,8 +5,6 @@
 <head>
     <title>${backgroundTitle}</title>
     <%@include file="/WEB-INF/views/include/backcreative.jsp" %>
-    <script type="text/javascript" src="/js/components/pwEnter/pwEnterMixin.js?version=${fns: getVevison()}"></script>
-    <script type="text/javascript" src="/js/components/pwEnter/pwEnterView.js?version=${fns: getVevison()}"></script>
 
 </head>
 <body>
@@ -45,6 +43,11 @@
                     <pw-enter-site :pw-enter-id="pwEnterId"></pw-enter-site>
                 </tab-pane-content>
             </el-tab-pane>
+            <el-tab-pane label="入驻记录" name="fivePwEnterTab">
+                <tab-pane-content>
+                    <pw-enter-record-list :pw-enter-id="pwEnterId"></pw-enter-record-list>
+                </tab-pane-content>
+            </el-tab-pane>
         </el-tabs>
     </div>
     <el-dialog
@@ -64,8 +67,8 @@
             </el-form-item>
             <el-form-item v-if="pwEnterAuditForm.atype != '0'" label="入驻有效期：" prop="hasTerm">
                 <el-select v-model="pwEnterAuditForm.hasTerm" @change="handleChangeHasTerm">
-                    <el-option v-for="item in yearOptions" :key="item.value" :value="item.value"
-                               :label="item.label"></el-option>
+                    <el-option v-for="item in yearOptions" :key="item.num" :value="item.num"
+                               :label="item.remarks | dateAddDays(sysDateAfter, item.num)"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item v-if="pwEnterAuditForm.hasTerm == '-1'" label="自定义时间：" prop="termDate">
@@ -112,7 +115,7 @@
                 yearOptions: [],
                 pickerOptions: {
                     disabledDate: function (time) {
-                        return time.getTime() < (Date.now() + 24 * 3600 * 1000);
+                        return time.getTime() < Date.now();
                     }
                 },
                 disabled: false
@@ -168,19 +171,31 @@
                 var self = this;
                 this.$axios.get('/sys/sysCurDateYmdHms').then(function (response) {
                     self.sysDate = moment(response.data).format('YYYY-MM-DD');
-                    var date1 = new Date(self.sysDate);
-                    var date2 = new Date(self.sysDate);
-                    date1.setMonth(date1.getMonth() + 6);
-                    date2.setMonth(date2.getMonth() + 12);
-                    var halfYear = moment(date1).format('YYYY-MM-DD');
-                    var oneYear = moment(date2).format('YYYY-MM-DD');
-                    self.yearOptions = [
-                        {label: ('半年（' + halfYear + '）'), value: halfYear},
-                        {label: ('一年（' + oneYear + '）'), value: oneYear},
-                        {label: '自定义', value: '-1'}
-                    ]
+//                    var date1 = new Date(self.sysDate);
+//                    var date2 = new Date(self.sysDate);
+//                    date1.setMonth(date1.getMonth() + 6);
+//                    date2.setMonth(date2.getMonth() + 12);
+//                    var halfYear = moment(date1).format('YYYY-MM-DD');
+//                    var oneYear = moment(date2).format('YYYY-MM-DD');
+//                    self.yearOptions = [
+//                        {label: ('半年（' + halfYear + '）'), value: halfYear},
+//                        {label: ('一年（' + oneYear + '）'), value: oneYear},
+//                        {label: '自定义', value: '-1'}
+//                    ]
                 })
             },
+
+            getYearOptions: function () {
+              var self = this;
+                this.$axios.get('/pw/pwEnter/ajaxDtypeTerms?isAll=false').then(function (response) {
+                    var data = response.data;
+                    if(data.status === 1){
+                        self.yearOptions = JSON.parse(data.data) || [];
+                        self.yearOptions.push({remarks: '自定义', num: '-1'})
+                    }
+                })
+            },
+
             getAuditParams: function () {
                 var pwEnterAuditForm = this.pwEnterAuditForm;
                 var atype = pwEnterAuditForm.atype;
@@ -193,11 +208,13 @@
                     remarks: pwEnterAuditForm.remarks
                 }
                 if (atype === '1') {
-                    nTerm = hasTerm;
+//                    nTerm = hasTerm;
+                    params['term'] = hasTerm;
                     if (hasTerm === '-1') {
                         nTerm = pwEnterAuditForm.termDate;
+                        params['term'] = Math.ceil((new Date(nTerm).getTime() - new Date(this.sysDate).getTime()) / 24 / 3600 / 1000);
                     }
-                    params['term'] = Math.ceil((new Date(nTerm).getTime() - new Date(this.sysDate).getTime()) / 24 / 3600 / 1000);
+//                    params['term'] = Math.ceil((new Date(nTerm).getTime() - new Date(this.sysDate).getTime()) / 24 / 3600 / 1000);
                 }
                 return params
             },
@@ -223,6 +240,8 @@
                     var data = response.data;
                     if (data.status === 1) {
                         self.dialogVisibleAudit = false;
+//                        window.parent.sideNavModule.changeStaticUnreadTag("/a/pw/pwEnter/ajaxCountToAudit");
+//                        window.parent.sideNavModule.changeStaticUnreadTagTargetUrl("/a/pw/pwEnter/ajaxCountToAudit", '/a/pw/pwEnter/listFPCD');
                         self.$msgbox({
                             type: 'success',
                             title: '提示',
@@ -232,7 +251,8 @@
                             showClose: false,
                             message: '审核完成'
                         }).then(function () {
-                            location.href = '/a/pw/pwEnter/list';
+                            window.parent.sideNavModule.topReload();
+//                            location.href = '/a/pw/pwEnter/list';
                         }).catch(function () {
                         });
                     } else {
@@ -249,6 +269,7 @@
         },
         mounted: function () {
             this.getSysDate();
+            this.getYearOptions();
         }
     })
 </script>

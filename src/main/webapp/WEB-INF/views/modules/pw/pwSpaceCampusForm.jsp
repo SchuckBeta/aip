@@ -13,10 +13,10 @@
 <div id="app" v-show="pageLoad" style="display: none" class="container-fluid mgb-60">
     <div class="mgb-20">
         <shiro:hasPermission name="pw:pwSpace:edit">
-            <edit-bar :second-name="campusForm.id ? '校区修改': '校区添加'"></edit-bar>
+            <edit-bar :second-name="campusForm.id ? '校区修改': '校区添加'" href="/pw/pwSpace/list"></edit-bar>
         </shiro:hasPermission>
         <shiro:lacksPermission name="pw:pwSpace:edit">
-            <edit-bar :second-name="校区查看"></edit-bar>
+            <edit-bar second-name="校区查看" href="/pw/pwSpace/list"></edit-bar>
         </shiro:lacksPermission>
     </div>
 
@@ -47,7 +47,6 @@
                            @click.stop.prevent="saveForm('campusForm')">保存
                 </el-button>
             </shiro:hasPermission>
-            <el-button @click.stop.prevent="goToBack">返回</el-button>
         </el-form-item>
 
     </el-form>
@@ -63,7 +62,7 @@
     new Vue({
         el: '#app',
         data: function () {
-            var pwSpace = JSON.parse('${fns:toJson(pwSpace)}');
+            var pwSpace = JSON.parse(JSON.stringify(${fns:toJson(pwSpace)})) || [];
 
             var nameReg = /['"\s“”‘’]+/;
             var validateName = function (rule, value, callback) {
@@ -103,9 +102,6 @@
                         self.$refs.campusForm.$el.submit();
                     }
                 })
-            },
-            goToBack:function () {
-                window.location.href = this.frontOrAdmin + '/pw/pwSpace/list';
             }
         },
         created: function () {

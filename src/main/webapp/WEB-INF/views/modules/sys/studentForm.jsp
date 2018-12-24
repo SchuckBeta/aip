@@ -13,7 +13,7 @@
     <script src="/js/components/cityDropDown/cityDropDown.js"></script>
     <script src="/js/components/cityDropDown/cityPicker.js"></script>
     <style>
-        .el-date-editor.el-input, .el-date-editor.el-input__inner{
+        .el-date-editor.el-input, .el-date-editor.el-input__inner {
             max-width: 220px;
             width: auto;
         }
@@ -30,7 +30,8 @@
             <div class="avatar-pic">
                 <img :src="userPhoto | ftpHttpFilter(ftpHttp) | studentPicFilter">
             </div>
-            <el-button v-if="userBaseForm.userId" type="primary" size="mini" @click.stop.prevent="handleChangeUserPicOpen">更换图像
+            <el-button v-if="userBaseForm.userId" type="primary" size="mini"
+                       @click.stop.prevent="handleChangeUserPicOpen">更换图像
             </el-button>
         </div>
     </div>
@@ -50,12 +51,13 @@
                                    style="vertical-align: top">返回
                         </el-button>
                         <%--<el-button :disabled="isUpdating" size="mini" @click.stop.prevent="reloadLo"--%>
-                                   <%--style="vertical-align: top">刷新--%>
+                        <%--style="vertical-align: top">刷新--%>
                         <%--</el-button>--%>
                     </div>
                 </div>
                 <el-form :model="userBaseForm" ref="userBaseForm" :rules="userBaseFormRule" :disabled="isUpdating"
-                         :action="frontOrAdmin + '/sys/studentExpansion/save'" method="POST" size="mini" class="el-form-builder"
+                         :action="frontOrAdmin + '/sys/studentExpansion/save'" method="POST" size="mini"
+                         class="el-form-builder"
                          label-width="90px">
                     <input type="hidden" name="user.photo" :value="userPhoto">
                     <input type="hidden" name="id" :value="userBaseForm.id">
@@ -165,17 +167,20 @@
                         </el-col>
                         <el-col :span="16">
                             <el-form-item label="联系地址" prop="address">
-                                <el-input name="address" placeholder="请输入联系地址" v-model="userBaseForm.address"></el-input>
+                                <el-input name="address" placeholder="请输入联系地址"
+                                          v-model="userBaseForm.address"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="8">
                             <el-form-item label="户籍" prop="userResidence">
-                                <el-input name="user.residence" placeholder="请输入户籍" v-model="userBaseForm.userResidence"></el-input>
+                                <el-input name="user.residence" placeholder="请输入户籍"
+                                          v-model="userBaseForm.userResidence"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="24" style="height: 66px;">
-                            <el-form-item label="简介" prop="userIntroduction">
-                                <el-input name="user.introduction" type="textarea" :rows="2" placeholder="请输入简介" v-model="userBaseForm.userIntroduction"></el-input>
+                            <el-form-item label="个人简介" prop="userIntroduction">
+                                <el-input name="user.introduction" type="textarea" :rows="2" placeholder="请输入个人简介"
+                                          v-model="userBaseForm.userIntroduction"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="8">
@@ -247,7 +252,7 @@
                             </el-form-item>
                         </el-col>
                         <el-col v-if="isInCurStates('userEducation')" :span="8">
-                            <el-form-item label="学历"  prop="userEducation"
+                            <el-form-item label="学历" prop="userEducation"
                             >
                                 <input type="hidden" name="user.education" :value="userBaseForm.userEducation">
                                 <el-select v-model="userBaseForm.userEducation" placeholder="-请选择-">
@@ -310,8 +315,10 @@
                         <el-col :span="24">
                             <el-form-item label="技术领域" prop="userDomainIdList"
                             >
-                                <input type="hidden" name="user.domainIdList" :value="userBaseForm.userDomainIdList.join(',')">
-                                <el-select v-model="userBaseForm.userDomainIdList" name multiple placeholder="请选择" style="width: 100%">
+                                <input type="hidden" name="user.domainIdList"
+                                       :value="userBaseForm.userDomainIdList.join(',')">
+                                <el-select v-model="userBaseForm.userDomainIdList" name multiple placeholder="请选择"
+                                           style="width: 100%">
                                     <el-option
                                             v-for="item in technologyFields"
                                             :key="item.value"
@@ -336,7 +343,8 @@
                             </div>
                             <div class="experience-card-body">
                                 <div class="exp-pic">
-                                    <a href="javascript: void(0);"><img :src="project.logo | proGConLogo | ftpHttpFilter(ftpHttp) | proGConPicFilter"></a>
+                                    <a href="javascript: void(0);"><img
+                                            :src="project.logo | proGConLogo | ftpHttpFilter(ftpHttp) | proGConPicFilter"></a>
                                 </div>
                                 <div class="exp-info">
                                     <e-col-item label="担任角色：" label-width="72px">{{ getRoleName(project) }}</e-col-item>
@@ -380,7 +388,8 @@
                             </div>
                             <div class="experience-card-body">
                                 <div class="exp-pic">
-                                    <a href="javascript: void(0);"><img :src="contest.logo | proGConLogo | ftpHttpFilter(ftpHttp) | proGConPicFilter"></a>
+                                    <a href="javascript: void(0);"><img
+                                            :src="contest.logo | proGConLogo | ftpHttpFilter(ftpHttp) | proGConPicFilter"></a>
                                 </div>
                                 <div class="exp-info">
                                     <e-col-item label="担任角色：" label-width="72px">{{ getRoleName(contest) }}</e-col-item>
@@ -429,7 +438,8 @@
         <cropper-pic :img-src="userAvatar" :disabled="isUpdating" ref="cropperPic"></cropper-pic>
         <div slot="footer" class="dialog-footer">
             <el-button size="mini" :disabled="isUpdating" @click.stop.prevent="handleChangeUserPicClose">取消</el-button>
-            <el-button size="mini" :disabled="!userPicFile || isUpdating" type="primary" @click.stop.prevent="updateUserPic">上传
+            <el-button size="mini" :disabled="!userPicFile || isUpdating" type="primary"
+                       @click.stop.prevent="updateUserPic">上传
             </el-button>
         </div>
     </el-dialog>
@@ -472,11 +482,11 @@
 //                return item.id !== '1';
 //            });
 
-            if(user.officeId){
+            if (user.officeId) {
                 userProfessional.push('1')
                 userProfessional.push(user.officeId);
             }
-            if(user.professional){
+            if (user.professional) {
                 userProfessional.push(user.professional)
             }
 
@@ -496,14 +506,14 @@
                     userMobile: user.mobile,
                     userCountry: user.country,
                     userIdNumber: user.idNumber,
-                    userIdType: user.idType,
+                    userIdType: user.idType || '1',
                     userQq: user.qq,
                     residence: user.residence,
                     introduction: user.introduction,
                     userPolitical: user.political,
                     userNational: user.national,
                     address: studentForm.address,
-                    enterdate:studentForm.enterdate ? moment(studentForm.enterdate).format('YYYY-MM') : '',//用户生日
+                    enterdate: studentForm.enterdate ? moment(studentForm.enterdate).format('YYYY-MM') : '',//用户生日
                     currState: studentForm.currState,
                     cycle: studentForm.cycle,
                     userNo: user.no,
@@ -520,9 +530,11 @@
                 },
                 userBaseFormRule: {
                     userResidence: [
-                        { max: 64, message: '请输入大不于64个字', trigger: 'blur'},
+                        {required: true, message: '请填写户籍', trigger: 'blur'},
+                        {max: 64, message: '请输入大不于64个字', trigger: 'blur'},
                     ],
                     userIntroduction: [
+                        {required: true, message: '请填写个人简介', trigger: 'blur'},
                         {max: 200, message: '请输入不大于200个字', trigger: 'blur'},
                     ],
                     userLoginName: [
@@ -591,7 +603,7 @@
                         {required: true, message: '请选择学制年', trigger: 'change'}
                     ],
                     userProfessional: [
-                        {required: true, message: '请选择学制年', trigger: 'change'}
+                        {required: true, message: '请选择院系/专业', trigger: 'change'}
                     ],
                     userEducation: [
                         {required: true, message: '请选择学历', trigger: 'change'}
@@ -696,7 +708,7 @@
                 isUpdating: false,
 
                 userPicFile: null,
-                dialogVisibleChangeUserPic:false,
+                dialogVisibleChangeUserPic: false,
                 userAvatar: '',
                 userPhoto: user.photo,
 
@@ -713,7 +725,7 @@
 
             officeId: function () {
                 var userProfessional = this.userBaseForm.userProfessional;
-                if(this.professionalId && userProfessional.length - 2 > -1){
+                if (this.professionalId && userProfessional.length - 2 > -1) {
                     return userProfessional[userProfessional.length - 2];
                 }
                 return ''
@@ -721,7 +733,7 @@
 
             professionalId: function () {
                 var userProfessional = this.userBaseForm.userProfessional;
-                if(userProfessional && userProfessional.length != 0){
+                if (userProfessional && userProfessional.length != 0) {
                     return userProfessional[userProfessional.length - 1];
                 }
             },
@@ -780,10 +792,7 @@
                 var formData = new FormData();
 
                 if (data.x < 0 || data.y < 0) {
-                    this.show$message({
-                        status: false,
-                        msg: '超出边界，请缩小裁剪框，点击上传'
-                    });
+                    this.$message.error('超出边界，请缩小裁剪框，点击上传');
                     return false;
                 }
 
@@ -797,7 +806,7 @@
                     var data = response.data;
                     if (data.state === 'SUCCESS') {
                         self.moveFile(data.ftpUrl);
-                    }else {
+                    } else {
                         self.userPicFile = null;
                         self.isUpdating = false;
                         self.dialogVisibleChangeUserPic = false;
@@ -828,13 +837,15 @@
                 var self = this;
                 return this.$axios.post('/sys/studentExpansion/ajaxUpdatePhoto?photo=' + url + "&userId=" + this.userBaseForm.userId).then(function (response) {
                     var data = response.data;
-                    self.show$message(data);
                     if (data.status) {
                         data = data.datas;
                         self.dialogVisibleChangeUserPic = false;
                         self.userAvatar = self.addFtpHttp(data.photo);
                         self.userPhoto = data.photo;
                         self.userPicFile = null;
+                        self.$message.success(response.data.msg);
+                    } else {
+                        self.$message.error(data.msg);
                     }
                     self.isUpdating = false;
 
@@ -889,7 +900,7 @@
             validateForm: function () {
                 var self = this;
                 this.$refs.userBaseForm.validate(function (valid) {
-                    if(valid){
+                    if (valid) {
                         self.submitUserBaseForm();
                     }
                 });

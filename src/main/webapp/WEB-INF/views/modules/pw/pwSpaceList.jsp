@@ -68,17 +68,17 @@
                     <template slot-scope="scope">
                         <div class="table-btns-action">
 
-                            <a v-if="scope.row.type == '1'" :href="'${ctx}/pw/pwSpace/form?parent.id='+ scope.row.id + '&type=2&secondName=添加基地'">添加基地</a>
-                            <a v-if="scope.row.type == '1'" :href="'${ctx}/pw/pwSpace/form?parent.id='+ scope.row.id + '&type=3&secondName=添加楼栋'">添加楼栋</a>
+                            <a v-if="scope.row.type == '1'" :href="'${ctx}/pw/pwSpace/form?parent.id='+ scope.row.id + '&type=2'">添加基地</a>
+                            <a v-if="scope.row.type == '1'" :href="'${ctx}/pw/pwSpace/form?parent.id='+ scope.row.id + '&type=3'">添加楼栋</a>
 
-                            <a v-if="scope.row.type == '2'" :href="'${ctx}/pw/pwSpace/form?parent.id='+ scope.row.id + '&type=3&secondName=添加楼栋'">添加楼栋</a>
+                            <a v-if="scope.row.type == '2'" :href="'${ctx}/pw/pwSpace/form?parent.id='+ scope.row.id + '&type=3'">添加楼栋</a>
 
-                            <a v-if="scope.row.type == '3'" :href="'${ctx}/pw/pwSpace/form?parent.id='+ scope.row.id + '&type=4&secondName=添加楼层'">添加楼层</a>
+                            <a v-if="scope.row.type == '3'" :href="'${ctx}/pw/pwSpace/form?parent.id='+ scope.row.id + '&type=4'">添加楼层</a>
 
-                            <a v-if="scope.row.type == '4'" :href="'${ctx}/pw/pwFloorDesigner/list?floorId='+ scope.row.id + '&secondName=设计'">设计</a>
+                            <a v-if="scope.row.type == '4'" :href="'${ctx}/pw/pwFloorDesigner/list?floorId='+ scope.row.id">设计</a>
 
-                            <a v-if="scope.row.type != '0'" :href="'${ctx}/pw/pwSpace/form?id='+ scope.row.id + '&secondName=修改'">修改</a>
-                            <a v-if="scope.row.type != '0'" href="javascript:void(0)" @click.stop.prevent="singleDelete(scope.row.id)">删除</a>
+                            <a v-if="scope.row.type != '0'" :href="'${ctx}/pw/pwSpace/form?id='+ scope.row.id">修改</a>
+                            <a v-if="scope.row.type != '0'" href="javascript:void(0)" @click.stop.prevent="singleDelete(scope.row)">删除</a>
                         </div>
                     </template>
                 </el-table-column>
@@ -97,8 +97,8 @@
         el: '#app',
         mixins: [Vue.menuTreeMixin],
         data: function () {
-            var pageList = JSON.parse('${fns:toJson(list)}');
-            var pwSpaceTypes = JSON.parse('${fns:toJson(fns:getDictList('pw_space_type'))}');
+            var pageList = JSON.parse(JSON.stringify(${fns:toJson(list)})) || [];
+            var pwSpaceTypes = JSON.parse(JSON.stringify(${fns:toJson(fns:getDictList('pw_space_type'))}));
             return {
                 pageList: pageList,
                 pwSpaceTypes: pwSpaceTypes,
@@ -183,66 +183,47 @@
                 return ids;
             },
 
-            singleDelete:function (id) {
-                this.$confirm('确认删除吗？', '提示', {
+            singleDelete:function (row) {
+                var tip = '';
+                if(row.type != '4'){
+                    tip = '该操作将会删除' + row.name + '下的所有房间！';
+                }
+                this.$confirm(tip + '确认删除吗？', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(function () {
-                    window.location.href = '${ctx}/pw/pwSpace/delete?id=' + id;
+                    window.location.href = '${ctx}/pw/pwSpace/delete?id=' + row.id;
                 });
             },
 
             goAddCampus:function () {
-                window.location.href = '${ctx}/pw/pwSpace/form?parent.id=c146d62ea1854e128549db6f999c7d47&type=1&secondName=添加校区';
+                window.location.href = '${ctx}/pw/pwSpace/form?parent.id=c146d62ea1854e128549db6f999c7d47&type=1';
             },
 
             goAddBase:function () {
-                window.location.href = '${ctx}/pw/pwSpace/form?parent.id=c146d62ea1854e128549db6f999c7d47&type=2&secondName=添加基地';
+                window.location.href = '${ctx}/pw/pwSpace/form?parent.id=c146d62ea1854e128549db6f999c7d47&type=2';
             },
 
             goAddBuilding:function () {
-                window.location.href = '${ctx}/pw/pwSpace/form?parent.id=c146d62ea1854e128549db6f999c7d47&type=3&secondName=添加楼栋';
+                window.location.href = '${ctx}/pw/pwSpace/form?parent.id=c146d62ea1854e128549db6f999c7d47&type=3';
             },
 
             openWeeksStr: function (arr) {
-                if (arr) {
-                    if (arr.length == 7) {
-                        return '不限';
-                    }
-                    var r = '';
-
-                    arr.forEach(function (item) {
-                        switch (item) {
-                            case '1':
-                                r += '每周一、';
-                                break;
-                            case '2':
-                                r += '每周二、';
-                                break;
-                            case '3':
-                                r += '每周三、';
-                                break;
-                            case '4':
-                                r += '每周四、';
-                                break;
-                            case '5':
-                                r += '每周五、';
-                                break;
-                            case '6':
-                                r += '每周六、';
-                                break;
-                            case '7':
-                                r += '每周日、';
-                                break;
-                            default:
-                                break;
-                        }
-                    });
-                    if (r != '') {
-                        return r.substring(0, r.length - 1);
-                    }
+                var openWeeksLabel = ['每周一','每周二','每周三','每周四','每周五','每周六','每周日'];
+                var strArr = [],str = '';
+                if(!arr || arr.length == 0){
+                    return '';
                 }
+                if(arr.length == 7){
+                    str = '不限';
+                    return str;
+                }
+                arr.forEach(function (item) {
+                    strArr.push(openWeeksLabel[item-1]);
+                });
+                str = strArr.join('、');
+                return str;
             },
 
             setFlattenMenuList: function (list) {

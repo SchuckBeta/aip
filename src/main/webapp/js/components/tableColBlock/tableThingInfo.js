@@ -7,7 +7,7 @@ Vue.component('table-thing-info', {
     '        <div>\n' +
     '            <el-tooltip :content="row.name" popper-class="white" placement="right">\n' +
     '                <span class="break-ellipsis">\n' +
-    '                    <a :href="row.href" class="underline-pointer"><span v-if="row.label">{{row.label}}：</span>{{row.name}}</a>\n' +
+    '                    <a :href="row.href" :class="{\'underline-pointer\':row.href}" style="color:#333"><span v-if="row.label">{{row.label}}：</span>{{row.name}}</a>\n' +
     '                </span>\n' +
     '            </el-tooltip>\n' +
     '        </div>\n' +

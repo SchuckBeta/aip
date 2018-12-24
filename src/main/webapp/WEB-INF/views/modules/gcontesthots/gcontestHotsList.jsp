@@ -24,12 +24,12 @@
             <div class="search-btns">
                 <el-button size="mini" :disabled="tableList.length < 1" type="primary" @click.stop.prevent="saveSorts">保存排序
                 </el-button>
-                <el-button size="mini" type="primary" :disabled="multipleSelectedId.length == 0"
-                           @click.stop.prevent="batchPublish">发布
-                </el-button>
-                <el-button size="mini" type="primary" :disabled="multipleSelectedId.length == 0"
-                           @click.stop.prevent="batchCancelPublish">取消发布
-                </el-button>
+                <%--<el-button size="mini" type="primary" :disabled="multipleSelectedId.length == 0"--%>
+                           <%--@click.stop.prevent="batchPublish">发布--%>
+                <%--</el-button>--%>
+                <%--<el-button size="mini" type="primary" :disabled="multipleSelectedId.length == 0"--%>
+                           <%--@click.stop.prevent="batchCancelPublish">取消发布--%>
+                <%--</el-button>--%>
                 <el-button size="mini" type="primary" :disabled="multipleSelectedId.length == 0"
                            @click.stop.prevent="batchDelete">批量删除
                 </el-button>
@@ -71,7 +71,7 @@
                   @selection-change="handleChangeSelection" @sort-change="handleTableSortChange">
             <el-table-column
                     type="selection"
-                    width="55">
+                    width="60">
             </el-table-column>
             <el-table-column label="标题" prop="title" min-width="100">
                 <template slot-scope="scope">

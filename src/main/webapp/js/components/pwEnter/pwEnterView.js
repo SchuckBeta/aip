@@ -5,8 +5,11 @@
 Vue.component('applicant-info', {
     template: '<div v-loading="loading" class="applicant-info">\n' +
     '                <div class="user-card-photo">\n' +
-    '                    <img :src="pwEnter.declarePhoto | ftpHttpFilter(ftpHttp) | proGConPicFilter">\n' +
-    '                </div>\n' +
+    '                    <template v-if="!isBg"><img :src="pwEnter.declarePhoto | ftpHttpFilter(ftpHttp) | cardPhoto"></template>\n' +
+    '                <template v-else><div class="card-photo common-upload-one-img"><div class="upload-box-border site-cover-size">' +
+    '                   <el-upload :disabled="disabled" class="avatar-uploader" action="/f/ftp/ueditorUpload/uploadTemp?folder=pwEnter" :show-file-list="false"  :on-success="idPhotoSuccess" :on-error="idPhotoError"  name="upfile" accept="image/jpg, image/jpeg, image/png">' +
+    '                       <img :src="pwEnter.declarePhoto | ftpHttpFilter(ftpHttp) | cardPhoto"></el-upload>' +
+    '                       </div></div></template></div>\n' +
     '                <div class="user-intros">\n' +
     '                    <el-row :gutter="8">\n' +
     '                        <el-col :span="3">\n' +
@@ -36,7 +39,7 @@ Vue.component('applicant-info', {
     '                    </el-row>\n' +
     '                    <el-row :gutter="8">\n' +
     '                        <el-col :span="3" class="text-right">\n' +
-    '                            <span class="text-second-color">创业人简介：</span>\n' +
+    '                            <span class="text-second-color">个人简介：</span>\n' +
     '                        </el-col>\n' +
     '                        <el-col :span="21">\n' +
     '                            <div class="white-space-pre user-intro">{{applicant.introduction}}</div>\n' +
@@ -48,6 +51,10 @@ Vue.component('applicant-info', {
         pwEnterId: {
             type: String,
             required: true
+        },
+        isBg:  {
+            type: Boolean,
+            default: false
         }
     },
     mixins: [Vue.pwEnterMixin],
@@ -55,7 +62,8 @@ Vue.component('applicant-info', {
         return {
             pwEnter: {},
             applicant: {},
-            loading: false
+            loading: false,
+            disabled: false
         }
     },
     computed: {
@@ -99,7 +107,19 @@ Vue.component('applicant-info', {
                 });
                 self.loading = false;
             })
-        }
+        },
+        idPhotoSuccess: function (response, file) {
+            if (response.state === 'SUCCESS') {
+                this.pwEnter.declarePhoto = response.ftpUrl;
+                this.$emit('change-photo', response.ftpUrl)
+                return
+            }
+            this.$message.error("登记照上传失败，请重新上传")
+        },
+
+        idPhotoError: function (error) {
+            this.$message.error(this.xhrErrorMsg)
+        },
     },
     created: function () {
         this.getApplicantInfo();
@@ -346,10 +366,9 @@ Vue.component('pw-enter-project', {
 
 Vue.component('pw-enter-site', {
     template: '<e-panel v-loading="loading" label="场地要求">\n' +
-    '                    <template v-if="pwEnter.expectWorkNum"><e-col-item label-width="96px" label="所需工位：">{{pwEnter.expectWorkNum}}</e-col-item>\n' +
-    '                    <e-col-item label-width="96px" label="预计孵化期：">{{pwEnter.expectTerm}}年</e-col-item>\n' +
-    '                    <e-col-item class="white-space-pre-static" label-width="96px" label="备注：">{{pwEnter.expectRemark}}</e-col-item></template>' +
-    '                   <template v-else><div class="empty">入驻申请还在审核中或其他原因，暂无场地要求</div></template>\n' +
+    '                    <e-col-item label-width="96px" label="所需工位：">{{expectWorkNum}}</e-col-item>\n' +
+    '                    <e-col-item label-width="96px" label="预计孵化期：">{{expectBornDate}}</e-col-item>\n' +
+    '                    <e-col-item class="white-space-pre-static" label-width="96px" label="备注：">{{pwEnter.expectRemark}}</e-col-item>' +
     '                </e-panel>',
     props: {
         pwEnterId: {
@@ -362,6 +381,23 @@ Vue.component('pw-enter-site', {
           pwEnter: {},
           loading: false
       }
+    },
+    computed: {
+        expectWorkNum: function () {
+            var isShowWorkNum = this.pwEnter.isShowWorkNum;
+            var expectWorkNum = this.pwEnter.expectWorkNum;
+            if(isShowWorkNum === '1'){
+                return (expectWorkNum)+'位'
+            }
+            return '无'
+        },
+        expectBornDate: function () {
+            var startDate = this.pwEnter.startDate;
+            var date = new Date(startDate);
+            var days = date.getDate();
+            date.setDate(days + parseFloat(this.pwEnter.expectTerm));
+            return moment(date).format('YYYY-MM-DD')
+        }
     },
     methods: {
         getPwEnterSite: function () {
@@ -415,7 +451,19 @@ Vue.component('pw-enter-record-list', {
             this.$axios.post('/pw/pwApplyRecord/ajaxFindAppList', {eid: this.pwEnterId}).then(function (response) {
                 var data = response.data;
                 if(data.status === 1){
-                    self.recordList = data.data || [];
+                    var recordList = data.data || [];
+                    recordList = recordList.sort(function (item1, item2) {
+                        var time1 = moment(item1.createDate).valueOf();
+                        var time2 = moment(item2.createDate).valueOf();
+                        if (time1 > time2) {
+                            return 1
+                        } else if (time1 < time2) {
+                            return -1
+                        } else {
+                            return 0
+                        }
+                    });
+                    self.recordList = recordList
                 }else {
                     self.$message.error(data.msg)
                 }
@@ -435,11 +483,11 @@ Vue.component('pw-enter-record-list', {
 
 Vue.component('pw-enter-result-list', {
     template: '<e-panel v-loading="loading" label="成果记录"><ul v-if="resultList.length > 0" class="timeline">\n' +
-    '                        <li class="work" v-for="item in resultList" :key="item.id">\n' +
-    '                            <span class="contest-date">{{item.createDate | formatDateFilter(\'YYYY-MM-DD HH:mm\')}}</span>\n' +
+    '                        <li class="work" v-if="resultList.length > 0" >\n' +
+    '                            <span class="contest-date">{{resultList[0].createDate | formatDateFilter(\'YYYY-MM-DD HH:mm\')}}</span>\n' +
     '                            <img src="/images/time-line.png" alt="">\n' +
     '                            <div class="relative">\n' +
-    '                                <e-file-item v-if="item.sysAttachmentList" v-for="file in item.sysAttachmentList" :key="file.uid" :file="file" size="mini" :show="false"></e-file-item>\n' +
+    '                                <e-file-item v-for="file in resultList" :key="file.uid" :file="file" size="mini" :show="false"></e-file-item>\n' +
     '                            </div>\n' +
     '                        </li>\n' +
     '                    </ul><div class="empty" v-if="resultList.length === 0">暂无成果记录</div></e-panel>',
@@ -467,7 +515,7 @@ Vue.component('pw-enter-result-list', {
                 self.loading = false;
             }).catch(function (error) {
                 self.loading = false;
-                self.$message.error(data.msg)
+                self.$message.error(self.msg)
             })
         }
     },
@@ -481,15 +529,15 @@ Vue.component('pw-enter-result-list', {
 Vue.component('pw-enter-result', {
     template: '<div class="pw-enter-audited-result">\n' +
     '                        <e-panel label="入驻审核">\n' +
-    '                            <el-table :data="pwEnterAuditedList" border size="small" empty-text="未审核">\n' +
+    '                            <div class="table-container"><el-table :data="auditedList" border size="small" empty-text="未审核">\n' +
     '                                <el-table-column label="审核人">\n' +
-    '                                    <template slot-scope="scope">{{scope.row.createName}}</template>\n' +
+    '                                    <template slot-scope="scope">{{scope.row.auditName}}</template>\n' +
     '                                </el-table-column>' +
     '                           <el-table-column label="审核结果" align="center"><template slot-scope="scope">{{scope.row.status | selectedFilter(pwEnterStatusEntries)}}</template></el-table-column>' +
-    '                           <el-table-column label="建议及意见" align="center"><template slot-scope="scope">{{scope.row.bgremarks}}</template></el-table-column>' +
+    '                           <el-table-column label="建议及意见" align="center"><template slot-scope="scope">{{scope.row.remarks}}</template></el-table-column>' +
     '                           <el-table-column label="入驻有效期" align="center"><template slot-scope="scope">{{scope.row.startDate | formatDateFilter(\'YYYY-MM-DD\')}}至{{scope.row.endDate |formatDateFilter(\'YYYY-MM-DD\')}}</template></el-table-column>' +
     '                           <el-table-column label="审核时间" align="center"><template slot-scope="scope">{{scope.row.createDate}}</template></el-table-column>\n' +
-    '                            </el-table>\n' +
+    '                            </el-table></div>\n' +
     '                        </e-panel>\n' +
     '                    </div>',
     props: {
@@ -509,6 +557,11 @@ Vue.component('pw-enter-result', {
         pwEnterStatusEntries: function () {
             return this.getEntries(this.pwEnterStatues)
         },
+        auditedList: function () {
+            return this.pwEnterAuditedList.filter(function (item) {
+                return item.status != '0'
+            })
+        }
     },
     methods: {
         getPwEnterAssignPlaceList: function () {

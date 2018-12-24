@@ -32,12 +32,12 @@
 <script src="${ctxStatic}/moment/moment.min.js"></script>
 <script src="/js/cityData/citydataNew.js?version=${fns: getVevison()}"></script>
 <script src="/js/globalUtils/globalUtils.js"></script>
-<script src="/js/filters/filters.js"></script>
+<script src="/js/filters/filters.js?version=${fns: getVevison()}"></script>
 <script src="/js/mixins/verifyExpression/verifyExpressionMixin.js"></script>
 <%--<script src="${ctxStatic}/vue/vue.min.js"></script>--%>
 
 <%--<script src="${ctxStatic}/axios/axios.min.js"></script>--%>
-
+<script src="/js/components/passwordForm/passwordForm.js?version=${fns: getVevison()}"></script><!---修改密码-->
 <script src="/js/mixins/colleges/collegesMixin.js"></script>
 <script src="/js/mixins/menuTree/menuTreeMixin.js"></script>
 <script src="/js/mixins/globalUtils/globalUtilsMixin.js"></script>
@@ -60,7 +60,6 @@
 <script src="/js/components/cropperPic/ePicFIle.js"></script>
 <script src="/js/components/cropperPic/cropperPic.js"></script> <!--图片裁剪-->
 <script src="/js/components/controlRuleBlock/controlRuleBlock.js"></script>
-<script src="/js/components/passwordForm/passwordForm.js"></script>                <!---修改密码-->
 <script src="/js/components/echart/echartBar.js"></script>
 <script src="/js/components/echart/echartPie.js"></script>
 <script src="/js/components/echart/echartLine.js"></script>
@@ -78,14 +77,21 @@
 <script src="/js/components/eSetText/eSetText.js"></script>
 <script src="/js/components/eSetName/eSetName.js"></script>
 <script src="/js/components/eSetWordText/eSetWordText.js"></script>
-<script src="/js/components/proContestDetail/proContestDetail.js"></script>
-<script src="/js/components/panel/e-panel.js"></script>
-<script src="/js/components/auditForm/auditForm.js"></script>
-<script src="/js/components/auditForm/scoreForm.js"></script>
-<script src="/js/components/uploadFile/uploadFile.component.js"></script>
+<script src="/js/components/proContestDetail/proContestDetail.js?version=${fns: getVevison()}"></script>
+<script src="/js/components/panel/e-panel.js?version=${fns: getVevison()}"></script>
+<script src="/js/components/auditForm/auditForm.js?version=${fns: getVevison()}"></script>
+<script src="/js/components/auditForm/scoreForm.js?version=${fns: getVevison()}"></script>
+<script src="/js/components/uploadFile/uploadFile.component.js?version=${fns: getVevison()}"></script>
+<script src="/js/components/uploadFile/uploadFile.pw.component.js?version=${fns: getVevison()}"></script>
 <script src="/js/components/common/commonComponents.js?version=${fns: getVevison()}"></script>
-<script src="/js/components/tableColBlock/tableTeamMember.js"></script>
-<script src="/js/components/tableColBlock/tableThingInfo.js"></script>
+<script src="/js/components/tableColBlock/tableTeamMember.js?version=${fns: getVevison()}"></script>
+<script src="/js/components/tableColBlock/tableThingInfo.js?version=${fns: getVevison()}"></script>
+<script type="text/javascript" src="/js/components/pwEnter/pwEnterMixin.js?version=${fns: getVevison()}"></script>
+<script type="text/javascript" src="/js/components/updateMember/updateMember.js?version=${fns: getVevison()}"></script>
+<script type="text/javascript" src="/js/components/pwEnter/pwEnterApplyRules.js?version=${fns: getVevison()}"></script>
+<script type="text/javascript" src="/js/components/pwEnter/pwEnterApplyForm.js?version=${fns: getVevison()}"></script>
+<script type="text/javascript" src="/js/components/pwEnter/pwEnterList.js?version=${fns: getVevison()}"></script>
+<script type="text/javascript" src="/js/components/pwEnter/pwEnterView.js?version=${fns: getVevison()}"></script>
 <script>
     +function (window) {
 

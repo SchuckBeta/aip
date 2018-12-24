@@ -3,827 +3,336 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <%@include file="/WEB-INF/views/include/backcyjd.jsp" %>
-    <script src="${ctxStatic}/vue/vue.min.js"></script>
-    <script src="${ctxStatic}/fullcalendar/moment.min.js"></script>
-    <script src="/other/jquery.form.min.js" type="text/javascript" charset="utf-8"></script>
+    <title>${backgroundTitle}</title>
+    <meta charset="UTF-8">
+    <%@include file="/WEB-INF/views/include/backcreative.jsp" %>
 </head>
 <body>
-<div id="actYwForm" class="container-fluid">
-    <%--<div class="edit-bar clearfix">--%>
-        <%--<div class="edit-bar-left"><span>--%>
-            <%--<c:if test="${not empty actYw.group.flowType}">${fpType.name}</c:if>--%>
-            <%--<c:if test="${empty actYw.group.flowType}">项目流程</c:if></span> --%>
-            <%--<i class="line weight-line"></i>--%>
-        <%--</div>--%>
-    <%--</div>--%>
-    <%@ include file="/WEB-INF/views/layouts/navigation.jsp" %>
-    <ul class="nav nav-tabs">
-        <li><a href="${ctx}/actyw/actYw/list?group.flowType=${actYw.group.flowType}">${fpType.name}列表</a></li>
-        <li class="active"><a href="javascript: void(0);">${fpType.name}
-            <shiro:hasPermission
-                    name="actyw:actYw:edit">${not empty actYw.id?'修改时间':'添加时间'}</shiro:hasPermission>
-            <shiro:lacksPermission
-                    name="actyw:actYw:edit">查看</shiro:lacksPermission></a></li>
-    </ul>
-    <input type="hidden" id="groupId" value="${actYw.groupId}">
-    <form:form id="inputForm" modelAttribute="actYw" action="${ctx}/actyw/actYw/ajaxGtime" method="post"
-               v-validate="{form: 'actYwTimeForm'}"
-               class="form-horizontal">
-        <form:hidden path="id"/>
-        <sys:message content="${message}"/>
-        <input type="hidden" name="secondName" id="secondName" value="${secondName}"/>
-        <div class="edit-bar edit-bar-sm clearfix" style="margin-left: 10px;">
-            <div class="edit-bar-left"><span>项目属性</span> <i class="line"></i></div>
+<div id="app" v-show="pageLoad" style="display: none" class="container-fluid mgb-60">
+    <div class="mgb-20">
+        <edit-bar :second-name="secondName"></edit-bar>
+    </div>
+    <el-form :model="actYwTimeForm" ref="actYwTimeForm" :rules="actYwTimeRules" :disabled="disabled" size="mini" label-width="120px">
+        <input type="hidden" name="id" :value="actYwTimeForm.id">
+        <div style="width: 520px;">
+            <el-form-item label="功能类型：">${fpType.name}</el-form-item>
+            <el-form-item label="名称：">${actYw.proProject.projectName}</el-form-item>
+            <el-form-item label="关联流程：">${actYwGroup.name}</el-form-item>
+            <el-form-item prop="year" label="项目年份：">
+                <el-date-picker
+                        v-model="actYwTimeForm.year"
+                        type="year"
+                        value-format="yyyy"
+                        placeholder="选择年份">
+                </el-date-picker>
+            </el-form-item>
+            <el-form-item prop="daterange" label="项目时间：">
+                <el-date-picker
+                        v-model="actYwTimeForm.daterange"
+                        @change="handleChangeProDate"
+                        type="daterange"
+                        unlink-panels
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        value-format="yyyy-MM-dd HH:mm:ss">
+                </el-date-picker>
+            </el-form-item>
+            <template v-if="hasShowTime">
+                <el-form-item prop="nodeState" label="申报时间：">
+                    <el-switch v-model="actYwTimeForm.nodeState"></el-switch>
+                </el-form-item>
+                <el-form-item prop="showTime" label="显示时间：">
+                    <el-switch v-model="actYwTimeForm.showTime" active-value="1" inactive-value="0"></el-switch>
+                </el-form-item>
+            </template>
         </div>
-        <div class="control-group">
-            <label class="control-label"> 功能类型：</label>
-            <div class="controls"><p class="control-static">${fpType.name}</p></div>
-        </div>
-        <div class="control-group">
-            <label class="control-label">名称：</label>
-            <div class="controls">
-                <p class="control-static">${actYw.proProject.projectName }</p>
-            </div>
-        </div>
-        <div class="control-group">
-            <label class="control-label">关联流程：</label>
-            <div class="controls"><p class="control-static">${actYwGroup.name}</p></div>
-        </div>
-
-        <div class="control-group">
-            <label class="control-label"><i>*</i>开始时间：</label>
-            <div class="controls">
-                <input name="startYearDate" type="text" readonly
-                       @click="showStartDatePicker($event)"
-                       v-model="proProject.startDate"
-                       class="Wdate required"
-                       />
-            </div>
-        </div>
-        <div class="control-group">
-            <label class="control-label"><i>*</i>结束时间：</label>
-            <div class="controls">
-                <input name="endYearDate" type="text" class="Wdate required" readonly
-                       @click="showEndDatePicker($event)"
-                       v-model="proProject.endDate"
-                      />
-            </div>
-        </div>
-        <div class="control-group">
-            <label class="control-label"><i>*</i>项目年份：</label>
-            <div class="controls">
-                <input name="proProject.year" type="text" class="Wdate required" readonly
-                       v-model="proProject.year"
-                       @click.stop.prevent="showProjectYear($event)"/>
-            </div>
-        </div>
-        <div v-show="isShowTime" class="control-group">
-            <label class="control-label">申报时间：</label>
-            <div class="controls controls-radio">
-                <form:radiobuttons path="proProject.nodeState"
-                                   items="${fns:getDictList('yes_no')}" itemLabel="label"
-                                   v-model="proProject.nodeState"
-                                   itemValue="value" htmlEscape="false" class="required"/>
-                <span class="help-inline gray-color">申报是否加申请时间控制</span>
-            </div>
-        </div>
-        <div v-show="isShowTime" class="control-group">
-            <label class="control-label">显示时间：</label>
-            <div class="controls">
-                <c:forEach items="${fns:getDictList('yes_no')}" var="showTimes">
-                    <label class="radio inline">
-                        <input type="radio" name="showTime" value="${showTimes.value}" class="required"
-                               v-model="proProject.showTime">${showTimes.label}
-                    </label>
-                </c:forEach>
-
-                    <%--<form:radiobuttons path="showTime" items="${fns:getDictList('yes_no')}" itemLabel="label"--%>
-                    <%--itemValue="value" class="required" v-model="proProject.showTime" />--%>
-            </div>
-        </div>
-
-        <div class="edit-bar edit-bar-sm clearfix" style="margin-left: 10px;">
-            <div class="edit-bar-left"><span>审核时间</span> <i class="line"></i></div>
-        </div>
-        <table v-show="isLoad" id="tableDate"
-               class="table table-bordered table-condensed table-hover table-orange table-center table-actYwForm"
-               style="display: none">
-            <thead>
-            <tr>
-                <td>流程节点</td>
-                <td>有效期</td>
-                <td>导入导出模板</td>
-                <td style="display: none">通过率（用于限制专家）</td>
-            </tr>
-            </thead>
-            <tbody>
-
-            <tr v-show="proProject.nodeState == '1'">
-                <td>申报</td>
-                <td>
-                    <div class="control-times">
-                        <input name="nodeStartDate" type="text" class="Wdate input-medium"
-                               :class="{required: proProject.nodeState == '1'}"
-                               readonly
-                               @click="showNodeStartDatePicker($event)"
-                               v-model="proProject.nodeStartDate"
-                        >
-                        <span class="zhi">至</span>
-                        <input name="nodeEndDate" type="text" class="Wdate input-medium"
-                               readonly
-                               :class="{required: proProject.nodeState == '1'}"
-                               @click="showNodeEndDatePicker($event)"
-                               v-model="proProject.nodeEndDate">
-                        <div style="width: 120px; display: none; vertical-align: middle">
-                        </div>
-                        <div class="error-box">
-                            <div class="error-first"></div>
-                            <div class="error-last"></div>
-                        </div>
-                    </div>
-
-                </td>
-                <td>
-                </td>
-            </tr>
-            <tr v-show="proProject.showTime == 1" v-for="(item, index) in actYwGTimes">
-                <td>{{item.gnode && item.gnode.name}}<input type="hidden" name="nodeId" :value="item.gnodeId"></td>
-                <td>
-                    <div class="control-times">
-                        <input :name="'beginDate'+index" type="text" class="Wdate input-medium"
-                               :class="{required: actYwGTimes[index].status == '1'}" readonly
-                               v-model="actYwGTimes[index].beginDate"
-                               @click="showNodeGTimeStartDatePicker(item, index, $event)">
-                        <span class="zhi">至</span>
-                        <input :name="'endDate'+index" type="text" class="Wdate input-medium"
-                               :class="{required: actYwGTimes[index].status == '1'}" readonly
-                               v-model="actYwGTimes[index].endDate"
-                               @click="showNodeGTimeEndDatePicker(item, index, $event)">
-                        <div style="width: 120px; display: none; vertical-align: middle">
-                            <label class="radio inline"><input type="radio" :name="'status'+index" true-value="1" false-value="0"
-                                                               v-model="actYwGTimes[index].status">是 </label>
-                            <label class="radio inline"> <input type="radio" :name="'status'+index" true-value="1" false-value="0"
-                                                                v-model="actYwGTimes[index].status">否</label>
-                        </div>
-                        <div class="error-box">
-                            <div class="error-first"></div>
-                            <div class="error-last"></div>
-                        </div>
-                    </div>
-
-                </td>
-                <td>
-                    <div class="control-rate">
-                        <%--<input type="text" :name="'rate'+index" value="100" min="0" max="100" class="input-mini"--%>
-                               <%--:class="{required: actYwGTimes[index].hasTpl == '1'}"/>--%>
-                        <%--<div class="help-inline">（<span class="red">默认为空，不限制</span>）</div>--%>
-                        <label class="radio inline">
-                            <input type="radio" :name="'hasTpl'+index" v-model="actYwGTimes[index].hasTpl"  value="1">是
-                        </label>
-                        <label class="radio inline">
-                            <input type="radio"  :name="'hasTpl'+index"  v-model="actYwGTimes[index].hasTpl" value="0">否
-                        </label>
-                        <%--<input type="hidden" :name="'hasTpl'+index" :value="actYwGTimes[index].hasTpl">--%>
-                        <input type="hidden" :name="'excelTplClazz'+index" :value="actYwGTimes[index].excelTplClazz">
-                        <select :disabled="actYwGTimes[index].hasTpl != '1'" v-model="actYwGTimes[index].excelTplPath" size="small" :name="'excelTplPath'+index">
-                            <option v-for="expType in expTypes" :key="expType.tplpext + expType.tplname" :value="expType.tplpext + expType.tplname">{{expType.name}}</option>
-						</select>
-						<%--<select name="actYwGTimes[index].excelTplClazz">--%>
-							<%--<option value="ProModelTlxy.class">通用导入导出模板</option>--%>
-						<%--</select>--%>
-                        <div class="error-box"></div>
-                    </div>
-                </td>
-                <td style="display: none">
-                    <div class="control-rate">
-                        <input type="text" :name="'rate'+index" value="100" min="0" max="100" class="input-mini"
-                               :class="{required: actYwGTimes[index].rateStatus == '1'}"/>
-                        <div class="help-inline">（<span class="red">默认为空，不限制</span>）</div>
-                        <label class="radio inline">
-                            <input type="radio" :name="'rateStatus'+index" value="1"
-                                   v-model="actYwGTimes[index].rateStatus">是 </label>
-                        <label class="radio inline"> <input type="radio" :name="'rateStatus'+index" value="0"
-                                                            v-model="actYwGTimes[index].rateStatus">否 </label>
-                        <div class="error-box"></div>
-                    </div>
-                </td>
-            </tr>
-
-            </tbody>
-        </table>
-
-        <div class="form-actions">
-            <shiro:hasPermission name="actyw:actYw:edit">
-                <button type="submit" class="btn btn-primary">保存</button>
-            </shiro:hasPermission>
-            <button type="button" class="btn btn-default" onclick="history.go(-1)">返回</button>
-        </div>
-
-    </form:form>
+        <el-form-item label="流程节点时间：">
+            <el-table :data="actYwTimeForm.actYwGtimeList" size="small" class="table table-act-yw-time"
+                      style="width: 960px;" border>
+                <el-table-column label="流程节点" width="160">
+                    <template slot-scope="scope">
+                        {{scope.row.gnode ? scope.row.gnode.name : ''}}
+                    </template>
+                </el-table-column>
+                <el-table-column label="有效期" width="500">
+                    <template slot-scope="scope">
+                        <el-form-item :inline-message="true" :prop="'actYwGtimeList.'+ scope.$index + '.daterange'"
+                                      :rules="{ required: true, message: '请选择有效期', trigger: 'change'}" label-width="0"
+                                      style="margin-bottom: 0">
+                            <el-tooltip class="item" effect="dark" popper-class="white"
+                                        :content="scope.row.isApplyDate ? applyDateTip : nodeDateTip" placement="right">
+                                <el-date-picker
+                                        style="width: 350px;"
+                                        v-model="scope.row.daterange"
+                                        :type="scope.row.isApplyDate ? 'datetimerange' : 'daterange'"
+                                        unlink-panels
+                                        range-separator="至"
+                                        start-placeholder="开始日期"
+                                        end-placeholder="结束日期"
+                                        :default-time="scope.row.isApplyDate ? defaultApplyDatetimerange : defaultDatetimerange"
+                                        format="yyyy-MM-dd HH:mm:ss"
+                                        value-format="yyyy-MM-dd HH:mm:ss">
+                                </el-date-picker>
+                            </el-tooltip>
+                        </el-form-item>
+                    </template>
+                </el-table-column>
+                <el-table-column label="导入导出模板">
+                    <template slot-scope="scope">
+                        <el-form-item v-if="!scope.row.isApplyDate" :inline-message="true"
+                                      :prop="'actYwGtimeList.'+ scope.$index + '.excelTplPath'"
+                                      label-width="0" style="margin-bottom: 0">
+                            <el-select placeholder="请选择" v-model="scope.row.excelTplPath"
+                                       clearable filterable
+                                       :disabled="!scope.row.hasTpl">
+                                <el-option v-for="expType in expTypes" :key="expType.tplpext + expType.tplname"
+                                           :value="expType.tplpext + expType.tplname" :label="expType.name"></el-option>
+                            </el-select>
+                            <el-checkbox v-model="scope.row.hasTpl">是</el-checkbox>
+                        </el-form-item>
+                        <div v-else>-</div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" @click.stop.prevent="validateForm">保存</el-button>
+            <el-button @click.stop.prevent="goToBack">返回</el-button>
+        </el-form-item>
+    </el-form>
 </div>
-<div id="dialogCyjd" class="dialog-cyjd"></div>
 
 <script type="text/javascript">
-    +function ($, Vue) {
 
-        var nodeStartDate = '<fmt:formatDate value="${actYwYear.nodeStartDate}" pattern="yyyy-MM-dd"/>';
-        var nodeEndDate = '<fmt:formatDate value="${actYwYear.nodeEndDate}" pattern="yyyy-MM-dd"/>';
+    'use strict';
 
-        var startDate = '<fmt:formatDate value="${actYwYear.startDate}" pattern="yyyy-MM-dd"/>';
-        var endDate = '<fmt:formatDate value="${actYwYear.endDate}" pattern="yyyy-MM-dd"/>';
-
-
-        var actYwForm = new Vue({
-            el: '#actYwForm',
-            data: function () {
-                return {
-                    groupId: '${actYw.groupId}',
-                    proProject: {
-
-                        startDate: '<fmt:formatDate value="${actYwYear.startDate}" pattern="yyyy-MM-dd"/>',
-                        endDate: '<fmt:formatDate value="${actYwYear.endDate}" pattern="yyyy-MM-dd"/>',
-                        showTime: '${actYw.showTime}',
-                        year: '${actYwYear.year}',
-                        //                        showTime: '1',
-                        //                        nodeState: '1',
-                        nodeState: '${actYw.proProject.nodeState}',
-                        nodeStartDate: nodeStartDate,
-                        nodeEndDate: nodeEndDate
-                    },
-
-                    actYwGtimeList: JSON.parse('${fns:toJson(actYwGtimeList)}'),
-                    actYwGTimes: [],
-                    actYwTimeForm: '',
-                    curDate: new Date(),
-                    gapDay: 1,
-                    nodeGayDay: 0,
-                    nodeState: '${actYw.proProject.nodeState}',
-                    flowType: '${actYw.group.flowType}',
-                    actYwForm: '',
-                    beforeTime: '',
-                    allTimes: [],
-                    gDateKey: '',
-                    isLoad: true,
-                    currentIndex: '',
-                    expTypes: []
+    new Vue({
+        el: '#app',
+        data: function () {
+            var actYw = JSON.parse(JSON.stringify(${fns: toJson(actYw)})) || {};
+            var actYwGtimeList = JSON.parse(JSON.stringify(${fns:toJson(actYwGtimeList)})) || [];
+            var actYwYear = JSON.parse(JSON.stringify(${fns: toJson(actYwYear)})) || {};
+            var proProject = actYw.proProject || {};
+            var startDate = actYwYear.startDate || proProject.startDate;
+            var endDate = actYwYear.endDate  || proProject.endDate;
+            var actYwTimeRang = [];
+            var flowType = actYw.group ? actYw.group.flowType : '';
+            var nodeState = actYw.proProject ? actYw.proProject.nodeState : '';
+            var applyDate = {
+                beginDate: moment(actYwYear.nodeStartDate).format('YYYY-MM-DD HH:mm:ss'),
+                endDate: moment(actYwYear.nodeEndDate).format('YYYY-MM-DD HH:mm:ss'),
+                gnode: {
+                    name: '申报'
+                },
+                isApplyDate: true
+            };
+            actYwGtimeList.unshift(applyDate);
+            actYwGtimeList = actYwGtimeList.map(function (item) {
+                var daterang = [];
+                if (item.beginDate) {
+                    daterang = [item.beginDate, item.endDate];
                 }
-            },
-            directives: {
-                validate: {
-                    inserted: function (element, binding, vnode) {
-                        vnode.context[binding.value.form] = $(element).validate({
-                            submitHandler: function (form) {
-                                var dateArr = vnode.context.getDateArr();
-                                var $form = $(form);
-                                var $submit = $form.find('button[type="submit"]');
-                                var isValidate;
-                                var validateAllTimes;
-                                isValidate = vnode.context.validateTimes(dateArr);
-                                //                                validateAllTimes = vnode.context.validateAllTimes(dateArr)
-                                if (!isValidate.valid) {
-                                    dialogCyjd.createDialog(0, isValidate.item.gnode.name + '时间大于后面节点时间');
-                                    return false;
-                                }
-                                //                                if (!validateAllTimes.valid) {
-                                //                                    dialogCyjd.createDialog(0, '设置的时间段有问题， 请检查');
-                                //                                    return false;
-                                //                                }
+                item['daterange'] = daterang;
+                return item;
+            });
 
-                                $submit.prop('disabled', true);
-
-                                $.ajax({
-                                    url: '${ctx}/actyw/actYw/ajaxGtime',
-                                    data: $(form).formSerialize(),
-                                    dataType: 'json',
-                                    success: function (data) {
-                                        if (data.status) {
-                                            location.href = '${ctx}/actyw/actYw/list?group.flowType=${actYw.group.flowType}'
-                                        } else {
-                                            dialogCyjd.createDialog(0, data.msg);
-                                        }
-                                        $submit.prop('disabled', false);
-                                    },
-                                    error: function () {
-                                        dialogCyjd.createDialog(0, '保存失败, 请重试');
-                                        $submit.prop('disabled', false);
-                                    }
-                                })
-                                return false;
-
-                            },
-                            errorPlacement: function (error, element) {
-                                if (element.is(":checkbox") || element.is(":radio")) {
-                                    error.appendTo(element.parent().parent());
-                                } else if (element.parent().hasClass('control-times')) {
-                                    var name = element.attr('name');
-                                    var $errorBox = element.parent().parent().find('.error-box');
-                                    if (/nodeStartDate|beginDate/.test(name)) {
-                                        error.appendTo($errorBox.find('.error-first'));
-                                    } else {
-                                        error.appendTo($errorBox.find('.error-last'));
-                                    }
-                                } else if (element.parent().hasClass('control-rate')) {
-                                    var $errorRateBox = element.parent().parent().find('.error-box');
-                                    error.appendTo($errorRateBox);
-                                } else {
-                                    error.insertAfter(element);
-                                }
-                            }
-                        })
-                    }
-                }
-            },
-            computed: {
-                isShowTime: function () {
-                    return this.flowType !== '1' && this.flowType !== '13'
-                },
-                actYwYear: function () {
-                    return {
-                        nodeStartDate: this.proProject.nodeStartDate,
-                        nodeEndDate: this.proProject.nodeEndDate
-                    }
-                }
-            },
-            methods: {
-
-                //获取结束时间
-                getEndDate: function (item, key) {
-                    var endDate = this.proProject.endDate;
-                    if (endDate) {
-                        endDate = new Date(endDate);
-                        endDate = endDate.setDate(endDate.getDate() - this.nodeGayDay);
-                        endDate = moment(endDate).format('YYYY-MM-DD');
-                    }
-                    if (key === 'endDate') {
-
-                    }
-                    if (key === 'beginDate') {
-                        endDate = item.endDate || endDate;
-                    }
-                    return endDate;
-                },
-
-                //获取最小时间
-                getStartDate: function (item, key) {
-                    var minDate = this.proProject.startDate;
-                    if (minDate) {
-                        minDate = new Date(minDate);
-                        minDate = minDate.setDate(minDate.getDate() + this.nodeGayDay);
-                        minDate = moment(minDate).format('YYYY-MM-DD');
-                    }
-                    if (key === 'endDate') {
-                        minDate = item.beginDate || minDate;
-                    }
-                    if (key === 'beginDate') {
-                        minDate = this.getBeforeDate(item);
-                    }
-                    return minDate;
-                },
-
-                //获取前一个节点的最小值
-                getBeforeDate: function (item) {
-                    var dateArr = this.getDateArr();
-                    var beforeDates = this.getBeginDateBefore(dateArr, item.id);
-                    return this.getBeforeSingleDate(beforeDates)
-                },
-
-                getBeforeSingleDate: function (beforeDates) {
-                    var date;
-                    for (var i = beforeDates.length - 1; i > -1; i--) {
-                        var itemDate = beforeDates[i];
-                        if ($.type(itemDate) === 'array') {
-                            date = this.getBeforeSingleDate(itemDate);
-                            if (date) {
-                                break;
-                            }
-                        } else {
-                            if (itemDate.endDate) {
-                                date = itemDate.endDate;
-                                break;
-                            }
-                            if (itemDate.beginDate) {
-                                date = itemDate.beginDate;
-                                break;
-                            }
-                        }
-                    }
-                    return date;
-                },
-
-                getBeginDateBefore: function (arr, id) {
-                    var index;
-                    for (var i = 0; i < arr.length; i++) {
-                        var itemDate = arr[i];
-                        if ($.type(itemDate) === 'array') {
-                            var hasId = itemDate.some(function (item) {
-                                return item.id === id;
-                            });
-                            if (hasId) {
-                                index = i;
-                                break;
-                            }
-                        } else {
-                            if (itemDate.id === id) {
-                                index = i;
-                                break;
-                            }
-                        }
-                    }
-                    return arr.slice(0, index);
-                },
-
-
-                //获取去重后的 levles
-                getLevels: function () {
-                    var levels = [];
-                    var levelObj = {};
-                    this.actYwGTimes.forEach(function (item) {
-                        var level = item.gnode && item.gnode.level;
-                        if (level) {
-                            if (!levelObj[level]) {
-                                levels.push(level);
-                            }
-                            levelObj[level] = true;
-                        }
-                    });
-                    levels = levels.sort(function (a, b) {
-                        return a - b > 0;
-                    });
-                    return levels;
-                },
-
-                //网关数据
-                getDateArr: function () {
-                    var dates = [];
-                    var levelDates;
-                    var self = this;
-                    var levels = this.getLevels();
-                    levels.forEach(function (level) {
-                        levelDates = self.getDateByLevel(level);
-                        dates.push(levelDates)
-                    });
-                    dates.unshift({
-                        beginDate: this.proProject.nodeStartDate,
-                        endDate: this.proProject.nodeEndDate,
-                        gnode: {
-                            name: '申报'
-                        }
-                    });
-                    return dates;
-                },
-
-                //获取同level时间段
-                getDateByLevel: function (level) {
-                    var dateArr = [];
-                    if (!level) {
-                        return dateArr
-                    }
-                    this.actYwGTimes.forEach(function (item) {
-                        var itemLevel = item.gnode && item.gnode.level;
-                        if (itemLevel === level) {
-                            dateArr.push(item);
-                        }
-                    });
-                    return dateArr.length > 1 ? dateArr : dateArr[0];
-                },
-
-                //验证时间
-                validateTimes: function (dateArr) {
-                    var allValid = false;
-                    var res;
-                    for (var i = 0; i < dateArr.length; i++) {
-                        var item = dateArr[i];
-                        if ($.type(item) === 'array') {
-                            res = this.validateTimes(item);
-                            allValid = res.valid;
-                        } else {
-                            allValid = this.validateSingleDate(item.beginDate, item.endDate);
-                            res = {
-                                valid: allValid,
-                                item: item
-                            };
-                        }
-                        if (!allValid) {
-                            break;
-                        }
-                    }
-                    return res;
-                },
-
-                //验证单个时间
-                validateSingleDate: function (startDate, endDate) {
-                    var startTimes, endTimes;
-                    if (!startDate || !endDate) {
-                        return true;
-                    }
-                    startTimes = new Date(startDate).getTime();
-                    endTimes = new Date(endDate).getTime();
-                    return endTimes - startTimes >= this.nodeGayDay * 24 * 60 * 60 * 1000;
-                },
-
-                //validateAllTimes;
-                validateAllTimes: function (dateArr) {
-                    var res = {
-                        valid: true
-                    };
-                    var times, copyTimes;
-                    this.getAllTimes(dateArr);
-                    this.addOtherTimes();
-                    times = this.allTimes;
-                    copyTimes = JSON.parse(JSON.stringify(times));
-                    copyTimes = copyTimes.sort(function (a, b) {
-                        return new Date(a).getTime() - new Date(b).getTime() > 0;
-                    });
-                    for (var i = 0; i < times.length; i++) {
-                        if (times[i] != copyTimes[i]) {
-                            res = {
-                                valid: false,
-                                time: times[i]
-                            };
-                            break;
-                        }
-                    }
-                    return res;
-                },
-
-                //获取所有的时间
-                getAllTimes: function (dateArr) {
-                    var self = this;
-                    self.allTimes = [];
-                    dateArr.forEach(function (item) {
-                        var beginDate, endDate, maxMin;
-                        if ($.type(item) === 'array') {
-                            maxMin = self.getArrMaxMinTime(item);
-                            if (maxMin.min) {
-                                self.allTimes.push(moment(new Date(maxMin.min)).format('YYYY-MM-DD'))
-                            }
-                            if (maxMin.max) {
-                                self.allTimes.push(moment(new Date(maxMin.max)).format('YYYY-MM-DD'))
-                            }
-                        } else {
-                            beginDate = item.beginDate;
-                            endDate = item.endDate;
-                            if (beginDate) {
-                                self.allTimes.push(beginDate)
-                            }
-                            if (endDate) {
-                                self.allTimes.push(endDate)
-                            }
-                        }
-                    })
-
-                },
-
-                getArrMaxMinTime: function (arr) {
-                    var bTimes = [], eTimes = [];
-                    arr.forEach(function (item) {
-                        if (item.beginDate) {
-                            bTimes.push(new Date(item.beginDate).getTime())
-                        }
-                        if (item.endDate) {
-                            eTimes.push(new Date(item.endDate).getTime())
-                        }
-                    });
-                    return {
-                        max: Math.max.apply(null, bTimes),
-                        min: Math.min.apply(null, eTimes)
-                    }
-                },
-
-                //添加申报时间
-                addOtherTimes: function () {
-                    //                    var nodeStartDate = this.proProject.nodeStartDate;
-                    //                    var nodeEndDate = this.proProject.nodeEndDate;
-                    var startDate = this.proProject.startDate;
-                    var endDate = this.proProject.endDate;
-                    //                    if (nodeEndDate) {
-                    //                        this.allTimes.unshift(nodeEndDate)
-                    //                    }
-                    //                    if (nodeStartDate) {
-                    //                        this.allTimes.unshift(nodeStartDate)
-                    //                    }
-                    if (startDate) {
-                        this.allTimes.unshift(startDate)
-                    }
-                    if (endDate) {
-                        this.allTimes.push(endDate)
-                    }
-                },
-
-                showProjectYear: function ($event) {
-                    var self = this;
-                    WdatePicker({
-                        el: $event.target,
-                        isShowToday: false,
-                        dateFmt: 'yyyy',
-                        isShowClear: true,
-                        onpicked: function () {
-                            self.proProject.year = $event.target.value
-                        },
-                        oncleared: function () {
-                            self.proProject.year = ''
-                        }
-                    });
-                },
-
-                showNodeGTimeStartDatePicker: function (item, index, $event) {
-                    var minDate;
-                    var self = this;
-                    var maxDate = this.getEndDate(item, 'beginDate');
-                    minDate = this.getStartDate(item, 'beginDate');
-
-                    WdatePicker({
-                        el: $event.target,
-                        minDate: minDate,
-                        maxDate: maxDate,
-                        onpicked: function () {
-                            self.actYwGTimes[index].beginDate = $event.target.value;
-                        },
-                        oncleared: function () {
-                            self.actYwGTimes[index].beginDate = ''
-                        }
-                    })
-                },
-
-                showNodeGTimeEndDatePicker: function (item, index, $event) {
-                    var minDate;
-                    var self = this;
-                    var maxDate = this.getEndDate(item, 'endDate');
-                    minDate = this.getStartDate(item, 'endDate');
-                    WdatePicker({
-                        el: $event.target,
-                        minDate: minDate,
-                        maxDate: maxDate,
-                        onpicked: function () {
-                            self.actYwGTimes[index].endDate = $event.target.value;
-                        },
-                        oncleared: function () {
-                            self.actYwGTimes[index].endDate = ''
-                        }
-                    })
-                },
-
-                showStartDatePicker: function ($event) {
-                    var endDate = this.proProject.endDate;
-                    var self = this;
-
-
-                    WdatePicker({
-                        el: $event.target,
-                        //                        minDate: moment(this.curDate).format('YYYY-MM-DD'),
-                        maxDate: endDate,
-                        onpicked: function () {
-                            self.proProject.startDate = $event.target.value;
-                            self.emptyTableDate();
-                        },
-                        oncleared: function () {
-                            self.proProject.startDate = '';
-                            self.emptyTableDate();
-                        }
-                    })
-                },
-
-                emptyTableDate: function () {
-                    this.actYwGTimes.forEach(function (item) {
-                        item.beginDate = '';
-                        item.endDate = '';
-                    })
-                    this.proProject.nodeStartDate = '';
-                    this.proProject.nodeEndDate = '';
-                },
-
-                showEndDatePicker: function ($event) {
-                    var self = this;
-
-                    WdatePicker({
-                        el: $event.target,
-                        minDate: this.proProject.startDate,
-                        onpicked: function () {
-                            self.proProject.endDate = $event.target.value;
-                            self.emptyTableDate();
-                        },
-                        oncleared: function () {
-                            self.proProject.endDate = '';
-                            self.emptyTableDate();
-                        }
-                    })
-                },
-
-
-                showNodeStartDatePicker: function ($event) {
-                    var self = this;
-                    WdatePicker({
-                        el: $event.target,
-                        minDate: this.proProject.startDate,
-                        maxDate: this.proProject.endDate,
-                        onpicked: function () {
-                            self.proProject.nodeStartDate = $event.target.value;
-                        },
-                        oncleared: function () {
-                            self.proProject.nodeStartDate = ''
-                        }
-                    })
-                },
-
-                showNodeEndDatePicker: function ($event) {
-                    var self = this;
-
-                    WdatePicker({
-                        el: $event.target,
-                        minDate: this.proProject.nodeStartDate,
-                        maxDate: this.proProject.endDate,
-                        onpicked: function () {
-                            self.proProject.nodeEndDate = $event.target.value;
-                        },
-                        oncleared: function () {
-                            self.proProject.nodeEndDate = ''
-                        }
-                    })
-                },
-
-                computedActYwGtimes: function () {
-
-
-                    this.actYwGTimes.forEach(function (t) {
-                        if (t.beginDate) {
-                            t.beginDate = moment(new Date(t.beginDate)).format('YYYY-MM-DD');
-                        }
-                        if (t.endDate) {
-                            t.endDate = moment(new Date(t.endDate)).format('YYYY-MM-DD');
-                        }
-                        Vue.set(t,'hasTpl',!t.hasTpl  ? '0' : '1' )
-                    })
-                },
-
-                getExpTypes: function () {
-                    var self = this;
-                    $.get('${ctx}/impdata/ajaxExpTypes?isAll=true').success(function (response) {
-                        var data = response.datas;
-                        if(response.status){
-                            data = JSON.parse(data);
-                            self.expTypes = data;
-                        }
-                        console.log(response)
-                    }).error(function (error) {
-
-                    })
-                },
-
-                getNodeTimes: function (groupId) {
-                    var self = this;
-                    if (this.actYwGtimeList.length) {
-                        this.actYwGTimes = [];
-                        this.actYwGTimes = this.actYwGtimeList.sort(function (item1, item2) {
-                            return item1.gnode.level - item2.gnode.level > 0
-                        });
-                        this.computedActYwGtimes();
-                        return
-                    }
-                    $.ajax({
-                        type: 'GET',
-                        url: 'changeModel',
-                        data: {
-                            id: groupId
-                        },
-                        dataType: 'json',
-                        success: function (data) {
-                            self.actYwGTimes = [];
-                            self.actYwGtimeList = data;
-                            self.actYwGtimeList.forEach(function (item) {
-                                self.actYwGTimes.push({
-                                    id: item.id,
-                                    beginDate: '',
-                                    endDate: '',
-                                    status: '1',
-                                    level: item.level,
-                                    hasTpl: '0',
-                                    gnode: {
-                                        name: item.name,
-                                        level: item.level
-                                    },
-                                    gnodeId: item.id,
-                                    rateStatus: '0'
-                                })
-                            })
-                        },
-                        error: function (error) {
-
-                        }
-                    })
-                },
-            },
-            beforeMount: function () {
-                this.proProject.nodeState = this.nodeState !== 'false' ? '1' : '0';
-                this.getNodeTimes('${actYw.groupId}');
-            },
-            mounted: function () {
-                this.getExpTypes();
-                console.log(this.actYwGtimeList)
+            if (startDate) {
+                actYwTimeRang = [moment(startDate).format('YYYY-MM-DD HH:mm:ss'), moment(endDate).format('YYYY-MM-DD HH:mm:ss')];
             }
-        })
-    }(jQuery, Vue);
 
+            return {
+                actYwTimeForm: {
+                    id: actYw.id,
+                    year: actYwYear.year,
+                    daterange: actYwTimeRang,
+                    startDate: moment(actYwYear.startDate).format('YYYY-MM-DD'),
+                    endDate: moment(actYwYear.endDate).format('YYYY-MM-DD'),
+                    nodeState: nodeState,
+                    showTime: actYw.showTime,
+                    actYwGtimeList: actYwGtimeList
+                },
+                actYwTimeRules: {
+                    year: [
+                        {required: true, message: '请选择年份', trigger: 'change'}
+                    ],
+                    daterange: [
+                        {required: true, message: '请选择项目时间', trigger: 'change'}
+                    ]
+                },
+                disabled: false,
+                flowType: flowType,
+                expTypes: [],
+                defaultDatetimerange: ['00:00:00', '23:59:59'],
+                defaultApplyDatetimerange: ['00:00:00', '17:00:00'],
+                applyDateTip: '建议结束时间选择工作日的工作时间9:00-17:00',
+                nodeDateTip: '请选择的时间在上一个节点日期之后'
+            }
+        },
+        computed: {
+            secondName: function () {
+                return this.actYwTimeForm.id ? '修改时间' : '添加时间'
+            },
+            hasShowTime: function () {
+                return ["1", "13"].indexOf(this.flowType) === -1;
+            }
+        },
+        methods: {
+            handleChangeProDate: function (value) {
+                if (value && value.length > 0) {
+                    this.actYwTimeForm.startDate = value[0];
+                    this.actYwTimeForm.endDate = value[1];
+                } else {
+                    this.actYwTimeForm.startDate = '';
+                    this.actYwTimeForm.endDate = '';
+                }
+            },
+            getExpTypes: function () {
+                var self = this;
+                this.$axios.get('/impdata/ajaxExpTypes?isAll=true').then(function (response) {
+                    var data = response.data;
+                    if (data.status) {
+                        data = JSON.parse(data.datas);
+                        self.expTypes = data;
+                    }
+                }).catch(function (error) {
+
+                })
+            },
+
+            goToBack: function () {
+                history.go(-1);
+            },
+
+
+            validateForm: function () {
+                var self = this;
+                this.$refs.actYwTimeForm.validate(function (valid) {
+                    if (valid) {
+                        var timesIsValid = self.timesIsValid();
+                        if (timesIsValid.status === 'error') {
+                            self.$alert(timesIsValid.message, '提示', {
+                                type: timesIsValid.status
+                            });
+                            return false;
+                        }
+                        self.submitActYwForm();
+                    }
+                })
+            },
+
+            //提交表单
+            submitActYwForm: function () {
+                var self = this;
+                var params = this.getActYwParams();
+                this.disabled = true;
+                this.$axios({
+                    method: "GET",
+                    url: '/actyw/actYw/ajaxGtime?'+params,
+                }).then(function (response) {
+                    var data = response.data;
+                    if (data.status) {
+                        self.$alert("保存成功", "提示", {
+                            type: 'success'
+                        }).then(function () {
+                            location.href = '${ctx}/actyw/actYw/list?group.flowType=${actYw.group.flowType}'
+                        }).catch(function () {
+
+                        })
+                    } else {
+                        self.$message.error(self.xhrErrorMsg);
+                    }
+                    self.disabled = false;
+                }).catch(function (error) {
+                    self.$message.error(self.xhrErrorMsg);
+                    self.disabled = false;
+                })
+            },
+
+            //获取提交参数
+            getActYwParams: function () {
+                var params =  {};
+                var paramsStr = [];
+                var urlStrParams;
+                var actYwTimeForm = this.actYwTimeForm;
+                var actYwGtimeList = actYwTimeForm.actYwGtimeList;
+                params.id = actYwTimeForm.id;
+                params.showTime = actYwTimeForm.showTime ? '1' : '0';
+                params.startYearDate = actYwTimeForm.startDate;
+                params.endYearDate = actYwTimeForm.endDate;
+                params['proProject.year'] = actYwTimeForm.year;
+                params['proProject.nodeState'] = actYwTimeForm.nodeState ? '1' : '0';
+                actYwGtimeList.forEach(function (item, index) {
+                    if (item.isApplyDate) {
+                        params.nodeStartDate = item.daterange[0];
+                        params.nodeEndDate = item.daterange[1];
+                    } else {
+                        params['beginDate' + (index - 1)] = item.daterange[0];
+                        params['endDate' + (index - 1)] = item.daterange[1];
+                        params['hasTpl' + (index - 1)] = item.hasTpl ? '1' : '0';
+                        params['excelTplClazz' + (index - 1)] = item.excelTplClazz;
+                        params['excelTplPath' + (index - 1)] = item.excelTplPath;
+                        paramsStr.push(("nodeId="+item.gnodeId));
+//                        params['nodeId'+(index - 1)] = item.gnodeId;
+//                        params["nodeIds"].push(item.gnodeId)
+                    }
+                });
+                urlStrParams = Object.toURLSearchParams(params);
+                urlStrParams += '&'+ paramsStr.join('&');
+                return urlStrParams;
+            },
+
+            //获取所有时间数据
+            getAllDateTimes: function () {
+                var startDate = this.actYwTimeForm.startDate;
+                var endDate = this.actYwTimeForm.endDate;
+                var actYwGtimeList = this.actYwTimeForm.actYwGtimeList;
+                var dateTimes = [];
+                actYwGtimeList.forEach(function (item) {
+                    var daterange = item.daterange;
+                    var startTime = daterange[0];
+                    var endTime = daterange[1];
+                    dateTimes.push({
+                        name: item.gnode ? item.gnode.name : '',
+                        time: moment(startTime).valueOf()
+                    });
+                    dateTimes.push({
+                        name: item.gnode ? item.gnode.name : '',
+                        time: moment(endTime).valueOf()
+                    });
+                });
+                dateTimes.unshift({
+                    name: '项目开始',
+                    time: moment(startDate).valueOf()
+                });
+                dateTimes.push({
+                    name: '项目结束',
+                    time: moment(endDate).valueOf()
+                });
+                return dateTimes;
+            },
+            //判断时间是否合格
+            timesIsValid: function () {
+                var dateTimes = this.getAllDateTimes();
+                for (var i = 0; i < dateTimes.length - 1; i++) {
+                    var item = dateTimes[i];
+                    var item2 = dateTimes[i + 1];
+                    if (item.time > item2.time) {
+                        return {
+                            status: 'error',
+                            message: item.name + '时间大于' + item2.name + '时间'
+                        };
+                    }
+                }
+                return {
+                    status: true
+                };
+            }
+        },
+        created: function () {
+            this.getExpTypes();
+        }
+    })
 
 </script>
 </body>

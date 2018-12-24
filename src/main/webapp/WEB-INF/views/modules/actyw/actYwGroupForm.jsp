@@ -4,228 +4,181 @@
 <html>
 <head>
     <title>${backgroundTitle}</title>
-    <%@include file="/WEB-INF/views/include/backcyjd.jsp" %>
+    <meta charset="UTF-8">
+    <%@include file="/WEB-INF/views/include/backcreative.jsp" %>
 </head>
 <body>
-
-<style>
-    .btn:focus{
-        outline:none;
-    }
-</style>
-
-<div class="container-fluid">
-    <%--<div class="edit-bar clearfix">--%>
-        <%--<div class="edit-bar-left">--%>
-            <%--<span>自定义流程</span>--%>
-            <%--<i class="line weight-line"></i>--%>
-        <%--</div>--%>
-    <%--</div>--%>
-    <%@ include file="/WEB-INF/views/layouts/navigation.jsp" %>
-    <%--<ul class="nav nav-tabs">--%>
-    <%--<li><a href="${ctx}/actyw/actYwGroup/">自定义流程列表</a></li>--%>
-    <%--<li class="active"><a--%>
-    <%--href="${ctx}/actyw/actYwGroup/form?id=${actYwGroup.id}">自定义流程${not empty actYwGroup.id?'修改':'添加'}</a>--%>
-    <%--</li>--%>
-    <%--</ul>--%>
-    <form:form id="inputForm" modelAttribute="actYwGroup" action="${ctx}/actyw/actYwGroup/save" method="post"
-               class="form-horizontal" autocomplete="off">
-        <form:hidden path="id"/>
-        <form:hidden path="temp"/>
-        <sys:message content="${message}"/>
-        <input type="hidden" id="secondName" name="secondName"value="${secondName}"/>
-        <div class="control-group">
-            <label class="control-label"><i>*</i>流程名称：</label>
-            <div class="controls">
-                <form:input path="name" htmlEscape="false" maxlength="50" class="required"/>
-            </div>
-        </div>
-        <%-- <div class="control-group">
-            <label class="control-label">流程惟一标识：</label>
-            <div class="controls">
-                <form:input path="keyss" htmlEscape="false" maxlength="50" class="input-xlarge required"/>
-            </div>
-        </div> --%>
-        <%-- <div class="control-group">
-            <label class="control-label">生效状态:</label>
-            <div class="controls">
-                <form:select path="status" class="input-xlarge required">
-                    <form:options items="${fns:getDictList('yes_no')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-                </form:select>
-            </div>
-        </div> --%>
-        <c:if test="${actYwGroup.status eq '1'}">
-            <form:hidden path="theme"/>
-            <form:hidden path="flowType"/>
-        </c:if>
-        <c:if test="${actYwGroup.status ne '1'}">
-            <div class="control-group">
-                <label class="control-label"><i>*</i>表单组：</label>
-                <div class="controls">
-                    <form:select id="theme" path="theme" class="required">
-                        <form:option value="" label="--请选择--"/>
-                        <c:forEach var="curFormTheme" items="${formThemes}">
-                            <c:if test="${curFormTheme.idx ne '0'}">
-                                <c:if test="${actYwGroup.theme eq curFormTheme.idx}">
-                                    <option value="${curFormTheme.idx}"
-                                            selected="selected">${curFormTheme.name }</option>
-                                </c:if>
-                                <c:if test="${actYwGroup.theme ne curFormTheme.idx}">
-                                    <option value="${curFormTheme.idx}">${curFormTheme.name }</option>
-                                </c:if>
-                            </c:if>
-                        </c:forEach>
-                    </form:select>
-                </div>
-            </div>
-            <div class="control-group">
-                <label class="control-label"><i>*</i>流程类型：</label>
-                <div class="controls">
-                    <form:select id="flowType" path="flowType" class="required">
-                        <form:option value="" label="--请选择--"/>
-                        <c:forEach var="curFlowType" items="${flowTypes}">
-                            <c:if test="${actYwGroup.flowType eq curFlowType.key}">
-                                <option value="${curFlowType.key}" selected="selected">${curFlowType.name }</option>
-                            </c:if>
-                            <c:if test="${actYwGroup.flowType ne curFlowType.key}">
-                                <option value="${curFlowType.key}">${curFlowType.name }</option>
-                            </c:if>
-                        </c:forEach>
-                    </form:select>
-                        <%-- <form:select path="flowType" class="required">
-                            <form:option value="" label="--请选择--"/>
-                            <form:options items="${fns:getDictList('act_category')}" itemLabel="label" itemValue="value"
-                                          htmlEscape="false"/>
-                        </form:select> --%>
-                    <span class="help-inline gray-color">供创建双创项目或者双创大赛时使用</span>
-                </div>
-            </div>
-        </c:if>
-        <%-- <div class="control-group">
-            <label class="control-label">项目类型：</label>
-            <div class="controls">
-                <form:select path="type" class="input-xlarge required">
-                    <form:option value="" label="--请选择--"/>
-                    <form:options items="${fns:getDictList('act_project_type')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
-                </form:select>
-            </div>
-        </div> --%>
-        <%-- <div class="control-group">
-            <label class="control-label">流程作者：</label>
-            <div class="controls">
-                <form:input path="author" htmlEscape="false" maxlength="50" class="input-xlarge required"/>
-            </div>
-        </div> --%>
-        <%-- <div class="control-group">
-            <label class="control-label">流程版本：</label>
-            <div class="controls">
-                <form:input path="version" htmlEscape="false" maxlength="50" class="input-xlarge required"/>
-            </div>
-        </div>
-        <div class="control-group">
-            <label class="control-label">排序：</label>
-            <div class="controls">
-                <form:input path="sort" htmlEscape="false" maxlength="50" class="input-xlarge required"/>
-            </div>
-        </div> --%>
-        <div class="control-group">
-            <label class="control-label">备注：</label>
-            <div class="controls">
-                <form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="200" class="input-xxlarge"/>
-            </div>
-        </div>
-        <div class="form-actions">
-            <%--<shiro:hasPermission name="actyw:actYwGroup:edit">--%>
-                <%--<button type="submit" class="btn btn-primary">保存</button>--%>
-            <%--</shiro:hasPermission>--%>
-            <button type="button" class="btn btn-primary btn-next_step">保存</button>
-            <button type="button" class="btn btn-default" onclick="history.go(-1)">返回</button>
-        </div>
-    </form:form>
+<div id="app" v-show="pageLoad" style="display: none" class="container-fluid mgb-60">
+    <div class="mgb-20">
+        <edit-bar :second-name="secondName"></edit-bar>
+    </div>
+    <el-form :model="actYwGroupForm" :disabled="disabled" auto-complete="off" autocomplete="off" ref="actYwGroupForm"
+             :rules="actYwGroupRules" size="mini" label-width="120px" style="width: 520px;">
+        <el-form-item prop="name" label="流程名称：">
+            <el-input name="name" v-model="actYwGroupForm.name"></el-input>
+        </el-form-item>
+        <template v-if="actYwGroupForm.status !== '1'">
+            <el-form-item prop="theme" label="表单组：">
+                <el-select v-model="actYwGroupForm.theme" placeholder="请选择" clearable filterable @change="handleChangeTheme">
+                    <el-option v-for="item in formThemes" :key="item.idx" :value="item.idx" :label="item.name"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item prop="flowType" label="流程类型：">
+                <!-- <el-select v-model="actYwGroupForm.flowType" placeholder="请选择" clearable filterable>
+                    <el-option v-for="item in flowTypes" :key="item.key" :value="item.key" :label="item.name"></el-option>
+                </el-select> -->
+                {{actYwGroupForm.flowType | selectedFilter(flowTypeEntries)}}
+            </el-form-item>
+        </template>
+        <el-form-item prop="remarks" label="备注：">
+            <el-input name="remarks" type="textarea" :rows="4" v-model="actYwGroupForm.remarks"></el-input>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" @click.stop.prevent="validateActYwGroupForm">保存</el-button>
+            <el-button @click.stop.prevent="goToBack">返回</el-button>
+        </el-form-item>
+    </el-form>
 </div>
 
-
-<div id="dialogCyjd" class="dialog-cyjd"></div>
-
-
-<script>
+</body>
 
 
-    $(function () {
+<script type="text/javascript">
 
-        var actYwGroupId = '${actYwGroup.id}';
-        var $theme = $('#theme');
+    'use strict';
 
-        $theme.on('change', function () {
-            if (!actYwGroupId) {
-                return;
-            }
-            dialogCyjd.createDialog(0, '确认修改表单组属性吗？若修改，请更新设计页的关联表单，否则流程发布后无法正常审核！！');
-        });
-
-        var $inputForm = $('#inputForm');
-        var $btnNextStep = $inputForm.find('.btn-next_step');
-        var formValidate = $inputForm.validate({
-            submitHandler: function (form) {
-//                loading('正在提交，请稍等...');
-                form.submit();
-            },
-            errorContainer: "#messageBox",
-            errorPlacement: function (error, element) {
-                $("#messageBox").text("输入有误，请先更正。");
-                if (element.is(":checkbox") || element.is(":radio") || element.parent().is(".input-append")) {
-                    error.appendTo(element.parent().parent());
-                } else {
-                    error.insertAfter(element);
-                }
-            }
-        });
-
-        $btnNextStep.on('click', function (e) {
-            e.stopPropagation();
-            if (!formValidate.form()) {
-                return false;
-            }
-            $btnNextStep.prop('disabled', true);
-            $.ajax({
-                type: 'GET',
-                url: '${ctx}/actyw/actYwGroup/ajaxSave',
-                data: $inputForm.serialize(),
-                success: function (data) {
-                    if (data.status) {
-                        dialogCyjd.createDialog(1, '自定义流程创建成功', {
-                            'buttons': [{
-                                'text': '设计流程图',
-                                'class': 'btn btn-primary btn-small',
-                                'click': function (e) {
-                                    e.stopPropagation();
-                                    $(this).dialog('close');
-                                    location.href = '${ctx}/actyw/actYwGnode/designNew?group.id=' + data.datas + '&groupId=' + data.datas;
-                                }
-                            }, {
-                                'text': '返回列表',
-                                'class': 'btn btn-default btn-small',
-                                'click': function (e) {
-                                    e.stopPropagation();
-                                    $(this).dialog('close');
-                                    location.href = ' ${ctx}/actyw/actYwGroup/list'
-                                }
-                            }]
-                        });
-                    } else {
-                        dialogCyjd.createDialog(0, data.msg);
-                    }
-                    $btnNextStep.prop('disabled', false)
+    new Vue({
+        el: '#app',
+        data: function () {
+            var actYwGroup = JSON.parse(JSON.stringify(${fns:toJson(actYwGroup)}));
+            var formThemes = JSON.parse(JSON.stringify(${fns: toJson(formThemes)}));
+            return {
+                actYwGroupForm: {
+                    id: actYwGroup.id,
+                    name: actYwGroup.name,
+                    theme: actYwGroup.theme,
+                    flowType: actYwGroup.flowType,
+                    remarks: actYwGroup.remarks,
+                    temp: actYwGroup.temp,
+                    status: actYwGroup.status
                 },
-                error: function (error) {
-                    $btnNextStep.prop('disabled', false)
-                }
-            })
-        })
+                actYwGroupRules: {
+                    name: [
+                        {required: true, message: '请输入流程名称', trigger: 'blur'},
+                        {max: 50, message: '请输入不大于50位字符', trigger: 'blur'}
+                    ],
+                    remarks: [
+                        {max: 200, message: '请输入不大于200位字符', trigger: 'blur'}
+                    ],
+                    theme: [
+                        {required: true, message: '请选择表单组', trigger: 'change'},
+                    ],
+                    flowType: [
+                        {required: true, message: '流程类型', trigger: 'change'},
+                    ]
+                },
+                formThemes: formThemes,
+                flowTypes: [],
+                disabled: false
+            }
+        },
+        computed: {
+            secondName: function () {
+                return this.actYwGroupForm.id ? '修改' : '添加'
+            },
+            flowTypeEntries: function(){
+            	return this.getEntries(this.flowTypes, {
+            		label: 'name',
+            		value: 'key'
+            	})
+            }
+        },
+        methods: {
 
-    });
+            handleChangeTheme: function (value) {
+				var theme = this.getThemeById(value);
+				if(theme){
+					this.actYwGroupForm.flowType = theme.ftype;
+				}
+
+                if(!this.actYwGroupForm.id){
+                    return;
+                }
+                this.$alert("确认修改表单组属性吗？若修改，请更新设计页的关联表单，否则流程发布后无法正常审核","提示", {
+                    type: 'warning'
+                })
+            },
+
+            getThemeById: function(id){
+            	for(var i = 0; i <this.formThemes.length; i++){
+            		if(this.formThemes[i].idx === id){
+            			return this.formThemes[i]
+            		}
+            	}
+            	return false;
+            },
+
+            //获取流程类型
+            getFlowTypes: function () {
+                var self = this;
+                this.$axios.get('/actyw/gnode/ajaxFlowTypes?isAll=true').then(function (response) {
+                    self.flowTypes = JSON.parse(response.data.datas);
+                })
+            },
+
+            validateActYwGroupForm: function () {
+              var self = this;
+                this.$refs.actYwGroupForm.validate(function (valid) {
+                    if(valid){
+                        self.submitActYwGroupForm();
+                    }
+                })
+            },
+
+            submitActYwGroupForm: function () {
+                var self = this;
+                this.disabled = true;
+                this.$axios({
+                    method: 'GET',
+                    url: '/actyw/actYwGroup/ajaxSave',
+                    params: this.actYwGroupForm
+                }).then(function (response) {
+                    var data = response.data;
+                    if(data.status){
+                        self.$msgbox({
+                            type: 'success',
+                            title: '提示',
+                            closeOnClickModal: false,
+                            closeOnPressEscape: false,
+                            showCancelButton: true,
+                            confirmButtonText: '设计流程图',
+                            cancelButtonText: '返回列表',
+                            showClose: false,
+                            message: data.msg || '自定义流程创建成功'
+                        }).then(function () {
+                            location.href = '${ctx}/actyw/actYwGnode/designNew?group.id=' + data.datas + '&groupId=' + data.datas;
+                        }).catch(function () {
+                            location.href = ' ${ctx}/actyw/actYwGroup/list'
+                        })
+                    }else {
+                        self.$message.error(data.msg);
+                    }
+                    self.disabled = false;
+                }).catch(function (error) {
+                    self.disabled = false;
+                    self.$message.error(self.xhrErrorMsg);
+                })
+            },
+
+            goToBack: function () {
+                history.go(-1)
+            }
+        },
+        created: function () {
+            this.getFlowTypes();
+        }
+    })
 
 </script>
 
-</body>
 </html>

@@ -111,19 +111,19 @@
                     </div>
                     <div class="select-color-label">背景色</div>
                 </div>
-                <div class="select-color-group select-color-group_inline">
-                    <div class="select-color select-color_inline select-color_image">
-                        <div class="select-color-content" :style="{backgroundImage: floorStyle.backgroundImage}"
-                             @click.stop="triggerUploadImage">
-                            <input type="file" ref="floorBackgroundImage" name="floorBackgroundImage"
-                                   class="floorBackgroundImage" @change="uploadFBI($event)"
-                                   accept="image/jpeg,image/png,image/jpg">
-                        </div>
-                        <img class="delete-background_image" @click.stop="handleDeleteBackgroundImage"
-                             src="/img/btn-hover-delete-file.png">
-                    </div>
-                    <div class="select-color-label">背景图</div>
-                </div>
+                <%--<div class="select-color-group select-color-group_inline">--%>
+                    <%--<div class="select-color select-color_inline select-color_image">--%>
+                        <%--<div class="select-color-content" :style="{backgroundImage: floorStyle.backgroundImage}"--%>
+                             <%--@click.stop="triggerUploadImage">--%>
+                            <%--<input type="file" ref="floorBackgroundImage" name="floorBackgroundImage"--%>
+                                   <%--class="floorBackgroundImage" @change="uploadFBI($event)"--%>
+                                   <%--accept="image/jpeg,image/png,image/jpg">--%>
+                        <%--</div>--%>
+                        <%--<img class="delete-background_image" @click.stop="handleDeleteBackgroundImage"--%>
+                             <%--src="/img/btn-hover-delete-file.png">--%>
+                    <%--</div>--%>
+                    <%--<div class="select-color-label">背景图</div>--%>
+                <%--</div>--%>
             </div>
             <div class="btn-group">
                 <button type="button" :disabled="isSave" @click.stop="clearPaper" class="btn btn-small btn-default">清空

@@ -165,7 +165,7 @@
                     <label for="introduction" class="control-label"><i class="icon-require">*</i>项目介绍：</label>
                     <div class="input-box">
                         <textarea id="introduction" class="introarea form-control" rows="5" name="introduction"
-                                  maxlength='1024'>${gContest.introduction}</textarea>
+                                  maxlength='2000'>${gContest.introduction}</textarea>
                     </div>
                 </div>
 

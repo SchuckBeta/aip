@@ -60,7 +60,7 @@
         <el-table :data="pageList" ref="pageList" class="table" size="mini" v-loading="loading" @selection-change="handleSelectionChange">
             <el-table-column
                     type="selection"
-                    width="55">
+                    width="60">
             </el-table-column>
             <el-table-column label="团队名称" prop="name" min-width="130">
                 <template slot-scope="scope">

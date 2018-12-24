@@ -27,7 +27,7 @@
         </div>
         <hr class="split-line">
         <div class="copyright">
-            <%-- <c:choose>
+            <c:choose>
                 <c:when test="${fnc:getAutoSite().copyright != null && fnc:getAutoSite().copyright != ''}">
                     ${fnc:getAutoSite().copyright}<br>
                     技术支持:武汉噢易云计算股份有限公司
@@ -41,7 +41,7 @@
                        <a style="font-size: 12px; color: rgb(0,0,199);text-decoration: underline" href="${fns:getSysFrontIp()}/a" >进入管理门户</a>
 
                 </c:otherwise>
-            </c:choose> --%>
+            </c:choose>
         </div>
 
     </div>
@@ -93,5 +93,4 @@
     </div>
 </div>
 <div id="dialogCyjdFooter" class="dialog-cyjd"></div>
-<script src="/js/frontCyjd/footer.js"></script>
-
+<script src="/js/frontCyjd/footer.js?version=${fns: getVevison()}"></script>

@@ -57,6 +57,25 @@ Vue.menuTreeMixin = {
             return flatten(data);
         },
 
+        handleFlattenTree: function (data, expandLevel) {
+            expandLevel = expandLevel || 0;
+            function flatten(data) {
+                return data.reduce(function (p1, p2) {
+                    var children = p2.children || [];
+                    var parentIds = p2.parentIds;
+                    parentIds = parentIds.replace(/\,$/, '');
+                    parentIds = parentIds.split(',');
+                    parentIds = parentIds.slice(1);
+                    Vue.set(p2, 'dots', parentIds.join('-'))
+                    Vue.set(p2, 'isCollapsed', parentIds.length > expandLevel + 1);
+                    Vue.set(p2, 'isExpand', parentIds.length <= expandLevel);
+                    return p1.concat(p2, flatten(children))
+                }, [])
+            }
+
+            return flatten(data);
+        },
+
         setMenuEntries: function (menuList) {
             var i = 0;
             this.menuEntries = {};
@@ -154,20 +173,20 @@ Vue.menuTreeMixin = {
             var parentKey = props["parentKey"];
             var id = props['id'];
             var rootIds = [];
-            if(menuRootIds.length < 1){
+            if (menuRootIds.length < 1) {
                 return false;
             }
             menuRootIds.forEach(function (item) {
-                if(!self.menuEntries[item].children){
+                if (!self.menuEntries[item].children) {
                     self.menuEntries[item].children = []
                 }
                 menuList.forEach(function (item2) {
-                    if(item2[parentKey] === item){
+                    if (item2[parentKey] === item) {
                         self.menuEntries[item].children.push(item2);
                         rootIds.push(item2[id]);
                     }
                 })
-                if(self.menuEntries[item].children.length < 1){
+                if (self.menuEntries[item].children.length < 1) {
                     delete self.menuEntries[item].children
                 }
             })

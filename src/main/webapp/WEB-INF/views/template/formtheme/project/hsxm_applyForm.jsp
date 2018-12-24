@@ -586,7 +586,7 @@
     </div>
 </div>
 
-<script src="/js/tlxyValidate.js" type="text/javascript" charset="utf-8"></script>
+<script src="/js/tlxyValidate.js?version=${fns: getVevison()}" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript">
 
     $(function () {

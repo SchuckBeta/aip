@@ -238,7 +238,7 @@
                                     <input type="hidden" class="custindex"
                                            name="proModel.studentList[${status.index}].userId" value="${item.userId}">
                                     <input type="hidden" class="custindex"
-                                           name="proModel.studentList[${status.index}].utype" value="1">
+                                           name="proModel.studentList[${status.index}].userType" value="1">
                                     <td>${item.name}</td>
                                     <td>${item.no}</td>
                                     <td>${item.mobile}</td>
@@ -284,7 +284,7 @@
                                 <tr userid="${item.userId}">
                                     <input type="hidden" name="proModel.teacherList[${status.index}].userId"
                                            value="${item.userId}">
-                                    <input type="hidden" name="proModel.teacherList[${status.index}].utype" value="2">
+                                    <input type="hidden" name="proModel.teacherList[${status.index}].userType" value="2">
                                     <td>${item.name}</td>
                                     <td>${item.no}</td>
                                     <td>${item.teacherType}</td>
@@ -506,7 +506,7 @@
 <script type="text/template" id="tpl_st">
     <tr userid="{{userId}}">
         <input type="hidden" class="custindex" name="proModel.studentList[custindex].userId" value="{{userId}}">
-        <input type="hidden" class="custindex" name="proModel.studentList[custindex].utype" value="1">
+        <input type="hidden" class="custindex" name="proModel.studentList[custindex].userType" value="1">
         <td>{{name}}</td>
         <td>{{no}}</td>
         <td>{{mobile}}</td>
@@ -528,7 +528,7 @@
 <script type="text/template" id="tpl_tea">
     <tr userid="{{userId}}">
         <input type="hidden" class="custindex" name="proModel.teacherList[custindex].userId" value="{{userId}}">
-        <input type="hidden" class="custindex" name="proModel.teacherList[custindex].utype" value="2">
+        <input type="hidden" class="custindex" name="proModel.teacherList[custindex].userType" value="2">
         <td>{{name}}</td>
         <td>{{no}}</td>
         <td>{{teacherType}}</td>

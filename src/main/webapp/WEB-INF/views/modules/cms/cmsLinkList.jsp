@@ -49,7 +49,7 @@
                   @sort-change="handleTableSortChange">
             <el-table-column
                     type="selection"
-                    width="55">
+                    width="60">
             </el-table-column>
             <el-table-column prop="linkname" label="名称" sortable="linkname"></el-table-column>
             <el-table-column align="center" label="Logo">
