@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.common.collect.Lists;
-import com.oseasy.initiate.common.config.SysJkey;
-import com.oseasy.pcore.common.config.ApiConst;
-import com.oseasy.pcore.common.config.ApiResult;
+import com.oseasy.pcore.common.config.CoreJkey;
 import com.oseasy.pcore.common.mapper.JsonMapper;
 import com.oseasy.pcore.common.utils.IdGen;
 import com.oseasy.pcore.modules.sys.service.SysService;
@@ -51,8 +49,8 @@ public class SysController {
   @RequestMapping(value = "${adminPath}/sys/uuid", method = RequestMethod.GET, produces = "application/json;charset=utf-8")
   public Map<String, Object> uuid() {
       Map<String, Object> ret = new HashMap<>();
-      ret.put(SysJkey.JK_STATUS, true);
-      ret.put(SysJkey.JK_ID, IdGen.uuid());
+      ret.put(CoreJkey.JK_STATUS, true);
+      ret.put(CoreJkey.JK_ID, IdGen.uuid());
     return ret;
   }
 
@@ -62,16 +60,16 @@ public class SysController {
       Map<String, Object> ret = new HashMap<>();
       List<String> ids = Lists.newArrayList();
       if(num <= 0){
-          ret.put(SysJkey.JK_STATUS, false);
-          ret.put(SysJkey.JK_ID, ids);
+          ret.put(CoreJkey.JK_STATUS, false);
+          ret.put(CoreJkey.JK_ID, ids);
           return ret;
       }
 
       for (int i = 0; i < num; i++) {
           ids.add(IdGen.uuid());
       }
-      ret.put(SysJkey.JK_STATUS, true);
-      ret.put(SysJkey.JK_ID, JsonMapper.toJsonString(ids));
+      ret.put(CoreJkey.JK_STATUS, true);
+      ret.put(CoreJkey.JK_ID, JsonMapper.toJsonString(ids));
       return ret;
   }
 

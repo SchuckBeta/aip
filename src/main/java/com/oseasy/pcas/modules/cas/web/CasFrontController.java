@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.oseasy.initiate.common.config.SysJkey;
 import com.oseasy.pcas.common.config.CasSval;
 import com.oseasy.pcas.modules.cas.entity.SysCasAnZhi;
 import com.oseasy.pcas.modules.cas.entity.SysCasUser;
@@ -28,6 +27,7 @@ import com.oseasy.pcas.modules.cas.service.SysUserService;
 import com.oseasy.pcas.modules.cas.utils.CasUtils;
 import com.oseasy.pcas.modules.cas.vo.CheckRet;
 import com.oseasy.pcore.common.config.CoreIds;
+import com.oseasy.pcore.common.config.CoreJkey;
 import com.oseasy.pcore.common.config.CoreSval;
 import com.oseasy.pcore.common.utils.IdGen;
 import com.oseasy.pcore.common.web.BaseController;
@@ -77,7 +77,7 @@ public class CasFrontController extends BaseController {
         SysCasUser reqSysCasUser = CasUtils.getSysCasUser(request);
         reqSysCasUser.setEnable(true);
         if(StringUtil.isEmpty(reqSysCasUser.getRuid())){
-            request.setAttribute(SysJkey.JK_MSG, "用户登录名不能为空!");
+            request.setAttribute(CoreJkey.JK_MSG, "用户登录名不能为空!");
             retUser = new SysUser(reqSysCasUser);
             retUser.setCas(false);
             retUser.setRetype(Retype.F_REGISTER.getKey());
@@ -89,7 +89,7 @@ public class CasFrontController extends BaseController {
         //检查登录用户是否存在于sys_cas_user处理表中
         SysCasUser sysCasUser = sysCasUserService.checkSysCaseUser(reqSysCasUser);
         if(sysCasUser.getCheckUtype() && StringUtil.isEmpty(sysCasUser.getRutype())){
-            request.setAttribute(SysJkey.JK_MSG, "用户类型不能为空!");
+            request.setAttribute(CoreJkey.JK_MSG, "用户类型不能为空!");
             retUser = new SysUser(sysCasUser);
             retUser.setCas(false);
             retUser.setRetype(Retype.F_SELECT_UTYPE.getKey());
@@ -99,7 +99,7 @@ public class CasFrontController extends BaseController {
 
         if(!sysCasUser.getEnable()){
             //查询用户表，获取用户信息，处理登录逻辑.
-            request.setAttribute(SysJkey.JK_MSG, "当前用户被禁止使用Cas登录，请前往登录页登录!");
+            request.setAttribute(CoreJkey.JK_MSG, "当前用户被禁止使用Cas登录，请前往登录页登录!");
             retUser = new SysUser(reqSysCasUser);
             retUser.setCas(false);
             retUser.setRetype(Retype.F_AUTH_ENABLE.getKey());
@@ -111,7 +111,7 @@ public class CasFrontController extends BaseController {
             logger.info("存在CASUSER = (" + sysCasUser.getLog() + ")！");
             //存在该用户
             if(StringUtil.isEmpty(sysCasUser.getRuid())){
-                request.setAttribute(SysJkey.JK_MSG, "用户登录名不能为空!");
+                request.setAttribute(CoreJkey.JK_MSG, "用户登录名不能为空!");
             }
 
             //查询用户表，获取用户信息，处理登录逻辑.
@@ -156,7 +156,7 @@ public class CasFrontController extends BaseController {
                 //调用登录逻辑
                 sysUser.setCas(true);
                 sysUser.setRetype(Retype.F_INDEX.getKey());
-                request.setAttribute(SysJkey.JK_MSG, "当前用户第一次登录，默认密码为：("+CoreUtils.USER_PSW_DEFAULT+")，为了保证您的账户安全，请修改密码!");
+                request.setAttribute(CoreJkey.JK_MSG, "当前用户第一次登录，默认密码为：("+CoreUtils.USER_PSW_DEFAULT+")，为了保证您的账户安全，请修改密码!");
                 retUser = sysUser;
                 sysUserService.loginToken(sysUser);
             }
@@ -208,7 +208,7 @@ public class CasFrontController extends BaseController {
                 //调用登录逻辑
                 sysUser.setCas(true);
                 sysUser.setRetype(Retype.F_INDEX.getKey());
-                request.setAttribute(SysJkey.JK_MSG, "当前用户第一次登录，默认密码为：("+CoreUtils.USER_PSW_DEFAULT+")，为了保证您的账户安全，请修改密码!");
+                request.setAttribute(CoreJkey.JK_MSG, "当前用户第一次登录，默认密码为：("+CoreUtils.USER_PSW_DEFAULT+")，为了保证您的账户安全，请修改密码!");
                 retUser = sysUser;
                 sysUserService.loginToken(sysUser);
             }

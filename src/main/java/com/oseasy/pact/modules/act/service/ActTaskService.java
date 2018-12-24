@@ -81,13 +81,12 @@ import org.springframework.util.CollectionUtils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.oseasy.initiate.common.config.SysIds;
-import com.oseasy.initiate.common.config.SysJkey;
 import com.oseasy.initiate.modules.promodel.entity.ProModel;
 import com.oseasy.initiate.modules.promodel.service.ProModelService;
 import com.oseasy.initiate.modules.promodel.utils.GT_Constant;
 import com.oseasy.initiate.modules.sys.service.SystemService;
 import com.oseasy.initiate.modules.sys.utils.UserUtils;
+import com.oseasy.pact.common.config.ActKey;
 import com.oseasy.pact.modules.act.dao.ActDao;
 import com.oseasy.pact.modules.act.entity.Act;
 import com.oseasy.pact.modules.act.service.cmd.CreateAndTakeTransitionCmd;
@@ -112,6 +111,7 @@ import com.oseasy.pact.modules.actyw.tool.process.ActYwTool;
 import com.oseasy.pact.modules.actyw.tool.process.vo.FlowYwId;
 import com.oseasy.pact.modules.actyw.tool.process.vo.GnodeTaskType;
 import com.oseasy.pact.modules.actyw.tool.process.vo.GnodeType;
+import com.oseasy.pcore.common.config.CoreJkey;
 import com.oseasy.pcore.common.config.Global;
 import com.oseasy.pcore.common.persistence.Page;
 import com.oseasy.pcore.common.service.BaseService;
@@ -2286,8 +2286,8 @@ public class ActTaskService extends BaseService {
 		setWidthAndHeight(activity, activityInfo);
 
 		Map<String, Object> properties = activity.getProperties();
-		vars.put("节点名称", properties.get(SysJkey.JK_NAME));
-		vars.put("任务类型", ActUtils.parseToZhType(properties.get(SysJkey.JK_TYPE).toString()));
+		vars.put("节点名称", properties.get(CoreJkey.JK_NAME));
+		vars.put("任务类型", ActUtils.parseToZhType(properties.get(CoreJkey.JK_TYPE).toString()));
 
 		ActivityBehavior activityBehavior = activity.getActivityBehavior();
 		logger.debug("activityBehavior={}", activityBehavior);
@@ -2566,7 +2566,7 @@ public class ActTaskService extends BaseService {
 		for (ActivityImpl activityImpl : activitiList) {
 			id = activityImpl.getId();
 			if (activitiId.equals(id)) {
-				System.out.println("当前任务：" + activityImpl.getProperty(SysJkey.JK_NAME));
+				System.out.println("当前任务：" + activityImpl.getProperty(CoreJkey.JK_NAME));
 				return nextTaskDefinition(activityImpl, activityImpl.getId(), "${iscorrect==1}");
 				//              System.out.println(taskDefinition.getCandidateGroupIdExpressions().toArray()[0]);
 				//              return taskDefinition;
@@ -2584,7 +2584,7 @@ public class ActTaskService extends BaseService {
 	 * @return
 	 */
 	private TaskDefinition nextTaskDefinition(ActivityImpl activityImpl, String activityId, String elString) {
-		if ("userTask".equals(activityImpl.getProperty(SysJkey.JK_TYPE)) && !activityId.equals(activityImpl.getId())) {
+		if ("userTask".equals(activityImpl.getProperty(CoreJkey.JK_TYPE)) && !activityId.equals(activityImpl.getId())) {
 			TaskDefinition taskDefinition = ((UserTaskActivityBehavior) activityImpl.getActivityBehavior()).getTaskDefinition();
 			//              taskDefinition.getCandidateGroupIdExpressions().toArray();
 			return taskDefinition;
@@ -2593,7 +2593,7 @@ public class ActTaskService extends BaseService {
 			List<PvmTransition> outTransitionsTemp = null;
 			for (PvmTransition tr : outTransitions) {
 				PvmActivity ac = tr.getDestination(); //获取线路的终点节点
-				if ("exclusiveGateway".equals(ac.getProperty(SysJkey.JK_TYPE))) {
+				if ("exclusiveGateway".equals(ac.getProperty(CoreJkey.JK_TYPE))) {
 					outTransitionsTemp = ac.getOutgoingTransitions();
 					if (outTransitionsTemp.size() == 1) {
 						return nextTaskDefinition((ActivityImpl) outTransitionsTemp.get(0).getDestination(), activityId, elString);
@@ -2605,7 +2605,7 @@ public class ActTaskService extends BaseService {
 							}
 						}
 					}
-				} else if ("userTask".equals(ac.getProperty(SysJkey.JK_TYPE))) {
+				} else if ("userTask".equals(ac.getProperty(CoreJkey.JK_TYPE))) {
 					return ((UserTaskActivityBehavior) ((ActivityImpl) ac).getActivityBehavior()).getTaskDefinition();
 				} else {
 

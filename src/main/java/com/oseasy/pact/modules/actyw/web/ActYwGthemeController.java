@@ -17,13 +17,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.oseasy.initiate.common.config.SysJkey;
 import com.oseasy.pact.modules.actyw.entity.ActYwGtheme;
 import com.oseasy.pact.modules.actyw.service.ActYwGthemeService;
 import com.oseasy.pact.modules.actyw.tool.process.vo.FormTheme;
 import com.oseasy.pcore.common.config.ApiConst;
 import com.oseasy.pcore.common.config.ApiParam;
 import com.oseasy.pcore.common.config.ApiResult;
+import com.oseasy.pcore.common.config.CoreJkey;
 import com.oseasy.pcore.common.persistence.Page;
 import com.oseasy.pcore.common.web.BaseController;
 import com.oseasy.putil.common.utils.StringUtil;
@@ -172,7 +172,7 @@ public class ActYwGthemeController extends BaseController {
         try {
             List<ActYwGtheme> entitys = api.getDatas();
             if(StringUtil.checkEmpty(entitys)){
-                return ApiResult.failed(ApiConst.CODE_PARAM_ERROR_CODE,ApiConst.getErrMsg(ApiConst.CODE_PARAM_ERROR_CODE)+":参数校验失败，"+SysJkey.JK_DATAS+"不能为空！");
+                return ApiResult.failed(ApiConst.CODE_PARAM_ERROR_CODE,ApiConst.getErrMsg(ApiConst.CODE_PARAM_ERROR_CODE)+":参数校验失败，"+CoreJkey.JK_DATAS+"不能为空！");
             }
             entityService.updatePLSort(entitys);
             return ApiResult.success(entitys);

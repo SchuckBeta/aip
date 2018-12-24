@@ -24,8 +24,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.oseasy.initiate.common.config.SysIds;
-import com.oseasy.initiate.common.config.SysJkey;
+import com.oseasy.pact.common.config.ActKey;
 import com.oseasy.pact.modules.act.service.ActTaskService;
 import com.oseasy.pact.modules.actyw.entity.ActYwGform;
 import com.oseasy.pact.modules.actyw.entity.ActYwGnode;
@@ -40,10 +39,11 @@ import com.oseasy.pact.modules.actyw.service.ActYwGstatusService;
 import com.oseasy.pact.modules.actyw.tool.process.ActYwTool;
 import com.oseasy.pact.modules.actyw.tool.process.vo.GnodeType;
 import com.oseasy.pact.modules.actyw.tool.process.vo.GnodeView;
+import com.oseasy.pcore.common.config.ApiTstatus;
 import com.oseasy.pcore.common.config.CoreIds;
+import com.oseasy.pcore.common.config.CoreJkey;
 import com.oseasy.pcore.common.config.CoreSval;
 import com.oseasy.pcore.common.config.Global;
-import com.oseasy.pcore.common.config.ApiTstatus;
 import com.oseasy.pcore.common.web.BaseController;
 import com.oseasy.putil.common.utils.StringUtil;
 
@@ -241,9 +241,9 @@ public class ActYwGnodeController extends BaseController {
             return CoreSval.REDIRECT + Global.getAdminPath() + "/actyw/actYwGnode/?repage";
         }
         model.addAttribute(ActYwGroup.JK_GROUP, actYwGroupService.get(actYwGnode.getGroup().getId()));
-        model.addAttribute(SysJkey.JK_ROOT, CoreIds.SYS_TREE_ROOT.getId());
+        model.addAttribute(CoreJkey.JK_ROOT, CoreIds.SYS_TREE_ROOT.getId());
 //        model.addAttribute("frontUid", SysIds.SYS_ROLE_USER.getId());
-        model.addAttribute(SysJkey.JK_ROOT_START, actYwGnodeService.getStart(actYwGnode.getGroup().getId()));
+        model.addAttribute(ActKey.JK_ROOT_START, actYwGnodeService.getStart(actYwGnode.getGroup().getId()));
         return "modules/actyw/actYwGnodeDesignNew";
     }
 

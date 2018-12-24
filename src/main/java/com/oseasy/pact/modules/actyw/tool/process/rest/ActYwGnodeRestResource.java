@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.oseasy.initiate.common.config.SysJkey;
 import com.oseasy.initiate.modules.sys.service.SystemService;
 import com.oseasy.pact.modules.actyw.entity.ActYwClazz;
 import com.oseasy.pact.modules.actyw.entity.ActYwForm;
@@ -57,9 +56,10 @@ import com.oseasy.pact.modules.actyw.tool.process.vo.GnodeType;
 import com.oseasy.pact.modules.actyw.tool.process.vo.NodeEtype;
 import com.oseasy.pact.modules.actyw.tool.process.vo.RegType;
 import com.oseasy.pact.modules.actyw.tool.process.vo.RtOutgoing;
-import com.oseasy.pcore.common.config.CoreIds;
-import com.oseasy.pcore.common.config.Global;
 import com.oseasy.pcore.common.config.ApiTstatus;
+import com.oseasy.pcore.common.config.CoreIds;
+import com.oseasy.pcore.common.config.CoreJkey;
+import com.oseasy.pcore.common.config.Global;
 import com.oseasy.pcore.common.utils.IdGen;
 import com.oseasy.pcore.modules.sys.entity.Role;
 import com.oseasy.pcore.modules.sys.entity.User;
@@ -155,7 +155,7 @@ public class ActYwGnodeRestResource {
         Map<String, Object> rmap = new HashMap<String, Object>();
         List<ActYwGnode> gnodes = actYwGnodeService.findListBygGroup(new ActYwGnode(new ActYwGroup(groupId)));
         if(StringUtil.checkNotEmpty(gnodes)){
-            rmap.put(SysJkey.JK_LIST, gnodes);
+            rmap.put(CoreJkey.JK_LIST, gnodes);
             rmap.put(ActYwGroup.JK_GROUP, actYwGroupService.get(groupId));
             return new ApiTstatus<Map<String, Object>>(true, "查询成功！", rmap);
         }
@@ -200,7 +200,7 @@ public class ActYwGnodeRestResource {
 //        Date date1 = new Date();
 //        logger.info("saveAll 开始，时间：[" + DateUtil.formatDate(date1, DateUtil.FMT_YYYY_MM_DD_HHmmss) + "]");
         Map<String, Class> classMap = new HashMap<String, Class>();
-        classMap.put(SysJkey.JK_LIST, Gpnode.class);
+        classMap.put(CoreJkey.JK_LIST, Gpnode.class);
         classMap.put("preIds", RtOutgoing.class);
         classMap.put("roleIds", Role.class);
         classMap.put("userIds", User.class);
@@ -215,7 +215,7 @@ public class ActYwGnodeRestResource {
         classMap.put("temp", Boolean.class);
 
         ActYwGparam gparam = (ActYwGparam) JSONObject.toBean(gps, ActYwGparam.class, classMap);
-        gparam.getUiJson().put(SysJkey.JK_LIST, gps.getJSONArray(SysJkey.JK_LIST).toString());
+        gparam.getUiJson().put(CoreJkey.JK_LIST, gps.getJSONArray(CoreJkey.JK_LIST).toString());
         runner.setEngine(initEngine());
 //        Date date2 = new Date();
 //        logger.info("saveAll Json->ActYwGparam 处理时间：[" + DateUtil.formatDate(date2, DateUtil.FMT_YYYY_MM_DD_HHmmss) + "]总耗时->" + (date2.getTime() - date1.getTime()));

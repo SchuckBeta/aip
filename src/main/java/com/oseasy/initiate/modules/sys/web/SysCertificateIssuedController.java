@@ -20,7 +20,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.oseasy.initiate.common.config.SysJkey;
 import com.oseasy.initiate.modules.sys.entity.SysCertificate;
 import com.oseasy.initiate.modules.sys.entity.SysCertificateIssued;
 import com.oseasy.initiate.modules.sys.entity.SysCertificateRel;
@@ -28,9 +27,10 @@ import com.oseasy.initiate.modules.sys.service.SysCertificateIssuedService;
 import com.oseasy.initiate.modules.sys.vo.SysCertificateIsstype;
 import com.oseasy.initiate.modules.sys.vo.SysSval.SysCertSval;
 import com.oseasy.pact.modules.actyw.entity.ActYw;
+import com.oseasy.pcore.common.config.ApiTstatus;
+import com.oseasy.pcore.common.config.CoreJkey;
 import com.oseasy.pcore.common.config.CoreSval;
 import com.oseasy.pcore.common.config.Global;
-import com.oseasy.pcore.common.config.ApiTstatus;
 import com.oseasy.pcore.common.persistence.Page;
 import com.oseasy.pcore.common.web.BaseController;
 import com.oseasy.pcore.modules.sys.entity.Dict;
@@ -164,7 +164,7 @@ public class SysCertificateIssuedController extends BaseController {
       ApiStatus.setMsg("没有数据！");
     }
 
-    result.put(SysJkey.JK_LISTS, lists);
+    result.put(CoreJkey.JK_LISTS, lists);
     ApiStatus.setDatas(result);
     return ApiStatus;
   }
@@ -209,7 +209,7 @@ public class SysCertificateIssuedController extends BaseController {
       ApiStatus.setMsg("没有数据！");
     }
 
-    result.put(SysJkey.JK_LISTS, lists);
+    result.put(CoreJkey.JK_LISTS, lists);
     ApiStatus.setDatas(result);
     return ApiStatus;
   }
@@ -254,7 +254,7 @@ public class SysCertificateIssuedController extends BaseController {
       ApiStatus.setMsg("没有数据！");
     }
 
-    result.put(SysJkey.JK_LISTS, lists);
+    result.put(CoreJkey.JK_LISTS, lists);
     ApiStatus.setDatas(result);
     return ApiStatus;
   }
@@ -299,7 +299,7 @@ public class SysCertificateIssuedController extends BaseController {
       ApiStatus.setMsg("没有数据！");
     }
 
-    result.put(SysJkey.JK_LISTS, lists);
+    result.put(CoreJkey.JK_LISTS, lists);
     ApiStatus.setDatas(result);
     return ApiStatus;
   }
