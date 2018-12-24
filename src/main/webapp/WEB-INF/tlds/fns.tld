@@ -304,13 +304,8 @@
         <example>${fns:getAuditStandardList()}</example>
     </function>
 
-    <function>
-        <description>根据资源id获得html代码</description>
-        <name>getHtmlByTemplate</name>
-        <function-class>com.oseasy.initiate.modules.cms.utils.CmsUtils</function-class>
-        <function-signature>java.lang.String getHtmlByTemplate(java.lang.String)</function-signature>
-        <example>${fns:getHtmlByTemplate(resid)}</example>
-    </function>
+
+
 
     <function>
         <description>根据资源id获得html代码</description>
@@ -320,20 +315,6 @@
         <example>${fns:getGrateSelect(proId)}</example>
     </function>
 
-    <function>
-        <description>获取优秀展示模板列表</description>
-        <name>getExcTemplateList</name>
-        <function-class>com.oseasy.initiate.modules.cms.utils.CmsUtils</function-class>
-        <function-signature>java.util.List getExcTemplateList()</function-signature>
-        <example>${fns:getExcTemplateList()}</example>
-    </function>
-    <function>
-        <description>根据模板列表</description>
-        <name>getTemplateList</name>
-        <function-class>com.oseasy.initiate.modules.cms.utils.CmsUtils</function-class>
-        <function-signature>java.util.List getTemplateList()</function-signature>
-        <example>${fns:getTemplateList()}</example>
-    </function>
     <function>
         <description>获取UUID</description>
         <name>getUuid</name>
@@ -617,70 +598,6 @@
         <example>${fns:toJson(object)}</example>
     </function>
 
-    <!-- CmsUtils -->
-    <function>
-        <description>根据Key和根节点ID获取栏目列表</description>
-        <name>getCategorys</name>
-        <function-class>com.oseasy.initiate.modules.cms.utils.CmsUtils</function-class>
-        <function-signature>java.util.List getCategorys(java.lang.String, java.lang.String)</function-signature>
-        <example>${fns:getCategorys(key, pid)}</example>
-    </function>
-
-    <function>
-        <description>获取前端首页栏目列表</description>
-        <name>getCategorysIndex</name>
-        <function-class>com.oseasy.initiate.modules.cms.utils.CmsUtils</function-class>
-        <function-signature>java.util.List getCategorysIndex()</function-signature>
-        <example>${fns:getCategorysIndex()}</example>
-    </function>
-
-    <function>
-        <description>添加前缀</description>
-        <name>addCtxFront</name>
-        <function-class>com.oseasy.initiate.modules.cms.utils.CmsUtils</function-class>
-        <function-signature>java.lang.String addCtxFront(java.lang.String, java.lang.String, java.lang.Integer)</function-signature>
-        <example>${fns:addCtxFront()}</example>
-    </function>
-
-    <function>
-        <description>获取前端首页底部链接</description>
-        <name>getCmsLinks</name>
-        <function-class>com.oseasy.initiate.modules.cms.utils.CmsUtils</function-class>
-        <function-signature>java.util.List getCmsLinks()</function-signature>
-        <example>${fns:getCmsLinks()}</example>
-    </function>
-
-    <function>
-        <description>获取前端首页栏目列表</description>
-        <name>site</name>
-        <function-class>com.oseasy.initiate.modules.cms.utils.CmsUtils</function-class>
-        <function-signature>java.util.List site()</function-signature>
-        <example>${fns:site()}</example>
-    </function>
-
-    <function>
-        <description>获取栏目列表</description>
-        <name>siteByCategoryId</name>
-        <function-class>com.oseasy.initiate.modules.cms.utils.CmsUtils</function-class>
-        <function-signature>java.util.List siteByCategoryId(java.lang.String)</function-signature>
-        <example>${fns:siteByCategoryId(categoryId)}</example>
-    </function>
-    <function>
-        <description>替换html代码中的FTP链接</description>
-        <name>replaceFtpUrl</name>
-        <function-class>com.oseasy.initiate.modules.cms.utils.CmsUtils</function-class>
-        <function-signature>java.lang.String replaceFtpUrl(java.lang.String)</function-signature>
-        <example>${fns:replaceFtpUrl(content)}</example>
-    </function>
-
-    <function>
-        <description>获取当前前端首页信息及栏目列表</description>
-        <name>curSite</name>
-        <function-class>com.oseasy.initiate.modules.cms.utils.CmsUtils</function-class>
-        <function-signature>com.oseasy.initiate.modules.cms.entity.Site curSite()</function-signature>
-        <example>${fns:curSite()}</example>
-    </function>
-
     <!-- OaUtils -->
     <function>
         <description>获得系统广播通知-最新双创动态</description>
@@ -791,14 +708,6 @@
     </function>
 
     <function>
-        <description>根据actywId查找配置的项目类别</description>
-        <name>getProCategoryByActywId</name>
-        <function-class>com.oseasy.initiate.modules.cms.utils.CmsUtils</function-class>
-        <function-signature>java.util.List getProCategoryByActywId(java.lang.String)</function-signature>
-        <example>${fns:getProCategoryByActywId(actywId)}</example>
-    </function>
-
-    <function>
         <description>根据proModelId查找流程信息</description>
         <name>getActByPromodelId</name>
         <function-class>com.oseasy.initiate.modules.act.utils.ProcessDefUtils</function-class>
@@ -838,4 +747,100 @@
         <example>${fns:getVersion()}</example>
     </function>
 
+
+
+
+	<!-- ************************************************************************ -->
+	<!-- CmsUtil -->
+    <function>
+        <description>根据资源id获得html代码</description>
+        <name>getHtmlByTemplate</name>
+        <function-class>com.oseasy.pcms.common.utils.CmsUtils</function-class>
+        <function-signature>java.lang.String getHtmlByTemplate(java.lang.String)</function-signature>
+        <example>${fns:getHtmlByTemplate(resid)}</example>
+    </function>
+	<function>
+        <description>获取优秀展示模板列表</description>
+        <name>getExcTemplateList</name>
+        <function-class>com.oseasy.pcms.common.utils.CmsUtils</function-class>
+        <function-signature>java.util.List getExcTemplateList()</function-signature>
+        <example>${fns:getExcTemplateList()}</example>
+    </function>
+    <function>
+        <description>根据模板列表</description>
+        <name>getTemplateList</name>
+        <function-class>com.oseasy.pcms.common.utils.CmsUtils</function-class>
+        <function-signature>java.util.List getTemplateList()</function-signature>
+        <example>${fns:getTemplateList()}</example>
+    </function>
+    <function>
+        <description>根据Key和根节点ID获取栏目列表</description>
+        <name>getCategorys</name>
+        <function-class>com.oseasy.pcms.common.utils.CmsUtils</function-class>
+        <function-signature>java.util.List getCategorys(java.lang.String, java.lang.String)</function-signature>
+        <example>${fns:getCategorys(key, pid)}</example>
+    </function>
+
+    <function>
+        <description>获取前端首页栏目列表</description>
+        <name>getCategorysIndex</name>
+        <function-class>com.oseasy.pcms.common.utils.CmsUtils</function-class>
+        <function-signature>java.util.List getCategorysIndex()</function-signature>
+        <example>${fns:getCategorysIndex()}</example>
+    </function>
+
+    <function>
+        <description>添加前缀</description>
+        <name>addCtxFront</name>
+        <function-class>com.oseasy.pcms.common.utils.CmsUtils</function-class>
+        <function-signature>java.lang.String addCtxFront(java.lang.String, java.lang.String, java.lang.Integer)</function-signature>
+        <example>${fns:addCtxFront()}</example>
+    </function>
+
+    <function>
+        <description>获取前端首页底部链接</description>
+        <name>getCmsLinks</name>
+        <function-class>com.oseasy.pcms.common.utils.CmsUtils</function-class>
+        <function-signature>java.util.List getCmsLinks()</function-signature>
+        <example>${fns:getCmsLinks()}</example>
+    </function>
+
+    <function>
+        <description>获取前端首页栏目列表</description>
+        <name>site</name>
+        <function-class>com.oseasy.pcms.common.utils.CmsUtils</function-class>
+        <function-signature>java.util.List site()</function-signature>
+        <example>${fns:site()}</example>
+    </function>
+
+    <function>
+        <description>获取栏目列表</description>
+        <name>siteByCategoryId</name>
+        <function-class>com.oseasy.pcms.common.utils.CmsUtils</function-class>
+        <function-signature>java.util.List siteByCategoryId(java.lang.String)</function-signature>
+        <example>${fns:siteByCategoryId(categoryId)}</example>
+    </function>
+    <function>
+        <description>替换html代码中的FTP链接</description>
+        <name>replaceFtpUrl</name>
+        <function-class>com.oseasy.pcms.common.utils.CmsUtils</function-class>
+        <function-signature>java.lang.String replaceFtpUrl(java.lang.String)</function-signature>
+        <example>${fns:replaceFtpUrl(content)}</example>
+    </function>
+
+    <function>
+        <description>获取当前前端首页信息及栏目列表</description>
+        <name>curSite</name>
+        <function-class>com.oseasy.pcms.common.utils.CmsUtils</function-class>
+        <function-signature>com.oseasy.initiate.modules.cms.entity.Site curSite()</function-signature>
+        <example>${fns:curSite()}</example>
+    </function>
+
+    <function>
+        <description>根据actywId查找配置的项目类别</description>
+        <name>getProCategoryByActywId</name>
+        <function-class>com.oseasy.pcms.common.utils.CmsUtils</function-class>
+        <function-signature>java.util.List getProCategoryByActywId(java.lang.String)</function-signature>
+        <example>${fns:getProCategoryByActywId(actywId)}</example>
+    </function>
 </taglib>

@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.oseasy.initiate</groupId>
-    <artifactId>Aip</artifactId>
+    <artifactId>ROOT</artifactId>
     <version>4.1.1.000</version>
     <packaging>war</packaging>
     <name>creativecloud</name>
