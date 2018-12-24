@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oseasy.initiate.modules.sys.dao.SysNumRuleDao">
+    
+	<sql id="sysNumRuleColumns">
+		a.id AS "id",
+		a.type AS "type",
+		a.name AS "name",
+		a.prefix AS "prefix",
+		a.suffix AS "suffix",
+		a.date_format AS "dateFormat",
+		a.timie_format AS "timieFormat",
+		a.start_num AS "startNum",
+		a.num_length AS "numLength",
+		a.update_date AS "updateDate",
+		a.update_by AS "updateBy.id",
+		a.create_date AS "createDate",
+		a.create_by AS "createBy.id",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="sysNumRuleJoins">
+	</sql>
+    
+	<select id="get" resultType="SysNumRule">
+		SELECT 
+			<include refid="sysNumRuleColumns"/>
+		FROM sys_num_rule a
+		<include refid="sysNumRuleJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	<select id="getByType" resultType="SysNumRule">
+		SELECT 
+			<include refid="sysNumRuleColumns"/>
+		FROM sys_num_rule a
+		<include refid="sysNumRuleJoins"/>
+		WHERE a.type = #{type} and a.del_flag='0'
+	</select>
+	<select id="findList" resultType="SysNumRule">
+		SELECT 
+			<include refid="sysNumRuleColumns"/>
+		FROM sys_num_rule a
+		<include refid="sysNumRuleJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SysNumRule">
+		SELECT 
+			<include refid="sysNumRuleColumns"/>
+		FROM sys_num_rule a
+		<include refid="sysNumRuleJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_num_rule(
+			id,
+			type,
+			name,
+			prefix,
+			suffix,
+			date_format,
+			timie_format,
+			start_num,
+			num_length,
+			update_date,
+			update_by,
+			create_date,
+			create_by,
+			del_flag
+		) VALUES (
+			#{id},
+			#{type},
+			#{name},
+			#{prefix},
+			#{suffix},
+			#{dateFormat},
+			#{timieFormat},
+			#{startNum},
+			#{numLength},
+			#{updateDate},
+			#{updateBy.id},
+			#{createDate},
+			#{createBy.id},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_num_rule SET 	
+			type = #{type},
+			name = #{name},
+			prefix = #{prefix},
+			suffix = #{suffix},
+			date_format = #{dateFormat},
+			timie_format = #{timieFormat},
+			start_num = #{startNum},
+			num_length = #{numLength},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE sys_num_rule SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<update id="onEventScheduler" parameterType="java.util.Map">
+		set global event_scheduler=1
+	</update>
+	<update id="dropNumResetEvent" parameterType="java.util.Map">
+		DROP EVENT IF EXISTS ${event}
+	</update>
+	<update id="createNumResetEvent" parameterType="java.util.Map">
+		CREATE EVENT ${event}
+		on schedule EVERY 1 DAY STARTS date_add(date(sysdate() + 1),interval 0 minute)
+		ON COMPLETION PRESERVE
+		do update ${seq} set sequence_id=${num}
+	</update>
+
+</mapper>

@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oseasy.initiate.modules.sys.dao.SysCertificateRelDao">
+
+	<sql id="sysCertificateRelColumns">
+		a.id AS "id",
+		a.cid AS "sysCert.id",
+		a.rid AS "sysCertRes.id",
+		a.type AS "type",
+		a.res_type AS "resType",
+		a.res_clazz AS "resClazz",
+		a.res_clazz_prop AS "resClazzProp",
+		a.update_date AS "updateDate",
+		a.update_by AS "updateBy.id",
+		a.create_date AS "createDate",
+		a.create_by AS "createBy.id",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+
+		b.no AS "sysCert.no",
+		b.name AS "sysCert.name",
+		b.type AS "sysCert.type",
+		b.has_use AS "sysCert.hasUse",
+		b.office_id AS "sysCert.office.id",
+		b.update_date AS "sysCert.updateDate",
+		b.update_by AS "sysCert.updateBy.id",
+		b.create_date AS "sysCert.createDate",
+		b.create_by AS "sysCert.createBy.id",
+		b.remarks AS "sysCert.remarks",
+		b.del_flag AS "sysCert.delFlag",
+		o5.name AS "sysCert.office.name",
+
+		c.type AS "sysCertRes.type",
+		c.name AS "sysCertRes.name",
+		c.width AS "sysCertRes.width",
+		c.height AS "sysCertRes.height",
+		c.xlt AS "sysCertRes.xlt",
+		c.ylt AS "sysCertRes.ylt",
+		c.opacity AS "sysCertRes.opacity",
+		c.rate AS "sysCertRes.rate",
+		c.has_loop AS "sysCertRes.hasLoop",
+		c.is_show AS "sysCertRes.isShow",
+		c.update_date AS "sysCertRes.updateDate",
+		c.update_by AS "sysCertRes.updateBy.id",
+		c.create_date AS "sysCertRes.createDate",
+		c.create_by AS "sysCertRes.createBy.id",
+		c.remarks AS "sysCertRes.remarks",
+		c.del_flag AS "sysCertRes.delFlag",
+
+		f.id AS "sysCertRes.file.id",
+		f.type AS "sysCertRes.file.ftype",
+		f.file_step AS "sysCertRes.file.ffileStep",
+		f.uid AS "sysCertRes.file.uid",
+		f.url AS "sysCertRes.file.url",
+		f.name AS "sysCertRes.file.name",
+		f.size AS "sysCertRes.file.size",
+		f.gnode_id AS "sysCertRes.file.gnodeId",
+		f.suffix AS "sysCertRes.file.suffix",
+		f.update_date AS "sysCertRes.file.updateDate",
+		f.update_by AS "sysCertRes.file.updateBy.id",
+		f.create_date AS "sysCertRes.file.createDate",
+		f.create_by AS "sysCertRes.file.createBy.id"
+	</sql>
+
+	<sql id="sysCertificateRelJoins">
+		LEFT JOIN sys_certificate b ON b.id = a.cid
+		LEFT JOIN sys_certificate_res c ON c.id = a.rid
+		LEFT JOIN sys_attachment f ON f.uid = c.id
+		LEFT JOIN sys_office o5 ON o5.id = b.office_id
+	</sql>
+
+	<select id="get" resultType="SysCertificateRel">
+		SELECT
+			<include refid="sysCertificateRelColumns"/>
+		FROM sys_certificate_rel a
+		<include refid="sysCertificateRelJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="SysCertificateRel">
+		SELECT
+			<include refid="sysCertificateRelColumns"/>
+		FROM sys_certificate_rel a
+		<include refid="sysCertificateRelJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="sysCert != null">
+				<if test="sysCert.id != null and sysCert.id != ''">
+					AND a.cid = #{sysCert.id}
+				</if>
+				<if test="sysCert.name != null and sysCert.name != ''">
+					AND b.name LIKE
+						<if test="dbName == 'oracle'">'%'||#{sysCert.name}||'%'</if>
+						<if test="dbName == 'mssql'">'%'+#{sysCert.name}+'%'</if>
+						<if test="dbName == 'mysql'">concat('%',#{sysCert.name},'%')</if>
+				</if>
+				<if test="sysCert.type != null and sysCert.type != ''">
+					AND b.type = #{sysCert.type}
+				</if>
+				<if test="sysCert.hasUse != null and sysCert.hasUse != ''">
+					AND b.has_use = #{hasUse}
+				</if>
+				<if test="sysCert.office != null and sysCert.office.id != null and sysCert.office.id != ''">
+					AND b.office_id = #{sysCert.office.id}
+				</if>
+			</if>
+			<if test="sysCertRes != null">
+				<if test="sysCertRes.id != null and sysCertRes.id != ''">
+					AND a.rid = #{sysCertRes.id}
+				</if>
+				<if test="sysCertRes.type != null and sysCertRes.type != ''">
+					AND c.type = #{sysCertRes.type}
+				</if>
+				<if test="sysCertRes.name != null and sysCertRes.name != ''">
+					AND c.name LIKE
+						<if test="dbName == 'oracle'">'%'||#{sysCertRes.name}||'%'</if>
+						<if test="dbName == 'mssql'">'%'+#{sysCertRes.name}+'%'</if>
+						<if test="dbName == 'mysql'">concat('%',#{sysCertRes.name},'%')</if>
+				</if>
+				<if test="sysCertRes.isShow != null and sysCertRes.isShow != ''">
+					AND c.is_show = #{sysCertRes.isShow}
+				</if>
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="resType != null and resType != ''">
+				AND a.res_type = #{resType}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="SysCertificateRel">
+		SELECT
+			<include refid="sysCertificateRelColumns"/>
+		FROM sys_certificate_rel a
+		<include refid="sysCertificateRelJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO sys_certificate_rel(
+			id,
+			cid,
+			rid,
+			type,
+			res_type,
+			res_clazz,
+			res_clazz_prop,
+			update_date,
+			update_by,
+			create_date,
+			create_by,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{sysCert.id},
+			#{sysCertRes.id},
+			#{type},
+			#{resType},
+			#{resClazz},
+			#{resClazzProp},
+			#{updateDate},
+			#{updateBy.id},
+			#{createDate},
+			#{createBy.id},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE sys_certificate_rel SET
+			cid = #{sysCert.id},
+			rid = #{sysCertRes.id},
+			type = #{type},
+			res_type = #{resType},
+			res_clazz = #{resClazz},
+			res_clazz_prop = #{resClazzProp},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		UPDATE sys_certificate_rel SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+</mapper>

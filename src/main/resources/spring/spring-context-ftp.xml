@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+		http://www.springframework.org/schema/context  http://www.springframework.org/schema/context/spring-context-4.1.xsd">
+
+    <description>vsftp Configuration</description>
+    <!-- 加载配置属性文件 -->
+    <context:property-placeholder ignore-unresolvable="true" location="classpath:initiate.properties"/>
+
+    <bean id="poolConfig" class="com.oseasy.putil.common.ftp.PoolConfig">
+        <constructor-arg index="0" value="1"/>   <!--maxActive-->
+        <constructor-arg index="1" value="1"/>   <!--maxIdle-->
+        <constructor-arg index="2" value="6000"/>   <!--maxWait-->
+    </bean>
+
+
+    <bean id="vsFtpPool" class="com.oseasy.putil.common.ftp.VsFtpPool" >
+        <constructor-arg index="0" ref="poolConfig"/>
+        <constructor-arg index="1" value="${ftp.url}"/>
+        <constructor-arg index="2" value="${ftp.port}"/>
+        <constructor-arg index="3" value="${ftp.username}"/>
+        <constructor-arg index="4" value="${ftp.passwd}"/>
+    </bean>
+
+
+</beans>

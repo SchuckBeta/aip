@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+		http://www.springframework.org/schema/context  http://www.springframework.org/schema/context/spring-context-4.1.xsd"
+>
+    <!-- JobDetail -->
+    <!-- CAS -->
+	<!-- <bean id="casUserJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="casUserJob"/>
+        <property name="targetMethod" value="execute"/>
+        <property name="concurrent" value="false"/>
+    </bean> -->
+
+
+    <!--  Trigger -->
+    <!-- <bean id="casUserJobDetailTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="casUserJobDetail">
+        </property>
+        <property name="cronExpression">
+        	<value>0 */1 * * * ?</value>
+            <value>0 1 2 * * ?</value>
+        </property>
+    </bean> -->
+
+    <!--  调度触发器 -->
+    <!-- <bean id="testJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="testJobsJobDetail"></property>
+        <property name="cronExpression">
+            <value>0 */2 * * * ?</value>
+        </property>
+    </bean> -->
+
+
+    <!-- 调度工厂 -->
+    <bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <!-- <ref bean="casUserJobDetailTrigger"/> -->
+            </list>
+        </property>
+    </bean>
+</beans>

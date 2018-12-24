@@ -1,0 +1,613 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oseasy.initiate.modules.sys.dao.SysCertificateIssuedDao">
+
+	<sql id="sysCertificateIssuedColumns">
+		a.id AS "id",
+		a.crid AS "sysCertRel.id",
+		a.ywid AS "actYw.id",
+		a.pmid AS "proModel.id",
+		a.is_yw AS "isYw",
+		a.type AS "type",
+		a.reason AS "reason",
+		a.issued_date AS "issuedDate",
+		a.issued_by AS "issuedBy.id",
+		a.accept_by AS "acceptBy.id",
+		a.update_date AS "updateDate",
+		a.update_by AS "updateBy.id",
+		a.create_date AS "createDate",
+		a.create_by AS "createBy.id",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+
+		b.no AS "sysCertRel.sysCert.no",
+		b.name AS "sysCertRel.sysCert.name",
+		b.type AS "sysCertRel.sysCert.type",
+		b.has_use AS "sysCertRel.sysCert.hasUse",
+		b.office_id AS "sysCertRel.sysCert.office.id",
+		b.update_date AS "sysCertRel.sysCert.updateDate",
+		b.update_by AS "sysCertRel.sysCert.updateBy.id",
+		b.create_date AS "sysCertRel.sysCert.createDate",
+		b.create_by AS "sysCertRel.sysCert.createBy.id",
+		b.remarks AS "sysCertRel.sysCert.remarks",
+		b.del_flag AS "sysCertRel.sysCert.delFlag",
+		o5.name AS "sysCertRel.sysCert.office.name",
+
+		ua.company_id AS "acceptBy.company.id",
+		ua.office_id AS "acceptBy.office.id",
+		ua.login_name AS "acceptBy.loginName",
+		ua.no AS "acceptBy.no",
+		ua.sex AS "acceptBy.sex",
+		ua.name AS "acceptBy.name",
+		ua.email AS "acceptBy.email",
+
+		ui.company_id AS "issuedBy.company.id",
+		ui.office_id AS "issuedBy.office.id",
+		ui.login_name AS "issuedBy.loginName",
+		ui.no AS "issuedBy.no",
+		ui.sex AS "issuedBy.sex",
+		ui.name AS "issuedBy.name",
+		ui.email AS "issuedBy.email",
+
+		y.rel_id AS "actYw.relId",
+		y.group_id AS "actYw.groupId",
+		y.flow_id AS "actYw.flowId",
+		y.deployment_id AS "actYw.deploymentId",
+		y.is_deploy AS "actYw.isDeploy",
+		y.is_show_axis AS "actYw.isShowAxis",
+		y.status  AS  "status",
+		y.show_time AS "actYw.showTime",
+		y.key_Type AS "actYw.keyType",
+
+		p.actyw_id AS "proModel.actYwId",
+		p.p_name AS "proModel.pName",
+		p.declare_id AS "proModel.declareId",
+		p.pro_type AS "proModel.proType",
+		p.pro_category AS "proModel.proCategory",
+		p.type AS "proModel.type",
+		p.level AS "proModel.level",
+		p.introduction AS "proModel.introduction",
+		p.financing_stat AS "proModel.financingStat",
+		p.final_status AS "proModel.finalStatus",
+		p.state AS "proModel.state",
+		p.team_id AS "proModel.teamId",
+		p.update_date AS "proModel.updateDate",
+		p.update_by AS "proModel.updateBy.id",
+		p.create_date AS "proModel.createDate",
+		p.create_by AS "proModel.createBy.id",
+		p.del_flag AS "proModel.delFlag",
+		p.proc_ins_id AS "proModel.procInsId",
+		p.pro_mark AS "proModel.proMark",
+		p.source AS "proModel.source",
+		p.competition_number AS "proModel.competitionNumber",
+		p.project_source AS "proModel.projectSource",
+		p.sub_time AS "proModel.subTime",
+		p.grade AS "proModel.grade",
+		p.g_score AS "proModel.gScore",
+
+		pp.id AS "actYw.proProject.id",
+		pp.menu_rid AS "actYw.proProject.menuRid",
+		pp.category_rid AS "actYw.proProject.categoryRid",
+		pp.content AS "actYw.proProject.content",
+		pp.project_name AS "actYw.proProject.projectName",
+		pp.project_mark AS "actYw.proProject.projectMark",
+		pp.state AS "actYw.proProject.state",
+		pp.pro_type AS "actYw.proProject.proType",
+		pp.type AS "actYw.proProject.type",
+		pp.pro_category AS "actYw.proProject.proCategory",
+		pp.level AS "actYw.proProject.level",
+		pp.final_status AS "actYw.proProject.finalStatus",
+		pp.start_date AS "actYw.proProject.startDate",
+		pp.end_date AS "actYw.proProject.endDate",
+		pp.node_state AS "actYw.proProject.nodeState",
+		pp.node_start_date AS "actYw.proProject.nodeStartDate",
+		pp.node_end_date AS "actYw.proProject.nodeEndDate",
+		pp.update_date AS "actYw.proProject.updateDate",
+		pp.update_by AS "actYw.proProject.updateBy.id",
+		pp.create_date AS "actYw.proProject.createDate",
+		pp.create_by AS "actYw.proProject.createBy.id",
+		pp.del_flag AS "actYw.proProject.delFlag"
+	</sql>
+
+	<sql id="sysCertificateIssuedByGroupColumns">
+		a.id AS "id",
+		a.crid AS "sysCertRel.id",
+		a.ywid AS "actYw.id",
+		a.pmid AS "proModel.id",
+		a.is_yw AS "isYw",
+		a.type AS "type",
+		a.reason AS "reason",
+		a.issued_date AS "issuedDate",
+		a.issued_by AS "issuedBy.id",
+		a.accept_by AS "acceptBy.id",
+		a.update_date AS "updateDate",
+		a.update_by AS "updateBy.id",
+		max(a.create_date) AS "createDate",
+		a.create_by AS "createBy.id",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+
+		b.no AS "sysCertRel.sysCert.no",
+		b.name AS "sysCertRel.sysCert.name",
+		b.type AS "sysCertRel.sysCert.type",
+		b.has_use AS "sysCertRel.sysCert.hasUse",
+		b.office_id AS "sysCertRel.sysCert.office.id",
+		b.update_date AS "sysCertRel.sysCert.updateDate",
+		b.update_by AS "sysCertRel.sysCert.updateBy.id",
+		b.create_date AS "sysCertRel.sysCert.createDate",
+		b.create_by AS "sysCertRel.sysCert.createBy.id",
+		b.remarks AS "sysCertRel.sysCert.remarks",
+		b.del_flag AS "sysCertRel.sysCert.delFlag",
+		o5.name AS "sysCertRel.sysCert.office.name",
+
+		ua.company_id AS "acceptBy.company.id",
+		ua.office_id AS "acceptBy.office.id",
+		ua.login_name AS "acceptBy.loginName",
+		ua.no AS "acceptBy.no",
+		ua.sex AS "acceptBy.sex",
+		ua.name AS "acceptBy.name",
+		ua.email AS "acceptBy.email",
+
+		ui.company_id AS "issuedBy.company.id",
+		ui.office_id AS "issuedBy.office.id",
+		ui.login_name AS "issuedBy.loginName",
+		ui.no AS "issuedBy.no",
+		ui.sex AS "issuedBy.sex",
+		ui.name AS "issuedBy.name",
+		ui.email AS "issuedBy.email",
+
+		y.rel_id AS "actYw.relId",
+		y.group_id AS "actYw.groupId",
+		y.flow_id AS "actYw.flowId",
+		y.deployment_id AS "actYw.deploymentId",
+		y.is_deploy AS "actYw.isDeploy",
+		y.is_show_axis AS "actYw.isShowAxis",
+		y.status  AS  "status",
+		y.show_time AS "actYw.showTime",
+		y.key_Type AS "actYw.keyType",
+
+		p.actyw_id AS "proModel.actYwId",
+		p.p_name AS "proModel.pName",
+		p.declare_id AS "proModel.declareId",
+		p.pro_type AS "proModel.proType",
+		p.pro_category AS "proModel.proCategory",
+		p.type AS "proModel.type",
+		p.level AS "proModel.level",
+		p.introduction AS "proModel.introduction",
+		p.financing_stat AS "proModel.financingStat",
+		p.final_status AS "proModel.finalStatus",
+		p.state AS "proModel.state",
+		p.team_id AS "proModel.teamId",
+		p.update_date AS "proModel.updateDate",
+		p.update_by AS "proModel.updateBy.id",
+		p.create_date AS "proModel.createDate",
+		p.create_by AS "proModel.createBy.id",
+		p.del_flag AS "proModel.delFlag",
+		p.proc_ins_id AS "proModel.procInsId",
+		p.pro_mark AS "proModel.proMark",
+		p.source AS "proModel.source",
+		p.competition_number AS "proModel.competitionNumber",
+		p.project_source AS "proModel.projectSource",
+		p.sub_time AS "proModel.subTime",
+		p.grade AS "proModel.grade",
+		p.g_score AS "proModel.gScore",
+
+		pp.id AS "actYw.proProject.id",
+		pp.menu_rid AS "actYw.proProject.menuRid",
+		pp.category_rid AS "actYw.proProject.categoryRid",
+		pp.content AS "actYw.proProject.content",
+		pp.project_name AS "actYw.proProject.projectName",
+		pp.project_mark AS "actYw.proProject.projectMark",
+		pp.state AS "actYw.proProject.state",
+		pp.pro_type AS "actYw.proProject.proType",
+		pp.type AS "actYw.proProject.type",
+		pp.pro_category AS "actYw.proProject.proCategory",
+		pp.level AS "actYw.proProject.level",
+		pp.final_status AS "actYw.proProject.finalStatus",
+		pp.start_date AS "actYw.proProject.startDate",
+		pp.end_date AS "actYw.proProject.endDate",
+		pp.node_state AS "actYw.proProject.nodeState",
+		pp.node_start_date AS "actYw.proProject.nodeStartDate",
+		pp.node_end_date AS "actYw.proProject.nodeEndDate",
+		pp.update_date AS "actYw.proProject.updateDate",
+		pp.update_by AS "actYw.proProject.updateBy.id",
+		pp.create_date AS "actYw.proProject.createDate",
+		pp.create_by AS "actYw.proProject.createBy.id",
+		pp.del_flag AS "actYw.proProject.delFlag"
+
+		<!-- ,
+		r.cid AS "sysCertRel.sysCert.id",
+		r.rid AS "sysCertRel.sysCertRes.id",
+		r.type AS "sysCertRel.type",
+		r.res_type AS "sysCertRel.resType",
+		r.res_clazz AS "sysCertRel.resClazz",
+		r.res_clazz_prop AS "sysCertRel.resClazzProp",
+		r.update_date AS "sysCertRel.updateDate",
+		r.update_by AS "sysCertRel.updateBy.id",
+		r.create_date AS "sysCertRel.createDate",
+		r.create_by AS "sysCertRel.createBy.id",
+		r.remarks AS "sysCertRel.remarks",
+		r.del_flag AS "sysCertRel.delFlag",
+
+		c.type AS "sysCertRel.sysCertRes.type",
+		c.name AS "sysCertRel.sysCertRes.name",
+		c.width AS "sysCertRel.sysCertRes.width",
+		c.height AS "sysCertRel.sysCertRes.height",
+		c.xlt AS "sysCertRel.sysCertRes.xlt",
+		c.ylt AS "sysCertRel.sysCertRes.ylt",
+		c.opacity AS "sysCertRel.sysCertRes.opacity",
+		c.rate AS "sysCertRel.sysCertRes.rate",
+		c.has_loop AS "sysCertRel.sysCertRes.hasLoop",
+		c.is_show AS "sysCertRel.sysCertRes.isShow",
+		c.update_date AS "sysCertRel.sysCertRes.updateDate",
+		c.update_by AS "sysCertRel.sysCertRes.updateBy.id",
+		c.create_date AS "sysCertRel.sysCertRes.createDate",
+		c.create_by AS "sysCertRel.sysCertRes.createBy.id",
+		c.remarks AS "sysCertRel.sysCertRes.remarks",
+		c.del_flag AS "sysCertRel.sysCertRes.delFlag",
+
+		f.id AS "sysCertRel.sysCertRes.file.id",
+		f.type AS "sysCertRel.sysCertRes.file.ftype",
+		f.file_step AS "sysCertRel.sysCertRes.file.ffileStep",
+		f.uid AS "sysCertRel.sysCertRes.file.uid",
+		f.url AS "sysCertRel.sysCertRes.file.url",
+		f.name AS "sysCertRel.sysCertRes.file.name",
+		f.size AS "sysCertRel.sysCertRes.file.size",
+		f.gnode_id AS "sysCertRel.sysCertRes.file.gnodeId",
+		f.suffix AS "sysCertRel.sysCertRes.file.suffix",
+		f.update_date AS "sysCertRel.sysCertRes.file.updateDate",
+		f.update_by AS "sysCertRel.sysCertRes.file.updateBy.id",
+		f.create_date AS "sysCertRel.sysCertRes.file.createDate",
+		f.create_by AS "sysCertRel.sysCertRes.file.createBy.id" -->
+	</sql>
+
+	<sql id="sysCertificateIssuedJoins">
+		LEFT JOIN sys_certificate b ON b.id = a.crid
+		<!-- LEFT JOIN sys_certificate_rel r ON r.cid = b.id
+		LEFT JOIN sys_certificate_res c ON c.id = r.rid
+		LEFT JOIN sys_attachment f ON f.uid = c.id -->
+		LEFT JOIN sys_office o5 ON o5.id = b.office_id
+		LEFT JOIN sys_user ua ON ua.id = a.accept_by
+		LEFT JOIN sys_user ui ON ui.id = a.issued_by
+		LEFT JOIN pro_model p ON p.id = a.pmid
+		LEFT JOIN act_yw y ON y.id = a.ywid
+		LEFT JOIN pro_project pp ON pp.id = y.rel_id
+	</sql>
+
+	<select id="get" resultType="SysCertificateIssued">
+		SELECT
+			<include refid="sysCertificateIssuedColumns"/>
+		FROM sys_certificate_issued a
+		<include refid="sysCertificateIssuedJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="SysCertificateIssued">
+		SELECT
+			<include refid="sysCertificateIssuedColumns"/>
+		FROM sys_certificate_issued a
+		<include refid="sysCertificateIssuedJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="sysCertRel != null">
+				<if test="sysCertRel.id != null and sysCertRel.id != ''">
+					AND a.crid = #{sysCertRel.id}
+				</if>
+			</if>
+			<if test="actYw != null">
+				<if test="actYw.id != null and actYw.id != ''">
+					AND a.ywid = #{actYw.id}
+				</if>
+			</if>
+			<if test="proModel != null">
+				<if test="proModel.id != null and proModel.id != ''">
+					AND a.pmid = #{proModel.id}
+				</if>
+			</if>
+			<if test="isYw != null and isYw != ''">
+				AND a.is_yw = #{isYw}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="issuedBy != null">
+				<if test="issuedBy.id != null and issuedBy.id != ''">
+					AND a.issued_by = #{issuedBy.id}
+				</if>
+			</if>
+			<if test="acceptBy != null">
+				<if test="acceptBy.id != null and acceptBy.id != ''">
+					AND a.accept_by = #{acceptBy.id}
+				</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findListByCert" resultType="SysCertificateIssued">
+		SELECT
+			<include refid="sysCertificateIssuedByGroupColumns"/>
+		FROM sys_certificate_issued a
+		<include refid="sysCertificateIssuedJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="sysCertRel != null">
+				<if test="sysCertRel.id != null and sysCertRel.id != ''">
+					AND a.crid = #{sysCertRel.id}
+				</if>
+			</if>
+			<if test="actYw != null">
+				<if test="actYw.id != null and actYw.id != ''">
+					AND a.ywid = #{actYw.id}
+				</if>
+			</if>
+			<if test="proModel != null">
+				<if test="proModel.id != null and proModel.id != ''">
+					AND a.pmid = #{proModel.id}
+				</if>
+			</if>
+			<if test="isYw != null and isYw != ''">
+				AND a.is_yw = #{isYw}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="issuedBy != null">
+				<if test="issuedBy.id != null and issuedBy.id != ''">
+					AND a.issued_by = #{issuedBy.id}
+				</if>
+			</if>
+			<if test="acceptBy != null">
+				<if test="acceptBy.id != null and acceptBy.id != ''">
+					AND a.accept_by = #{acceptBy.id}
+				</if>
+			</if>
+		</where>
+		GROUP BY a.crid, a.accept_by, a.ywid, a.pmid
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY a.crid, ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.crid, a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findListByIssued" resultType="SysCertificateIssued">
+		SELECT
+			<include refid="sysCertificateIssuedByGroupColumns"/>
+		FROM sys_certificate_issued a
+		<include refid="sysCertificateIssuedJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="sysCertRel != null">
+				<if test="sysCertRel.id != null and sysCertRel.id != ''">
+					AND a.crid = #{sysCertRel.id}
+				</if>
+			</if>
+			<if test="actYw != null">
+				<if test="actYw.id != null and actYw.id != ''">
+					AND a.ywid = #{actYw.id}
+				</if>
+			</if>
+			<if test="proModel != null">
+				<if test="proModel.id != null and proModel.id != ''">
+					AND a.pmid = #{proModel.id}
+				</if>
+			</if>
+			<if test="isYw != null and isYw != ''">
+				AND a.is_yw = #{isYw}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="issuedBy != null">
+				<if test="issuedBy.id != null and issuedBy.id != ''">
+					AND a.issued_by = #{issuedBy.id}
+				</if>
+			</if>
+			<if test="acceptBy != null">
+				<if test="acceptBy.id != null and acceptBy.id != ''">
+					AND a.accept_by = #{acceptBy.id}
+				</if>
+			</if>
+		</where>
+		GROUP BY a.crid, a.accept_by, a.ywid, a.pmid
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY a.issued_by, ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.issued_by, a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findListByAccept" resultType="SysCertificateIssued">
+		SELECT
+			<include refid="sysCertificateIssuedByGroupColumns"/>
+		FROM sys_certificate_issued a
+		<include refid="sysCertificateIssuedJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="sysCertRel != null">
+				<if test="sysCertRel.id != null and sysCertRel.id != ''">
+					AND a.crid = #{sysCertRel.id}
+				</if>
+			</if>
+			<if test="actYw != null">
+				<if test="actYw.id != null and actYw.id != ''">
+					AND a.ywid = #{actYw.id}
+				</if>
+			</if>
+			<if test="proModel != null">
+				<if test="proModel.id != null and proModel.id != ''">
+					AND a.pmid = #{proModel.id}
+				</if>
+			</if>
+			<if test="isYw != null and isYw != ''">
+				AND a.is_yw = #{isYw}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="issuedBy != null">
+				<if test="issuedBy.id != null and issuedBy.id != ''">
+					AND a.issued_by = #{issuedBy.id}
+				</if>
+			</if>
+			<if test="acceptBy != null">
+				<if test="acceptBy.id != null and acceptBy.id != ''">
+					AND a.accept_by = #{acceptBy.id}
+				</if>
+			</if>
+		</where>
+		GROUP BY a.crid, a.accept_by, a.ywid, a.pmid
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY a.accept_by, ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.accept_by, a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findListByYw" resultType="SysCertificateIssued">
+		SELECT
+			<include refid="sysCertificateIssuedByGroupColumns"/>
+		FROM sys_certificate_issued a
+		<include refid="sysCertificateIssuedJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="sysCertRel != null">
+				<if test="sysCertRel.id != null and sysCertRel.id != ''">
+					AND a.crid = #{sysCertRel.id}
+				</if>
+			</if>
+			<if test="actYw != null">
+				<if test="actYw.id != null and actYw.id != ''">
+					AND a.ywid = #{actYw.id}
+				</if>
+			</if>
+			<if test="proModel != null">
+				<if test="proModel.id != null and proModel.id != ''">
+					AND a.pmid = #{proModel.id}
+				</if>
+			</if>
+			<if test="isYw != null and isYw != ''">
+				AND a.is_yw = #{isYw}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="issuedBy != null">
+				<if test="issuedBy.id != null and issuedBy.id != ''">
+					AND a.issued_by = #{issuedBy.id}
+				</if>
+			</if>
+			<if test="acceptBy != null">
+				<if test="acceptBy.id != null and acceptBy.id != ''">
+					AND a.accept_by = #{acceptBy.id}
+				</if>
+			</if>
+		</where>
+		GROUP BY a.crid, a.accept_by, a.ywid, a.pmid
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY a.ywid, ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.ywid, a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="SysCertificateIssued">
+		SELECT
+			<include refid="sysCertificateIssuedColumns"/>
+		FROM sys_certificate_issued a
+		<include refid="sysCertificateIssuedJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO sys_certificate_issued(
+			id,
+			crid,
+			ywid,
+			pmid,
+			is_yw,
+			type,
+			reason,
+			issued_date,
+			issued_by,
+			accept_by,
+			update_date,
+			update_by,
+			create_date,
+			create_by,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{sysCertRel.id},
+			#{actYw.id},
+			#{proModel.id},
+			#{isYw},
+			#{type},
+			#{reason},
+			#{issuedDate},
+			#{issuedBy.id},
+			#{acceptBy.id},
+			#{updateDate},
+			#{updateBy.id},
+			#{createDate},
+			#{createBy.id},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE sys_certificate_issued SET
+			crid = #{sysCertRel.id},
+			ywid = #{actYw.id},
+			pmid = #{proModel.id},
+			is_yw = #{isYw},
+			type = #{type},
+			reason = #{reason},
+			issued_date = #{issuedDate},
+			issued_by = #{issuedBy.id},
+			accept_by = #{acceptBy.id},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		UPDATE sys_certificate_issued SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+</mapper>

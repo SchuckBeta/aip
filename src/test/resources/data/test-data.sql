@@ -1,0 +1,1 @@
+INSERT INTO USERSS (name, password, age) VALUES ('admin', 'admin', 1);

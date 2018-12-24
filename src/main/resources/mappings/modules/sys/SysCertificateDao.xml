@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oseasy.initiate.modules.sys.dao.SysCertificateDao">
+	<resultMap id="sysCertificateResult" type="com.oseasy.initiate.modules.sys.entity.SysCertificate">
+		<id property="id" column="id" />
+		<result property="no" column="no" />
+		<result property="name" column="name" />
+		<result property="type" column="type" />
+		<result property="hasUse" column="hasUse" />
+		<result property="office.id" column="office.id" />
+		<result property="updateDate" column="updateDate" />
+		<result property="updateBy.id" column="updateBy.id" />
+		<result property="createDate" column="createDate" />
+		<result property="createBy.id" column="createBy.id" />
+		<result property="remarks" column="remarks" />
+		<result property="delFlag" column="delFlag" />
+
+		<collection property="sysCertRels" ofType="SysCertificateRel">
+			<id property="id" column="sysCertRels.id" />
+			<result property="type" column="sysCertRels.type" />
+			<result property="resType" column="sysCertRels.resType" />
+			<result property="resClazz" column="sysCertRels.resClazz" />
+			<result property="resClazzProp" column="sysCertRels.resClazzProp" />
+
+			<result property="updateDate" column="sysCertRels.updateDate" />
+			<result property="updateBy.id" column="sysCertRels.updateBy.id" />
+			<result property="createDate" column="sysCertRels.createDate" />
+			<result property="createBy.id" column="sysCertRels.createBy.id" />
+			<result property="remarks" column="sysCertRels.remarks" />
+			<result property="delFlag" column="sysCertRels.delFlag" />
+			<association property="sysCertRes" javaType="com.oseasy.initiate.modules.sys.entity.SysCertificateRes">
+				<id property="id" column="sysCertRels.sysCertRes.id" />
+				<result property="type" column="sysCertRels.sysCertRes.type" />
+				<result property="name" column="sysCertRels.sysCertRes.name" />
+				<result property="width" column="sysCertRels.sysCertRes.width" />
+				<result property="height" column="sysCertRels.sysCertRes.height" />
+				<result property="xlt" column="sysCertRels.sysCertRes.xlt" />
+				<result property="ylt" column="sysCertRels.sysCertRes.ylt" />
+				<result property="opacity" column="sysCertRels.sysCertRes.opacity" />
+				<result property="rate" column="sysCertRels.sysCertRes.rate" />
+				<result property="hasLoop" column="sysCertRels.sysCertRes.hasLoop" />
+				<result property="isShow" column="sysCertRels.sysCertRes.isShow" />
+
+				<result property="updateDate" column="sysCertRels.sysCertRes.updateDate" />
+				<result property="updateBy.id" column="sysCertRels.sysCertRes.updateBy.id" />
+				<result property="createDate" column="sysCertRels.sysCertRes.createDate" />
+				<result property="createBy.id" column="sysCertRels.sysCertRes.createBy.id" />
+				<result property="remarks" column="sysCertRels.sysCertRes.remarks" />
+				<result property="delFlag" column="sysCertRels.sysCertRes.delFlag" />
+				<association property="file" javaType="com.oseasy.initiate.modules.attachment.entity.SysAttachment">
+					<id property="id" column="sysCertRels.sysCertRes.file.id" />
+					<result property="ftype" column="sysCertRels.sysCertRes.file.ftype" />
+					<result property="ffileStep" column="sysCertRels.sysCertRes.file.ffileStep" />
+					<result property="url" column="sysCertRels.sysCertRes.file.url" />
+					<result property="name" column="sysCertRels.sysCertRes.file.size" />
+					<result property="size" column="sysCertRels.sysCertRes.file.name" />
+					<result property="suffix" column="sysCertRels.sysCertRes.file.suffix" />
+					<result property="imgType" column="sysCertRels.sysCertRes.file.imgType" />
+					<result property="ftpUrl" column="sysCertRels.sysCertRes.file.ftpUrl" />
+
+					<result property="updateDate" column="sysCertRels.sysCertRes.file.updateDate" />
+					<result property="updateBy.id" column="sysCertRels.sysCertRes.file.updateBy.id" />
+					<result property="createDate" column="sysCertRels.sysCertRes.file.createDate" />
+					<result property="createBy.id" column="sysCertRels.sysCertRes.file.createBy.id" />
+					<result property="remarks" column="sysCertRels.sysCertRes.file.remarks" />
+					<result property="delFlag" column="sysCertRels.sysCertRes.file.delFlag" />
+				</association>
+			</association>
+			<!-- <association property="sysCert" javaType="com.oseasy.initiate.modules.sys.entity.SysCertificate">
+				<id property="id" column="id" />
+				<result property="no" column="no" />
+				<result property="name" column="name" />
+				<result property="type" column="type" />
+				<result property="hasUse" column="hasUse" />
+				<result property="office.id" column="office.id" />
+				<result property="updateDate" column="updateDate" />
+				<result property="updateBy.id" column="updateBy.id" />
+				<result property="createDate" column="createDate" />
+				<result property="createBy.id" column="createBy.id" />
+				<result property="remarks" column="remarks" />
+				<result property="delFlag" column="delFlag" />
+			</association> -->
+		</collection>
+	</resultMap>
+
+	<sql id="sysCertificateColumns">
+		a.id AS "id",
+		a.no AS "no",
+		a.name AS "name",
+		a.type AS "type",
+		a.has_use AS "hasUse",
+		a.office_id AS "office.id",
+		a.update_date AS "updateDate",
+		a.update_by AS "updateBy.id",
+		a.create_date AS "createDate",
+		a.create_by AS "createBy.id",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		o5.name AS "office.name",
+
+		r.rid AS "sysCertRels.sysCertRes.id",
+		r.type AS "sysCertRels.type",
+		r.res_type AS "sysCertRels.resType",
+		r.res_clazz AS "sysCertRels.resClazz",
+		r.res_clazz_prop AS "sysCertRels.resClazzProp",
+		r.update_date AS "sysCertRels.updateDate",
+		r.update_by AS "sysCertRels.updateBy.id",
+		r.create_date AS "sysCertRels.createDate",
+		r.create_by AS "sysCertRels.createBy.id",
+		r.remarks AS "sysCertRels.remarks",
+		r.del_flag AS "sysCertRels.delFlag",
+
+		c.type AS "sysCertRels.sysCertRes.type",
+		c.name AS "sysCertRels.sysCertRes.name",
+		c.width AS "sysCertRels.sysCertRes.width",
+		c.height AS "sysCertRels.sysCertRes.height",
+		c.xlt AS "sysCertRels.sysCertRes.xlt",
+		c.ylt AS "sysCertRels.sysCertRes.ylt",
+		c.opacity AS "sysCertRels.sysCertRes.opacity",
+		c.rate AS "sysCertRels.sysCertRes.rate",
+		c.has_loop AS "sysCertRels.sysCertRes.hasLoop",
+		c.is_show AS "sysCertRels.sysCertRes.isShow",
+		c.update_date AS "sysCertRels.sysCertRes.updateDate",
+		c.update_by AS "sysCertRels.sysCertRes.updateBy.id",
+		c.create_date AS "sysCertRels.sysCertRes.createDate",
+		c.create_by AS "sysCertRels.sysCertRes.createBy.id",
+		c.remarks AS "sysCertRels.sysCertRes.remarks",
+		c.del_flag AS "sysCertRels.sysCertRes.delFlag",
+
+		f.id AS "sysCertRels.sysCertRes.file.id",
+		f.type AS "sysCertRels.sysCertRes.file.ftype",
+		f.file_step AS "sysCertRels.sysCertRes.file.ffileStep",
+		f.uid AS "sysCertRels.sysCertRes.file.uid",
+		f.url AS "sysCertRels.sysCertRes.file.url",
+		f.name AS "sysCertRels.sysCertRes.file.name",
+		f.size AS "sysCertRels.sysCertRes.file.size",
+		f.gnode_id AS "sysCertRels.sysCertRes.file.gnodeId",
+		f.suffix AS "sysCertRels.sysCertRes.file.suffix",
+		f.update_date AS "sysCertRels.sysCertRes.file.updateDate",
+		f.update_by AS "sysCertRels.sysCertRes.file.updateBy.id",
+		f.create_date AS "sysCertRels.sysCertRes.file.createDate",
+		f.create_by AS "sysCertRels.sysCertRes.file.createBy.id"
+	</sql>
+
+	<sql id="sysCertificateJoins">
+		LEFT JOIN sys_certificate_rel r ON r.cid = a.id
+		LEFT JOIN sys_certificate_res c ON c.id = r.rid
+		LEFT JOIN sys_attachment f ON f.uid = c.id
+		LEFT JOIN sys_office o5 ON o5.id = a.office_id
+	</sql>
+
+	<select id="get" resultMap="sysCertificateResult">
+		SELECT
+			<include refid="sysCertificateColumns"/>
+		FROM sys_certificate a
+		<include refid="sysCertificateJoins"/>
+		WHERE a.id = #{id}
+		ORDER BY a.type ASC, r.type ASC, r.res_type ASC, a.update_date DESC
+	</select>
+
+	<select id="findList" resultMap="sysCertificateResult">
+		SELECT
+			<include refid="sysCertificateColumns"/>
+		FROM sys_certificate a
+		<include refid="sysCertificateJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="hasUse != null and hasUse != ''">
+				AND a.has_use = #{hasUse}
+			</if>
+			<if test="office != null and office.id != null and office.id != ''">
+				AND a.office_id = #{office.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.type ASC, r.type ASC, r.res_type ASC, a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultMap="sysCertificateResult">
+		SELECT
+			<include refid="sysCertificateColumns"/>
+		FROM sys_certificate a
+		<include refid="sysCertificateJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.type ASC, r.type ASC, r.res_type ASC, a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO sys_certificate(
+			id,
+			no,
+			name,
+			type,
+			has_use,
+			office_id,
+			update_date,
+			update_by,
+			create_date,
+			create_by,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{no},
+			#{name},
+			#{type},
+			#{hasUse},
+			#{office.id},
+			#{updateDate},
+			#{updateBy.id},
+			#{createDate},
+			#{createBy.id},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE sys_certificate SET
+			no = #{no},
+			name = #{name},
+			type = #{type},
+			has_use = #{hasUse},
+			office_id = #{office.id},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+
+	<update id="updateHasUsePL">
+		UPDATE sys_certificate SET
+			has_use = #{hasUse}
+        where id in
+        <foreach item="item" collection="entitys" index="index" open="(" close=")" separator=",">
+            #{item.id}
+        </foreach>
+	</update>
+
+	<update id="delete">
+		UPDATE sys_certificate SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+</mapper>

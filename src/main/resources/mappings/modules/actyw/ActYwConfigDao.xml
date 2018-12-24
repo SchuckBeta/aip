@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oseasy.initiate.modules.actyw.dao.ActYwConfigDao">
+    
+	<sql id="actYwConfigColumns">
+		a.id AS "id",
+		a.yw_id AS "ywId",
+		a.has_flow_deploy AS "hasFlowDeploy",
+		a.flow_deploy_way AS "flowDeployWay",
+		a.flow_gd AS "flowGd",
+		a.flow_xml AS "flowXml",
+		a.has_score AS "hasScore",
+		a.score_fid AS "scoreFid",
+		a.has_menu AS "hasMenu",
+		a.menu_reset AS "menuReset",
+		a.menu_theme AS "menuTheme",
+		a.has_global_audit AS "hasGlobalAudit",
+		a.audit_type AS "auditType",
+		a.audit_office_id AS "auditOfficeId",
+		a.has_categpry AS "hasCategpry",
+		a.categpry_reset AS "categpryReset",
+		a.categpry_theme AS "categpryTheme",
+		a.has_notice AS "hasNotice",
+		a.has_msg AS "hasMsg",
+		a.has_email AS "hasEmail",
+		a.has_cert AS "hasCert",
+		a.cert_way AS "certWay",
+		a.cert_show_type AS "certShowType",
+		a.cert_notice AS "certNotice",
+		a.cert_msg AS "certMsg",
+		a.cert_email AS "certEmail",
+		a.has_assign AS "hasAssign",
+		a.assign_way AS "assignWay",
+		a.assign_show_type AS "assignShowType",
+		a.has_time AS "hasTime",
+		a.has_apypage AS "hasApypage",
+		a.apypage_as_start AS "apypageAsStart",
+		a.apypage_id AS "apypageId",
+		a.apypage_url AS "apypageUrl",
+		a.has_applylt AS "hasApplylt",
+		a.applylt_way AS "applyltWay",
+		a.applylt_num AS "applyltNum",
+		a.has_prate AS "hasPrate",
+		a.prate_way AS "prateWay",
+		a.prate_show_type AS "prateShowType",
+		a.has_nrule AS "hasNrule",
+		a.nrule_id AS "nruleId",
+		a.has_rename AS "hasRename",
+		a.rename_way AS "renameWay",
+		a.has_axis AS "hasAxis",
+		a.has_key AS "hasKey",
+		a.key_type AS "keyType",
+		a.has_teamlt AS "hasTeamlt",
+		a.teamlt_min AS "teamltMin",
+		a.teamlt_max AS "teamltMax",
+		a.allow_enjoy AS "allowEnjoy",
+		a.has_incubator AS "hasIncubator",
+		a.incubator_fid AS "incubatorFid",
+		a.update_date AS "updateDate",
+		a.update_by AS "updateBy.id",
+		a.create_date AS "createDate",
+		a.create_by AS "createBy.id",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="actYwConfigJoins">
+		LEFT JOIN sys_office o14 ON o14.id = a.audit_office_id
+	</sql>
+    
+	<select id="get" resultType="ActYwConfig">
+		SELECT 
+			<include refid="actYwConfigColumns"/>
+		FROM act_yw_config a
+		<include refid="actYwConfigJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ActYwConfig">
+		SELECT 
+			<include refid="actYwConfigColumns"/>
+		FROM act_yw_config a
+		<include refid="actYwConfigJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="ywId != null and ywId != ''">
+				AND a.yw_id = #{ywId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ActYwConfig">
+		SELECT 
+			<include refid="actYwConfigColumns"/>
+		FROM act_yw_config a
+		<include refid="actYwConfigJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO act_yw_config(
+			id,
+			yw_id,
+			has_flow_deploy,
+			flow_deploy_way,
+			flow_gd,
+			flow_xml,
+			has_score,
+			score_fid,
+			has_menu,
+			menu_reset,
+			menu_theme,
+			has_global_audit,
+			audit_type,
+			audit_office_id,
+			has_categpry,
+			categpry_reset,
+			categpry_theme,
+			has_notice,
+			has_msg,
+			has_email,
+			has_cert,
+			cert_way,
+			cert_show_type,
+			cert_notice,
+			cert_msg,
+			cert_email,
+			has_assign,
+			assign_way,
+			assign_show_type,
+			has_time,
+			has_apypage,
+			apypage_as_start,
+			apypage_id,
+			apypage_url,
+			has_applylt,
+			applylt_way,
+			applylt_num,
+			has_prate,
+			prate_way,
+			prate_show_type,
+			has_nrule,
+			nrule_id,
+			has_rename,
+			rename_way,
+			has_axis,
+			has_key,
+			key_type,
+			has_teamlt,
+			teamlt_min,
+			teamlt_max,
+			allow_enjoy,
+			has_incubator,
+			incubator_fid,
+			update_date,
+			update_by,
+			create_date,
+			create_by,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{ywId},
+			#{hasFlowDeploy},
+			#{flowDeployWay},
+			#{flowGd},
+			#{flowXml},
+			#{hasScore},
+			#{scoreFid},
+			#{hasMenu},
+			#{menuReset},
+			#{menuTheme},
+			#{hasGlobalAudit},
+			#{auditType},
+			#{auditOfficeId},
+			#{hasCategpry},
+			#{categpryReset},
+			#{categpryTheme},
+			#{hasNotice},
+			#{hasMsg},
+			#{hasEmail},
+			#{hasCert},
+			#{certWay},
+			#{certShowType},
+			#{certNotice},
+			#{certMsg},
+			#{certEmail},
+			#{hasAssign},
+			#{assignWay},
+			#{assignShowType},
+			#{hasTime},
+			#{hasApypage},
+			#{apypageAsStart},
+			#{apypageId},
+			#{apypageUrl},
+			#{hasApplylt},
+			#{applyltWay},
+			#{applyltNum},
+			#{hasPrate},
+			#{prateWay},
+			#{prateShowType},
+			#{hasNrule},
+			#{nruleId},
+			#{hasRename},
+			#{renameWay},
+			#{hasAxis},
+			#{hasKey},
+			#{keyType},
+			#{hasTeamlt},
+			#{teamltMin},
+			#{teamltMax},
+			#{allowEnjoy},
+			#{hasIncubator},
+			#{incubatorFid},
+			#{updateDate},
+			#{updateBy.id},
+			#{createDate},
+			#{createBy.id},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE act_yw_config SET 	
+			yw_id = #{ywId},
+			has_flow_deploy = #{hasFlowDeploy},
+			flow_deploy_way = #{flowDeployWay},
+			flow_gd = #{flowGd},
+			flow_xml = #{flowXml},
+			has_score = #{hasScore},
+			score_fid = #{scoreFid},
+			has_menu = #{hasMenu},
+			menu_reset = #{menuReset},
+			menu_theme = #{menuTheme},
+			has_global_audit = #{hasGlobalAudit},
+			audit_type = #{auditType},
+			audit_office_id = #{auditOfficeId},
+			has_categpry = #{hasCategpry},
+			categpry_reset = #{categpryReset},
+			categpry_theme = #{categpryTheme},
+			has_notice = #{hasNotice},
+			has_msg = #{hasMsg},
+			has_email = #{hasEmail},
+			has_cert = #{hasCert},
+			cert_way = #{certWay},
+			cert_show_type = #{certShowType},
+			cert_notice = #{certNotice},
+			cert_msg = #{certMsg},
+			cert_email = #{certEmail},
+			has_assign = #{hasAssign},
+			assign_way = #{assignWay},
+			assign_show_type = #{assignShowType},
+			has_time = #{hasTime},
+			has_apypage = #{hasApypage},
+			apypage_as_start = #{apypageAsStart},
+			apypage_id = #{apypageId},
+			apypage_url = #{apypageUrl},
+			has_applylt = #{hasApplylt},
+			applylt_way = #{applyltWay},
+			applylt_num = #{applyltNum},
+			has_prate = #{hasPrate},
+			prate_way = #{prateWay},
+			prate_show_type = #{prateShowType},
+			has_nrule = #{hasNrule},
+			nrule_id = #{nruleId},
+			has_rename = #{hasRename},
+			rename_way = #{renameWay},
+			has_axis = #{hasAxis},
+			has_key = #{hasKey},
+			key_type = #{keyType},
+			has_teamlt = #{hasTeamlt},
+			teamlt_min = #{teamltMin},
+			teamlt_max = #{teamltMax},
+			allow_enjoy = #{allowEnjoy},
+			has_incubator = #{hasIncubator},
+			incubator_fid = #{incubatorFid},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE act_yw_config SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
