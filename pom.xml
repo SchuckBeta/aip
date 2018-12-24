@@ -13,7 +13,7 @@
 
     <!-- 项目属性 -->
     <properties>
-        <artifactId.finalName>Aip</artifactId.finalName>
+        <artifactId.finalName>ROOT</artifactId.finalName>
         <!-- main version setting -->
         <!--<spring.version>4.1.9.RELEASE</spring.version>-->
         <spring.version>4.2.5.RELEASE</spring.version>
