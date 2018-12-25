@@ -66,7 +66,7 @@ public class CmsUtil {
      * 添加前缀.
      * @return
      */
-    public String addCtxFront(){
+    public String addCtxFront(String a, String ss, Integer id){
         //TODO CHENHAO
         return null;
     }
