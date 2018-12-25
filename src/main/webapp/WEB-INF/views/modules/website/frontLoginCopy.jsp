@@ -404,7 +404,7 @@
                         </div>
                         <div class="form-group-ls clearfix">
                             <input class="password form-control" name="password" type="password" placeholder="密码" autocomplete="off"/>
-                            <a class="btn-getpassword" href="/f/page-seekpassword">找回密码</a>
+                            <a class="btn-getpassword" href="/f/cms/page-seekpassword">找回密码</a>
                         </div>
                         <input type="hidden" name="loginType" value="2"/>
                         <c:if test="${isValidateCodeLogin}">

@@ -128,7 +128,7 @@
             <ul>
                 <li><img src="/img/bc_home.png"></li>
                 <li><a href="/f/">首页></a></li>
-                <li><a href="/f/page-projectshow"> 优秀项目展示></a></li>
+                <li><a href="/f/cms/page-projectshow"> 优秀项目展示></a></li>
                 <li>腕带识别系统</li>
             </ul>
         </div>

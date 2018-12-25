@@ -150,7 +150,7 @@ $(function() {
 	});
 	/* 跳转到通知详情 */
 	// $("#wrap").click(function(){
-	// 	window.location.href="f/page-notice";
+	// 	window.location.href="f/cms/page-notice";
 	// });
 	  // 初始化轮播
 	$("#myCarousel").carousel({
@@ -182,24 +182,24 @@ $(function(){
 			// 新闻标题
 			title : '李克强对首届中国“互联网+”大学生创新创业“大赛',
 			// 新闻链接
-			url : '/f/page-scdt',
+			url : '/f/cms/page-scdt',
 			// 新闻日期
 			date : '2016-2-23'
 		}, {
 			title : '李克强对首届中国“互联网+”大学生创新创业“大赛',
-			url : '/f/page-scdt',
+			url : '/f/cms/page-scdt',
 			date : '2016-2-23'
 		}, {
 			title : '李克强对首届中国“互联网+”大学生创新创业“大赛',
-			url : '/f/page-scdt',
+			url : '/f/cms/page-scdt',
 			date : '2016-2-23'
 		}, {
 			title : '李克强对首届中国“互联网+”大学生创新创业“大赛',
-			url : '/f/page-scdt',
+			url : '/f/cms/page-scdt',
 			date : '2016-2-23'
 		}, {
 			title : '李克强对首届中国“互联网+”大学生创新创业“大赛',
-			url : '/f/page-scdt',
+			url : '/f/cms/page-scdt',
 			date : '2016-2-23'
 		} ],
 		// 双创通知新闻列表
@@ -207,24 +207,24 @@ $(function(){
 			// 新闻标题
 			title : '关于组织申报2017年度大学生创新创业',
 			// 新闻链接
-			url : '/f/page-scdt',
+			url : '/f/cms/page-scdt',
 			// 新闻日期
 			date : '2016-2-23'
 		}, {
 			title : '李克强对首届中国“互联网+”大学生创新创业“大赛',
-			url : '/f/page-scdt',
+			url : '/f/cms/page-scdt',
 			date : '2016-2-23'
 		}, {
 			title : '李克强对首届中国“互联网+”大学生创新创业“大赛',
-			url : '/f/page-scdt',
+			url : '/f/cms/page-scdt',
 			date : '2016-2-23'
 		}, {
 			title : '李克强对首届中国“互联网+”大学生创新创业“大赛',
-			url : '/f/page-scdt',
+			url : '/f/cms/page-scdt',
 			date : '2016-2-23'
 		}, {
 			title : '李克强对首届中国“互联网+”大学生创新创业“大赛',
-			url : '/f/page-scdt',
+			url : '/f/cms/page-scdt',
 			date : '2016-2-23'
 		} ],
 		// 省市动态新闻列表
@@ -232,24 +232,24 @@ $(function(){
 			// 新闻标题
 			title : '第二届浙江省“互联网+”大学生创新创业“大赛',
 			// 新闻链接
-			url : '/f/page-scdt',
+			url : '/f/cms/page-scdt',
 			// 新闻日期
 			date : '2016-2-23'
 		}, {
 			title : '李克强对首届中国“互联网+”大学生创新创业“大赛',
-			url : '/f/page-scdt',
+			url : '/f/cms/page-scdt',
 			date : '2016-2-23'
 		}, {
 			title : '李克强对首届中国“互联网+”大学生创新创业“大赛',
-			url : '/f/page-scdt',
+			url : '/f/cms/page-scdt',
 			date : '2016-2-23'
 		}, {
 			title : '李克强对首届中国“互联网+”大学生创新创业“大赛',
-			url : '/f/page-scdt',
+			url : '/f/cms/page-scdt',
 			date : '2016-2-23'
 		}, {
 			title : '李克强对首届中国“互联网+”大学生创新创业“大赛',
-			url : '/f/page-scdt',
+			url : '/f/cms/page-scdt',
 			date : '2016-2-23'
 		} ]
 	};

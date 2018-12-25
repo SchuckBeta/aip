@@ -28,7 +28,7 @@
     <div class="main-wrap">
         <%--<ol class="breadcrumb">--%>
             <%--<li><a href="/f/"><i class="icon-home"></i>首页</a></li>--%>
-            <%--<li><a href="/f//page-innovation">双创大赛</a></li>--%>
+            <%--<li><a href="/f//cms/page-innovation">双创大赛</a></li>--%>
             <%--<li class="active">申报</li>--%>
         <%--</ol>--%>
         <div class="row-step-cyjd mgb40">

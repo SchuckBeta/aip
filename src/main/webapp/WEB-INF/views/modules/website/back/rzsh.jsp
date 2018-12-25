@@ -266,7 +266,7 @@
                 <a href="#">{{item.auditStatusLabel}}</a>
             </td>
             <td>
-                <a v-if="item.auditStatus == 1" href="/a/html-rzshAction" class="btn btn-back-oe btn-primaryBack-oe btn-small">审核</a>
+                <a v-if="item.auditStatus == 1" href="/a/cms/html-rzshAction" class="btn btn-back-oe btn-primaryBack-oe btn-small">审核</a>
                 <a v-if="item.auditStatus != 1" href="#" class="btn btn-back-oe btn-primaryBack-oe btn-small">查看</a>
             </td>
         </tr>

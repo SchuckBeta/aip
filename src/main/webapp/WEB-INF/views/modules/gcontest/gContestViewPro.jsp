@@ -16,7 +16,7 @@
     <el-breadcrumb separator-class="el-icon-arrow-right">
         <el-breadcrumb-item><a href="${ctxFront}"><i class="iconfont icon-ai-home" style="font-size: 12px;"></i>首页</a>
         </el-breadcrumb-item>
-        <el-breadcrumb-item><a href="${ctxFront}/html-sctzsj">双创大赛</a></el-breadcrumb-item>
+        <el-breadcrumb-item><a href="${ctxFront}/cms/html-sctzsj">双创大赛</a></el-breadcrumb-item>
         <el-breadcrumb-item><a href="${ctxFront}/gcontest/gContest">我的大赛</a></el-breadcrumb-item>
         <el-breadcrumb-item>大赛详情</el-breadcrumb-item>
     </el-breadcrumb>

@@ -153,7 +153,7 @@
     </div>
     <ul class="nav nav-tabs">
         <li class="active"><a href="javascript:void (0)">资产管理</a></li>
-        <li><a href="/a/html-zclxgl">资产类型管理</a></li>
+        <li><a href="/a/cms/html-zclxgl">资产类型管理</a></li>
     </ul>
     <div class="form-box">
         <form>

@@ -26,7 +26,7 @@
 <div class="container container-ct">
     <ol class="breadcrumb" style="margin-top: 0;">
         <li><a href="${ctxFront}"><i class="icon-home"></i>首页</a></li>
-        <li><a href="${ctxFront}/html-sctzsj">双创大赛</a></li>
+        <li><a href="${ctxFront}/cms/html-sctzsj">双创大赛</a></li>
         <li class="active">我的大赛</li>
     </ol>
     <div class="cate-table-module">

@@ -3,7 +3,7 @@
 <template>
 	<jsonparam>
 	<![CDATA[{
-				'url':'模块跳转链接,如：/f/page-teacherGrace',
+				'url':'模块跳转链接,如：/f/cms/page-teacherGrace',
 			    'banner': [
 			        {
 			            'name': '导师1名称',
@@ -89,7 +89,7 @@
 									<img src="${freemarkerGetFtpUrl(tea.img)}" />
 								</div>
 								<p class="infor">
-									<b class="name" style="float: left;font-size: 18px;color: #342c2a;font-weight: normal">${tea.name}</b> 
+									<b class="name" style="float: left;font-size: 18px;color: #342c2a;font-weight: normal">${tea.name}</b>
 									<#list tea.tags as tag>
 									<span>${tag}</span>
 									</#list>

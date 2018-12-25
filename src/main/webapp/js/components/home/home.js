@@ -259,14 +259,14 @@ var HomeAnnouncement = Vue.component('home-announcement', {
 var HomeNotice = Vue.component('home-notice', {
     name: 'HomeNotice',
     template: '<div class="home-module-container"><div class="container"><h-title_bar :title-data="titleData"></h-title_bar>' +
-    '<div class="h_notification-block"><a href="/f/page-SCtognzhi#homeSSDT"><span class="hnb-title" :class="className">{{notiyNames.homeSSDT}}</span></a><div class="hnb-inner">' +
+    '<div class="h_notification-block"><a href="/f/cms/page-SCtognzhi#homeSSDT"><span class="hnb-title" :class="className">{{notiyNames.homeSSDT}}</span></a><div class="hnb-inner">' +
     '<div class="hnb-pic"><img :src="msgImg | ftpHttpFilter(ftpHttp)"></div>' +
-    '<ul class="hnb-notices"><li v-for="item in notifys.ss"><a :href="frontOrAdmin+\'/oa/oaNotify/viewDynamic?id=\'+item.id">{{item.title}}</a><span class="date">{{item.createDate | formatDateFilter(\'YYYY-MM-DD\')}}</span></li></ul><div class="text-right more"><a href="/f/page-SCtognzhi#homeSSDT">更多<i class="el-icon-d-arrow-right"></i></a></div></div></div>' +
+    '<ul class="hnb-notices"><li v-for="item in notifys.ss"><a :href="frontOrAdmin+\'/oa/oaNotify/viewDynamic?id=\'+item.id">{{item.title}}</a><span class="date">{{item.createDate | formatDateFilter(\'YYYY-MM-DD\')}}</span></li></ul><div class="text-right more"><a href="/f/cms/page-SCtognzhi#homeSSDT">更多<i class="el-icon-d-arrow-right"></i></a></div></div></div>' +
     '<div class="h_notification-banner"><el-carousel trigger="click" height="255px"><el-carousel-item v-for="item in dynamiceImages" :key="item"><img :src="item | ftpHttpFilter(ftpHttp)"></el-carousel-item></el-carousel></div>' +
     '<div class="h_notification-dynamics">' +
-    '<div class="hn-dynamic"><h4 class="title">{{notiyNames.homeSCDT}}<a class="more" href="/f/page-SCtognzhi#homeSCDT">更多<i class="el-icon-d-arrow-right"></i></a></h4>' +
+    '<div class="hn-dynamic"><h4 class="title">{{notiyNames.homeSCDT}}<a class="more" href="/f/cms/page-SCtognzhi#homeSCDT">更多<i class="el-icon-d-arrow-right"></i></a></h4>' +
     '<ul class="hnd-notices"><li v-for="item in notifys.sc" :key="item.id"><a :href="frontOrAdmin+\'/oa/oaNotify/viewDynamic?id=\'+item.id">{{item.title}}</a><span class="date">{{item.createDate | formatDateFilter(\'YYYY-MM-DD\')}}</span></li></ul></div>' +
-    '<div class="hn-dynamic"><h4 class="title">{{notiyNames.homeSCTZ}}<a class="more" href="/f/page-SCtognzhi#homeSCTZ">更多<i class="el-icon-d-arrow-right"></i></a></h4>' +
+    '<div class="hn-dynamic"><h4 class="title">{{notiyNames.homeSCTZ}}<a class="more" href="/f/cms/page-SCtognzhi#homeSCTZ">更多<i class="el-icon-d-arrow-right"></i></a></h4>' +
     '<ul class="hnd-notices"><li v-for="item in notifys.tz"><a :href="frontOrAdmin+\'/oa/oaNotify/viewDynamic?id=\'+item.id">{{item.title}}</a><span class="date">{{item.createDate | formatDateFilter(\'YYYY-MM-DD\')}}</span></li></ul></div>' +
     '</div>' +
     '</div></div>',
@@ -280,7 +280,7 @@ var HomeNotice = Vue.component('home-notice', {
     computed: {
         titleData: function () {
             return {
-                href: '/f/page-SCtognzhi',
+                href: '/f/cms/page-SCtognzhi',
                 title: this.componentData.modelname,
                 ename: this.componentData.ename
             }

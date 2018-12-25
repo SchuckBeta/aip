@@ -17,7 +17,7 @@
 <div class="container container-ct">
     <ol class="breadcrumb" style="margin-top: 0;">
         <li><a href="${ctxFront}"><i class="icon-home"></i>首页</a></li>
-        <li><a href="${ctxFront}/html-sctzsj">双创大赛</a></li>
+        <li><a href="${ctxFront}/cms/html-sctzsj">双创大赛</a></li>
         <li class="active">${projectName}</li>
     </ol>
     <input type="hidden" id="pageType" value="edit">

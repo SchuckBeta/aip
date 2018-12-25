@@ -36,7 +36,7 @@
     <%--</div>--%>
     <ol class="breadcrumb" style="margin-top: 0">
         <li><a href="${ctxFront}"><i class="icon-home"></i>首页</a></li>
-        <li><a href="${ctxFront}/page-innovation">双创项目</a></li>
+        <li><a href="${ctxFront}/cms/page-innovation">双创项目</a></li>
         <li class="active">项目申报</li>
     </ol>
     <input type="hidden" id="pageType" value="edit">

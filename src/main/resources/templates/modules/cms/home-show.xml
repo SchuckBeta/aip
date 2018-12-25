@@ -4,7 +4,7 @@
 	<![CDATA[{
 		    'groups': [
 			    {
-			    	'url':'模块跳转链接,如：f/page-projectshow',
+			    	'url':'模块跳转链接,如：f/cms/page-projectshow',
 			    	'groupName':'分组1',
 			    	'list':[
 			    		{

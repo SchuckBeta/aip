@@ -56,8 +56,8 @@
         <p><span>邮  箱：</span>30469879@qq.com(备注好项目名称)</p>
     </div>
     <ul class="adjuncts">
-        <li><span>附件一：</span><a href="${ctxFront }/page-download-noticedoc?type=1">湖南大学入驻工训中心创新创业项目中期检查表.doc</a></li>
-        <li><span>附件二：</span><a href="${ctxFront }/page-download-noticedoc?type=2">重点“项目阶段性研究报告”书写格式（见群通知）</a></li>
+        <li><span>附件一：</span><a href="${ctxFront }/cms/page-download-noticedoc?type=1">湖南大学入驻工训中心创新创业项目中期检查表.doc</a></li>
+        <li><span>附件二：</span><a href="${ctxFront }/cms/page-download-noticedoc?type=2">重点“项目阶段性研究报告”书写格式（见群通知）</a></li>
     </ul>
     <p class="text-right">现代工程训练中心</p>
     <p class="text-right">2017年3月16日</p>

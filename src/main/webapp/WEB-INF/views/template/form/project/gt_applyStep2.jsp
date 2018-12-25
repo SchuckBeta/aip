@@ -14,12 +14,12 @@
     <div class="main-wrap">
         <ol class="breadcrumb">
             <li><a href="/f/"><i class="icon-home"></i>首页</a></li>
-            <li><a href="/f//page-innovation">双创项目</a></li>
+            <li><a href="/f//cms/page-innovation">双创项目</a></li>
             <li class="active">申报</li>
         </ol>
         <div class="row-step-cyjd" style="height: 30px; margin-bottom: 15px;">
             <div class="step-indicator" style="margin-right: -20px;">
-                <a class="step">第一步（填写个人基本信息）</a> 
+                <a class="step">第一步（填写个人基本信息）</a>
                 <a class="step completed">第二步（填写项目基本信息）</a>
                 <a class="step">第三步（提交项目申报附件）</a>
             </div>
@@ -74,7 +74,7 @@
 				<div class="form-group" style="position:relative;left:45px;margin-top:30px;">
                     <label class="control-label col-xs-1" style="width: 150px;"><i>*</i>项目简介：</label>
                     <div class="col-xs-9">
-                        <textarea class="form-control required fill" oldv="${proModel.introduction }" name="introduction" 
+                        <textarea class="form-control required fill" oldv="${proModel.introduction }" name="introduction"
                                   rows="3"
                                   maxlength="512" placeholder="最多512个字符">${proModel.introduction }</textarea>
                     </div>
@@ -205,7 +205,7 @@
                 <a id="savebtn" class="btn btn-primary" href="javascript:void(0)" onclick="saveStep2UnCheck()" style="margin-right: 10px;">保存</a>
 	            <button id="nextbtn" type="button" class="btn btn-primary btn-save" onclick="saveStep2(this)">下一步</button>
 	        </div>
-	        
+
         </div>
     </div>
 </div>
@@ -278,7 +278,7 @@ function findTeamPerson() {
 										+"<td>"+(v.currState||"")+"</td>"
 										+"<td>"+(v.curJoin||"")+"</td>"
 										+"<td>"+(v.domain||"")+"</td>"
-							
+
 
 									   +"</tr>";
 								scount++;
@@ -500,7 +500,7 @@ function saveStep2UnCheck(type){
 		                }]
 		            });
 				}
-				
+
 			}else{
 				dialogCyjd.createDialog(0, data.msg, {
 	                dialogClass: 'dialog-cyjd-container none-close',

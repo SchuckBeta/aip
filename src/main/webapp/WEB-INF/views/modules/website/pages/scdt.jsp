@@ -19,7 +19,7 @@
 				<ul>
 					<li><img src="/img/bc_home.png"></li>
 					<li><a href="/f/">首页></a></li>
-					<li><a href="/f/page-competition">双创大赛></a>  </li>
+					<li><a href="/f/cms/page-competition">双创大赛></a>  </li>
 					<li>双创动态详情</li>
 				</ul>
 			</div> -->

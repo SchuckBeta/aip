@@ -162,7 +162,7 @@
     <div class="container" style="width: 1270px;padding-top: 60px;">
         <el-breadcrumb separator-class="el-icon-arrow-right" class="mgb-20" size="mini">
             <el-breadcrumb-item><a href="${ctxFront}"><i class="iconfont icon-ai-home"></i>首页</a></el-breadcrumb-item>
-            <el-breadcrumb-item><a href="${ctxFront}/page-innovation">双创项目</a></el-breadcrumb-item>
+            <el-breadcrumb-item><a href="${ctxFront}/cms/page-innovation">双创项目</a></el-breadcrumb-item>
             <el-breadcrumb-item>我的项目</el-breadcrumb-item>
         </el-breadcrumb>
         <div class="nav-wrap">

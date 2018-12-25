@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.oseasy.initiate</groupId>
-    <artifactId>ROOT</artifactId>
+    <artifactId>Aip</artifactId>
     <version>4.1.1.000</version>
     <packaging>war</packaging>
     <name>creativecloud</name>
@@ -13,7 +13,7 @@
 
     <!-- 项目属性 -->
     <properties>
-        <artifactId.finalName>ROOT</artifactId.finalName>
+        <artifactId.finalName>Aip</artifactId.finalName>
         <!-- main version setting -->
         <!--<spring.version>4.1.9.RELEASE</spring.version>-->
         <spring.version>4.2.5.RELEASE</spring.version>

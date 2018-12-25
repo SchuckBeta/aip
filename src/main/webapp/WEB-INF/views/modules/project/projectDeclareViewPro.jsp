@@ -14,7 +14,7 @@
     <el-breadcrumb separator-class="el-icon-arrow-right" class="mgb-20">
         <el-breadcrumb-item><a href="${ctxFront}"><i class="iconfont icon-ai-home"></i>首页</a>
         </el-breadcrumb-item>
-        <el-breadcrumb-item><a href="${ctxFront}/page-innovation">双创项目</a></el-breadcrumb-item>
+        <el-breadcrumb-item><a href="${ctxFront}/cms/page-innovation">双创项目</a></el-breadcrumb-item>
         <el-breadcrumb-item><a href="${ctxFront}/project/projectDeclare/curProject">我的项目</a></el-breadcrumb-item>
         <el-breadcrumb-item><a href="${ctxFront}/project/projectDeclare/list">项目列表</a></el-breadcrumb-item>
         <el-breadcrumb-item>项目详情</el-breadcrumb-item>

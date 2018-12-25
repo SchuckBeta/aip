@@ -26,7 +26,7 @@
 
             <ol class="breadcrumb">
                 <li><a href="/f/"><i class="icon-home"></i>首页</a></li>
-                <li><a href="/f//page-innovation">双创项目</a></li>
+                <li><a href="/f//cms/page-innovation">双创项目</a></li>
                 <li class="active">申报</li>
             </ol>
         </div>
@@ -103,15 +103,15 @@
                         <p class="form-control-static">${leader.email}</p>
                     </div>
                 </div>
-                
-           
-	            
+
+
+
 	        </form:form>
 
 	        <div class="form-actions-cyjd text-center">
 	            <button type="button" class="btn btn-primary btn-save" onclick="saveStep1(this);">下一步</button>
 	        </div>
-	        
+
         </div>
 
 

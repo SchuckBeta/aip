@@ -157,7 +157,7 @@
                     })
                 },
                 findPwd:function () {
-                    location.href = '/f/page-seekpassword';
+                    location.href = '/f/cms/page-seekpassword';
                 },
                 validateCodeRefresh:function () {
                     this.imgCode = '/f/validateCode/createValidateCode?'+new Date().getTime();

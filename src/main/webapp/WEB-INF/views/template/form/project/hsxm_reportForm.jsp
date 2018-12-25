@@ -17,7 +17,7 @@
     <el-breadcrumb separator-class="el-icon-arrow-right">
         <el-breadcrumb-item><a :href="frontOrAdmin"><i class="iconfont icon-ai-home" style="font-size: 12px;"></i>首页</a>
         </el-breadcrumb-item>
-        <el-breadcrumb-item><a :href="frontOrAdmin + '/page-innovation'">双创项目</a></el-breadcrumb-item>
+        <el-breadcrumb-item><a :href="frontOrAdmin + '/cms/page-innovation'">双创项目</a></el-breadcrumb-item>
         <el-breadcrumb-item><a :href="frontOrAdmin + '/project/projectDeclare/curProject'">我的项目</a></el-breadcrumb-item>
         <el-breadcrumb-item>{{gnodeName}}</el-breadcrumb-item>
     </el-breadcrumb>

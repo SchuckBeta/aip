@@ -9,9 +9,9 @@
 
 <c:forEach var="resource" items="${region.childResourceList}">
     <div class="card sc-dyn-news">
-        <div class="title"><a href="${ctxFront}/page-SCtognzhi#${type}">${resource.title}</a></div>
+        <div class="title"><a href="${ctxFront}/cms/page-SCtognzhi#${type}">${resource.title}</a></div>
         <div class="photo">
-            <a href="${ctxFront}/page-SCtognzhi#${type}"><img src="${fns:ftpImgUrl(resource.resUrl1)}"/></a>
+            <a href="${ctxFront}/cms/page-SCtognzhi#${type}"><img src="${fns:ftpImgUrl(resource.resUrl1)}"/></a>
         </div>
         <ul class="news-list">
             <c:forEach var="o" items="${oaNotifys}">

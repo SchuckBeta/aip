@@ -22,46 +22,46 @@
 					<div class="secondlever"></div></li>
 			</a>
 			<a href="#">
-				<li><a href="/f/page-innovation"><span>双创项目</span></a>
+				<li><a href="/f/cms/page-innovation"><span>双创项目</span></a>
 					<div class="secondlever">
 						<p>
-							<a href="/f/html-2017gcsb" style="margin-left: -43px;">●2017年国创项目申报通知</a> <a
+							<a href="/f/cms/html-2017gcsb" style="margin-left: -43px;">●2017年国创项目申报通知</a> <a
 								href="/f/project/projectDeclare/form">●国创项目申报</a> <a
-								href="/f/page-projectshow">●优秀项目展示</a> <a
+								href="/f/cms/page-projectshow">●优秀项目展示</a> <a
 								href="/f/project/projectDeclare/curProject">●我的项目</a>
 						</p>
 					</div></li>
 			</a>
 			<a href="#">
-				<li><a href="/f/page-competition"><span>双创大赛</span></a>
+				<li><a href="/f/cms/page-competition"><span>双创大赛</span></a>
 					<div class="secondlever">
 						<p>
-							<a href="/f/html-sctzsj" style="margin-left: 255px">●第三届互联网+大赛报名通知</a>
+							<a href="/f/cms/html-sctzsj" style="margin-left: 255px">●第三届互联网+大赛报名通知</a>
 							<a href="/f/gcontest/gContest/form">●互联网+大赛报名</a> <a
-								href="/f/html-dsrd">●大赛获奖作品展示</a> <a
+								href="/f/cms/html-dsrd">●大赛获奖作品展示</a> <a
 								href="/f/gcontest/gContest/list">●我的大赛</a>
 						</p>
 					</div></li>
 			</a>
 			<a href="#">
-				<li><a href="/f/page-achievements"><span>科研成果</span></a>
+				<li><a href="/f/cms/page-achievements"><span>科研成果</span></a>
 					<div class="secondlever">
 						<p>
-							<a href="/f/html-kycg" style="margin-left: 8px">●优秀科研成果展示</a>
+							<a href="/f/cms/html-kycg" style="margin-left: 8px">●优秀科研成果展示</a>
 						</p>
 					</div></li>
 			</a>
 			<a href="#">
-				<li><a href="/f/page-teacherGrace"><span>导师风采</span></a>
+				<li><a href="/f/cms/page-teacherGrace"><span>导师风采</span></a>
 					<div class="secondlever">
 						<p>
-							<a href="/f/html-xyds" style="margin-left: 287px">●校内导师</a> <a
-								href="/f/html-teacherGrace">●企业导师</a>
+							<a href="/f/cms/html-xyds" style="margin-left: 287px">●校内导师</a> <a
+								href="/f/cms/html-teacherGrace">●企业导师</a>
 						</p>
 					</div></li>
 			</a>
 			<a href="#">
-				<li><a href="/f/page-SCschool"><span>人才库</span></a>
+				<li><a href="/f/cms/page-SCschool"><span>人才库</span></a>
 					<div class="secondlever">
 						<p>
 							<a href="/f/sys/frontStudentExpansion" style="margin-left: 622px">●学生库</a>
@@ -73,7 +73,7 @@
 					</div></li>
 			</a>
 			<a href="#">
-				<li class="scxy"><a href="/f/page-SCschool"><span>双创学院</span></a>
+				<li class="scxy"><a href="/f/cms/page-SCschool"><span>双创学院</span></a>
 					<div class="secondlever"></div></li>
 			</a>
 		</ul>

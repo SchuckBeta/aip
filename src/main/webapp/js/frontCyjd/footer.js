@@ -85,7 +85,7 @@
                             interval: false
                         });
                         self.notifyModule.show();
-                        //                            xhr = $.post('/f/closeButton', {send_id: self.list[0].notifyId});
+                        //                            xhr = $.post('${ctxFront}/oa/oaNotify/closeButton', {send_id: self.list[0].notifyId});
                         //                            xhr.success(function (res) {
                         //                                if (res == 1) {
                         //                                    self.carouselNotify.find('.item').addClass('read')
@@ -271,7 +271,7 @@
         var $target = $(e.target);
         var teamId = $target.parent().data('teamId');
         var notifyId = $target.parent().data('notifyId');
-        var xhr = $.post('/f/closeButton', {send_id: notifyId});
+        var xhr = $.post('${ctxFront}/oa/oaNotify/closeButton', {send_id: notifyId});
         $target.prop('disabled', true);
         xhr.success(function (res) {
             changeUnreadTrForNotify(notifyId);
@@ -288,7 +288,7 @@
     };
 
     NotifyModule.prototype.readTip = function (id) {
-        var xhr = $.post('/f/closeButton', {send_id: id});
+        var xhr = $.post('${ctxFront}/oa/oaNotify/closeButton', {send_id: id});
         var self = this;
         xhr.success(function (res) {
             if (res == 1) {
@@ -385,7 +385,7 @@
     NotifyModule.prototype.readedTip = function (ele) {
         var self = this;
         var notifyId = ele.data('notifyId');
-        var xhr = $.post('/f/closeButton', {send_id: notifyId});
+        var xhr = $.post('${ctxFront}/oa/oaNotify/closeButton', {send_id: notifyId});
         xhr.success(function (res) {
             if (res == 1) {
                 ele.addClass('read');
@@ -511,7 +511,7 @@
         if ($target.hasClass('disabled')) {
             return false;
         }
-        var xhr = $.post('/f/closeButton', {send_id: notifyId});
+        var xhr = $.post('${ctxFront}/oa/oaNotify/closeButton', {send_id: notifyId});
         $target.addClass('disabled');
         xhr.success(function (res) {
             changeUnreadTrForNotify(notifyId);
@@ -556,7 +556,7 @@ $(function () {
 function resetNotifyShow() {
     $.ajax({
         type: "GET",
-        url: "/f/resetNotifyShow?" + Math.random(),
+        url: "${ctxFront}/oa/oaNotify/resetNotifyShow?" + Math.random(),
         success: function (data) {
 
         }

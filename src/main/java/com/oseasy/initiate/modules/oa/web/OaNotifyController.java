@@ -191,12 +191,7 @@ public class OaNotifyController extends BaseController {
 		}
 		return true;
 	}
-	@RequestMapping(value="unReadOaNotify")
-	@ResponseBody
-	public List<OaNotifySent> unReadOaNotify(OaNotify oaNotify) {
-		return oaNotifyService.unRead(oaNotify);
 
-	}
 	@RequestMapping(value = "getReadFlag")
 	@ResponseBody
 	public String getReadFlag(String oaNotifyId) {
@@ -207,22 +202,7 @@ public class OaNotifyController extends BaseController {
 		}
 		return flag;
 	}
-	@RequestMapping(value="resetNotifyShow")
-	@ResponseBody
-	public String resetNotifyShow(HttpServletRequest request, HttpServletResponse response) {
-		if (request.getSession().getAttribute("notifyShow")!=null) {//登录成功后重置是否弹出消息
-			request.getSession().removeAttribute("notifyShow");
-		}
-		return "1";
-	}
-	@RequestMapping(value="closeButton")
-	@ResponseBody
-	public String closeButton(HttpServletRequest request) {
-		String oaNotifyId = request.getParameter("send_id");
-		OaNotify oaNotify = oaNotifyService.get(oaNotifyId);
-		oaNotifyService.updateReadFlag(oaNotify);
-		return "1";
-	}
+
 	@RequestMapping(value = {"msgRecList"})
 	public String msgRecList(OaNotify oaNotify, HttpServletRequest request, HttpServletResponse response, Model model) {
 		User currUser = UserUtils.getUser();
