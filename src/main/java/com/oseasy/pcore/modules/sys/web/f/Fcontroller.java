@@ -65,7 +65,7 @@ public class Fcontroller extends BaseController{
     /**
      * 登录成功，进入管理首页
      */
-    @RequestMapping(value = "/")
+    @RequestMapping(value = "")
     public String index(HttpServletRequest request,Model model, HttpServletResponse response) {
         if (logger.isDebugEnabled()) {
             logger.debug("show index, active session size: {}", sessionDAO.getActiveSessions(false).size());

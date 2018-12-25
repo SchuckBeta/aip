@@ -42,7 +42,7 @@ public class Acontroller extends BaseController{
      * 登录成功，进入管理首页
      */
     @RequiresPermissions("user")
-    @RequestMapping(value = "/")
+    @RequestMapping(value = "")
     public String index(HttpServletRequest request, HttpServletResponse response) {
         Principal principal = CoreUtils.getPrincipal();
 
