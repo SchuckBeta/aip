@@ -73,7 +73,7 @@ public class Fcontroller extends BaseController{
         return "modules/website/indexForTemplate";
     }
 
-	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	@RequestMapping(value = "login", method = RequestMethod.GET)
     public String login(HttpServletRequest request, HttpServletResponse response, Model model) {
         Principal principal = CoreUtils.getPrincipal();
 
@@ -101,7 +101,7 @@ public class Fcontroller extends BaseController{
     /**
      * 登录失败，真正登录的POST请求由Filter完成
      */
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @RequestMapping(value = "login", method = RequestMethod.POST)
     public String loginFail(HttpServletRequest request, HttpServletResponse response, Model model) {
         Principal principal = CoreUtils.getPrincipal();
 
