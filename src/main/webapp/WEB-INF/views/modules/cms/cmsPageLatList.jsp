@@ -82,10 +82,10 @@
 				<c:forEach items="${page.list}" var="cmsPageLat">
 					<tr>
 						<td><a href="${ctx}/cms/cmsPageLat/form?id=${cmsPageLat.id}">
-							${fns:getDictLabel(cmsPageLat.cpage.id, '', '')}
+							${cmsPageLat.cpage.id}
 						</a></td>
 						<td>
-							${fns:getDictLabel(cmsPageLat.lat.id, '', '')}
+							${cmsPageLat.lat.name}
 						</td>
 						<td>
 							${cmsPageLat.createBy.id}

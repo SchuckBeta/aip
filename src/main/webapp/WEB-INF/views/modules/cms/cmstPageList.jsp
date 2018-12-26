@@ -85,7 +85,7 @@
 							${cmstPage.tpl.name}
 						</a></td>
 						<td>
-							${cmstPage.cpage.name}
+							${cmstPage.cpage.id}
 						</td>
 						<td>
 							${cmstPage.createBy.id}

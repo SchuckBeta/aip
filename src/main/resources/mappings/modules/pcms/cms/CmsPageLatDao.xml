@@ -17,18 +17,16 @@
 	</sql>
 
 	<sql id="cmsLatColumns">
-		b.id AS "id",
-		b.name AS "name",
-		b.create_by AS "createBy.id",
-		b.create_date AS "createDate",
-		b.update_by AS "updateBy.id",
-		b.update_date AS "updateDate",
-		b.remarks AS "remarks",
-		b.del_flag AS "delFlag"
+		b.name AS "lat.name",
+		b.create_by AS "lat.createBy.id",
+		b.create_date AS "lat.createDate",
+		b.update_by AS "lat.updateBy.id",
+		b.update_date AS "lat.updateDate",
+		b.remarks AS "lat.remarks",
+		b.del_flag AS "lat.delFlag"
 	</sql>
 
 	<sql id="cmsPageColumns">
-		c.id AS "cpage.id",
 		c.create_by AS "cpage.createBy.id",
 		c.create_date AS "cpage.createDate",
 		c.update_by AS "cpage.updateBy.id",

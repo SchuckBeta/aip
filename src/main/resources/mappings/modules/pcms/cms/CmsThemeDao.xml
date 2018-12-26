@@ -28,7 +28,7 @@
 	</sql>
 
 	<sql id="cmsThemeJoins">
-		LEFT JOIN cms_theme b ON b.id = a.theme_id
+		LEFT JOIN cms_theme_detail b ON b.theme_id = a.id
 	</sql>
 
 	<select id="get" resultType="CmsTheme">

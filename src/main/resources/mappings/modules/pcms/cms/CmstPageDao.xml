@@ -17,7 +17,6 @@
 	</sql>
 
 	<sql id="cmsTplColumns">
-		b.id AS "tpl.id",
 		b.top_tid AS "tpl.top.id",
 		b.type_id AS "tpl.type.id",
 		b.name AS "tpl.name",
@@ -30,7 +29,6 @@
 	</sql>
 
 	<sql id="cmsPageColumns">
-		c.id AS "cpage.id",
 		c.create_by AS "cpage.createBy.id",
 		c.create_date AS "cpage.createDate",
 		c.update_by AS "cpage.updateBy.id",

@@ -17,7 +17,6 @@
 	</sql>
 
 	<sql id="cmsTplColumns">
-		b.id AS "tpl.id",
 		b.top_tid AS "tpl.top.id",
 		b.type_id AS "tpl.type.id",
 		b.name AS "tpl.name",
