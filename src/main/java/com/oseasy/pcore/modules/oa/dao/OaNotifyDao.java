@@ -1,16 +1,16 @@
 /**
  *
  */
-package com.oseasy.initiate.modules.oa.dao;
+package com.oseasy.pcore.modules.oa.dao;
 
 import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
-import com.oseasy.initiate.modules.oa.entity.OaNotify;
 import com.oseasy.pcore.common.persistence.CrudDao;
 import com.oseasy.pcore.common.persistence.annotation.MyBatisDao;
+import com.oseasy.pcore.modules.oa.entity.OaNotify;
 import com.oseasy.pcore.modules.sys.entity.User;
 
 /**

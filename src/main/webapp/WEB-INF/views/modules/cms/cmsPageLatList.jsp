@@ -28,31 +28,51 @@
 		<form:form id="searchForm" modelAttribute="cmsPageLat" action="${ctx}/cms/cmsPageLat/" method="post" class="form-horizontal clearfix form-search-block">
 			<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 			<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
-			<ul class="ul-form">
-			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			<div class="col-control-group">
+				<div class="control-group">
+					<label class="control-label">页面ID</label>
+					<div class="controls">
+						<form:select path="cpage.id" class="input-medium">
+							<form:option value="" label="--请选择--"/>
+							<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+						</form:select>
 					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">布局ID</label>
+					<div class="controls">
+						<form:select path="lat.id" class="input-medium">
+							<form:option value="" label="--请选择--"/>
+							<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+						</form:select>
 					</div>
+				</div>
+	            <div class="control-group">
+	                <label class="control-label">删除标记</label>
+					<div class="controls">
+						<form:select path="delFlag" class="input-medium">
+							<form:option value="" label="--请选择--"/>
+							<form:options items="${fns:getDictList('del_flag')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+						</form:select>
 					</div>
-					</div>
-					</div>
-					</div>
-					</div>
-					</div>
-					</div>
-			</div>
+	            </div>
+	        </div>
 			<div class="search-btn-box">
 				<button type="submit" class="btn btn-primary">查询</button>
 				<shiro:hasPermission name="dr:drEquipment:edit">
 					<shiro:hasPermission name="cms:cmsPageLat:edit"><a  class="btn btn-primary" href="${ctx}/cms/cmsPageLat/form">页面布局添加</a></shiro:hasPermission>
 				</shiro:hasPermission>
-
 			</div>
 		</form:form>
 		<sys:message content="${message}"/>
 			<table id="contentTable" class="table table-bordered table-condensed table-hover table-center table-orange table-nowrap">
 				<thead>
 					<tr>
+						<th>页面ID</th>
+						<th>布局ID</th>
+						<th>创建者</th>
+						<th>创建时间</th>
+						<th>更新者</th>
 						<th>更新时间</th>
 						<th>备注信息</th>
 						<shiro:hasPermission name="cms:cmsPageLat:edit"><th>操作</th></shiro:hasPermission>
@@ -62,8 +82,23 @@
 				<c:forEach items="${page.list}" var="cmsPageLat">
 					<tr>
 						<td><a href="${ctx}/cms/cmsPageLat/form?id=${cmsPageLat.id}">
-							<fmt:formatDate value="${cmsPageLat.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+							${fns:getDictLabel(cmsPageLat.cpage.id, '', '')}
 						</a></td>
+						<td>
+							${fns:getDictLabel(cmsPageLat.lat.id, '', '')}
+						</td>
+						<td>
+							${cmsPageLat.createBy.id}
+						</td>
+						<td>
+							<fmt:formatDate value="${cmsPageLat.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+						</td>
+						<td>
+							${cmsPageLat.updateBy.id}
+						</td>
+						<td>
+							<fmt:formatDate value="${cmsPageLat.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+						</td>
 						<td>
 							${cmsPageLat.remarks}
 						</td>

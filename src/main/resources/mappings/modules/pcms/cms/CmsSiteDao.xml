@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.oseasy.initiate.modules.cms.dao.CmsSiteDao">
+<mapper namespace="com.oseasy.pcms.modules.cms.dao.CmsSiteDao">
 
 	<sql id="cmsSiteColumns">
 		a.id AS "id",
@@ -15,10 +15,27 @@
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		<include refid="cmsSiteParentColumns"/>
+	</sql>
+
+	<sql id="cmsSiteParentColumns">
+		p.parent_id AS "parent.id",
+		p.parent_ids AS "parentIds",
+		p.config_id AS "config.id",
+		p.name AS "name",
+		p.is_curr AS "isCurr",
+		p.is_zzd AS "isZzd",
+		p.create_by AS "createBy.id",
+		p.create_date AS "createDate",
+		p.update_by AS "updateBy.id",
+		p.update_date AS "updateDate",
+		p.remarks AS "remarks",
+		p.del_flag AS "delFlag"
 	</sql>
 
 	<sql id="cmsSiteJoins">
+		LEFT JOIN cms_site p ON p.id = a.parent_id
 	</sql>
 
 	<select id="get" resultType="CmsSite">

@@ -1,7 +1,7 @@
 /**
  *
  */
-package com.oseasy.initiate.modules.oa.entity;
+package com.oseasy.pcore.modules.oa.entity;
 
 import java.util.Date;
 import java.util.List;
@@ -10,6 +10,7 @@ import org.hibernate.validator.constraints.Length;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.common.collect.Lists;
+import com.oseasy.initiate.modules.oa.entity.OaNotifyRecord;
 import com.oseasy.pcore.common.persistence.DataEntity;
 import com.oseasy.pcore.common.utils.IdGen;
 import com.oseasy.pcore.modules.sys.entity.User;

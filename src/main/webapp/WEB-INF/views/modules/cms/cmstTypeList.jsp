@@ -76,7 +76,7 @@
 	</div>
 	<script type="text/template" id="treeTableTpl">
 		<tr id="{{row.id}}" pId="{{pid}}">
-			<td><a href="${ctx}/cms/cmstType/form?id={{row.id}}">
+			<td style="text-align:left"><a href="${ctx}/cms/cmstType/form?id={{row.id}}">
 				{{row.name}}
 			</a></td>
 			<td>

@@ -23,11 +23,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.collect.Lists;
-import com.oseasy.initiate.modules.oa.entity.OaNotify;
 import com.oseasy.initiate.modules.oa.entity.OaNotifyRecord;
 import com.oseasy.initiate.modules.oa.entity.OaNotifySent;
 import com.oseasy.initiate.modules.oa.service.OaNotifyKeywordService;
-import com.oseasy.initiate.modules.oa.service.OaNotifyService;
 import com.oseasy.initiate.modules.oa.vo.OaNotifySendType;
 import com.oseasy.initiate.modules.sys.utils.UserUtils;
 import com.oseasy.pact.modules.actyw.service.ActYwService;
@@ -38,6 +36,8 @@ import com.oseasy.pcore.common.config.Global;
 import com.oseasy.pcore.common.persistence.Page;
 import com.oseasy.pcore.common.utils.FtpUtil;
 import com.oseasy.pcore.common.web.BaseController;
+import com.oseasy.pcore.modules.oa.entity.OaNotify;
+import com.oseasy.pcore.modules.oa.service.OaNotifyService;
 import com.oseasy.pcore.modules.sys.entity.User;
 import com.oseasy.putil.common.utils.StringUtil;
 

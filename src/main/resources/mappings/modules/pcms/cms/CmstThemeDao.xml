@@ -1,85 +1,98 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.oseasy.initiate.modules.cms.dao.CmstTypeDao">
+<mapper namespace="com.oseasy.pcms.modules.cms.dao.CmstThemeDao">
 
-	<sql id="cmstTypeColumns">
+	<sql id="cmstThemeColumns">
 		a.id AS "id",
-		a.parent_id AS "parent.id",
-		a.parent_ids AS "parentIds",
-		a.name AS "name",
+		a.tpl_id AS "tpl.id",
+		a.theme_id AS "theme.id",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		<include refid="cmsTplColumns"/>,
+		<include refid="cmsThemeColumns"/>
 	</sql>
 
-	<sql id="cmstTypeJoins">
+	<sql id="cmsTplColumns">
+		b.id AS "tpl.id",
+		b.top_tid AS "tpl.top.id",
+		b.type_id AS "tpl.type.id",
+		b.name AS "tpl.name",
+		b.create_by AS "tpl.createBy.id",
+		b.create_date AS "tpl.createDate",
+		b.update_by AS "tpl.updateBy.id",
+		b.update_date AS "tpl.updateDate",
+		b.remarks AS "tpl.remarks",
+		b.del_flag AS "tpl.delFlag"
 	</sql>
 
-	<select id="get" resultType="CmstType">
+	<sql id="cmsThemeColumns">
+		c.name AS "theme.name",
+		c.create_by AS "theme.createBy.id",
+		c.create_date AS "theme.createDate",
+		c.update_by AS "theme.updateBy.id",
+		c.update_date AS "theme.updateDate",
+		c.remarks AS "theme.remarks",
+		c.del_flag AS "theme.delFlag"
+	</sql>
+
+	<sql id="cmstThemeJoins">
+		LEFT JOIN cms_tpl b ON b.id = a.tpl_id
+		LEFT JOIN cms_theme c ON c.id = a.theme_id
+	</sql>
+
+	<select id="get" resultType="CmstTheme">
 		SELECT
-			<include refid="cmstTypeColumns"/>
-		FROM cmst_type a
-		<include refid="cmstTypeJoins"/>
+			<include refid="cmstThemeColumns"/>
+		FROM cmst_theme a
+		<include refid="cmstThemeJoins"/>
 		WHERE a.id = #{id}
 	</select>
 
-	<select id="findList" resultType="CmstType">
+	<select id="findList" resultType="CmstTheme">
 		SELECT
-			<include refid="cmstTypeColumns"/>
-		FROM cmst_type a
-		<include refid="cmstTypeJoins"/>
+			<include refid="cmstThemeColumns"/>
+		FROM cmst_theme a
+		<include refid="cmstThemeJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="parent != null and parent.id != null and parent.id != ''">
-				AND a.parent_id = #{parent.id}
-			</if>
-			<if test="parentIds != null and parentIds != ''">
-				AND a.parent_ids LIKE
-					<if test="dbName == 'oracle'">'%'||#{parentIds}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{parentIds}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{parentIds},'%')</if>
-			</if>
-			<if test="name != null and name != ''">
-				AND a.name LIKE
-					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
-			</if>
 		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy} ${page.orderByType}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
 	</select>
 
-	<select id="findAllList" resultType="CmstType">
+	<select id="findAllList" resultType="CmstTheme">
 		SELECT
-			<include refid="cmstTypeColumns"/>
-		FROM cmst_type a
-		<include refid="cmstTypeJoins"/>
+			<include refid="cmstThemeColumns"/>
+		FROM cmst_theme a
+		<include refid="cmstThemeJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 		</where>
-	</select>
-
-	<select id="findByParentIdsLike" resultType="CmstType">
-		SELECT
-			a.id,
-			a.parent_id AS "parent.id",
-			a.parent_ids
-		FROM cmst_type a
-		<include refid="cmstTypeJoins"/>
-		<where>
-			a.del_flag = #{DEL_FLAG_NORMAL}
-			AND a.parent_ids LIKE #{parentIds}
-		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy} ${page.orderByType}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
 	</select>
 
 	<insert id="insert">
-		INSERT INTO cmst_type(
+		INSERT INTO cmst_theme(
 			id,
-			parent_id,
-			parent_ids,
-			name,
+			tpl_id,
+			theme_id,
 			create_by,
 			create_date,
 			update_by,
@@ -88,9 +101,8 @@
 			del_flag
 		) VALUES (
 			#{id},
-			#{parent.id},
-			#{parentIds},
-			#{name},
+			#{tpl.id},
+			#{theme.id},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -101,11 +113,10 @@
 	</insert>
 
 	<insert id="insertPL" >
-		INSERT INTO cmst_type(
+		INSERT INTO cmst_theme(
 			id,
-			parent_id,
-			parent_ids,
-			name,
+			tpl_id,
+			theme_id,
 			create_by,
 			create_date,
 			update_by,
@@ -116,9 +127,8 @@
 		<foreach item="item" collection="entitys" index="index" separator=",">
 			(
 			#{item.id},
-			#{item.parent.id},
-			#{item.parentIds},
-			#{item.name},
+			#{item.tpl.id},
+			#{item.theme.id},
 			#{item.createBy.id},
 			#{item.createDate},
 			#{item.updateBy.id},
@@ -130,10 +140,9 @@
 	</insert>
 
 	<update id="update">
-		UPDATE cmst_type SET
-			parent_id = #{parent.id},
-			parent_ids = #{parentIds},
-			name = #{name},
+		UPDATE cmst_theme SET
+			tpl_id = #{tpl.id},
+			theme_id = #{theme.id},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}
@@ -141,21 +150,16 @@
 	</update>
 
 	<update id="updatePL" parameterType="java.util.List" >
-		UPDATE cmst_type
+		UPDATE cmst_theme
 		<trim prefix="set" suffixOverrides=",">
-						<trim prefix="parent_id =case" suffix="end,">
+						<trim prefix="tpl_id =case" suffix="end,">
 				<foreach item="item" collection="entitys" index="index">
-					when id=#{item.id} then #{item.parent.id}
+					when id=#{item.id} then #{item.tpl.id}
 				</foreach>
 			</trim>
-			<trim prefix="parent_ids =case" suffix="end,">
+			<trim prefix="theme_id =case" suffix="end,">
 				<foreach item="item" collection="entitys" index="index">
-					when id=#{item.id} then #{item.parentIds}
-				</foreach>
-			</trim>
-			<trim prefix="name =case" suffix="end,">
-				<foreach item="item" collection="entitys" index="index">
-					when id=#{item.id} then #{item.name}
+					when id=#{item.id} then #{item.theme.id}
 				</foreach>
 			</trim>
 			<trim prefix="update_by =case" suffix="end,">
@@ -183,21 +187,14 @@
 	</update>
 
 
-	<update id="updateParentIds">
-		UPDATE cmst_type SET
-			parent_id = #{parent.id},
-			parent_ids = #{parentIds}
+	<update id="delete">
+		UPDATE cmst_theme SET
+			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
 
-	<update id="delete">
-		UPDATE cmst_type SET
-			del_flag = #{DEL_FLAG_DELETE}
-		WHERE id = #{id} OR parent_ids LIKE '%,'||#{id}||',%'
-	</update>
-
 	<update id="deletePL">
-		UPDATE cmst_type SET
+		UPDATE cmst_theme SET
 			del_flag = #{DEL_FLAG_DELETE}
 			WHERE id in
 			<foreach item="id" collection="ids" open="(" separator="," close=")">
@@ -206,17 +203,17 @@
 	</update>
 
 	<update id="deleteWL">
-		DELETE FROM cmst_type WHERE id = #{id}
+		DELETE FROM cmst_theme WHERE id = #{id}
 	</update>
 
 	<update id="deleteWLPL">
-		DELETE FROM cmst_type WHERE id in
+		DELETE FROM cmst_theme WHERE id in
 		<foreach item="id" collection="ids" open="(" separator="," close=")">
 			#{id}
 		</foreach>
 	</update>
 
 	<update id="deleteWLAll">
-		DELETE FROM cmst_type
+		DELETE FROM cmst_theme
 	</update>
 </mapper>

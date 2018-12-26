@@ -5,6 +5,7 @@ package com.oseasy.initiate.modules.oa.entity;
 
 import org.hibernate.validator.constraints.Length;
 
+import com.oseasy.pcore.modules.oa.entity.OaNotify;
 import com.oseasy.pcore.modules.sys.entity.Office;
 import com.oseasy.pcore.common.persistence.DataEntity;
 import com.oseasy.pcore.modules.sys.entity.User;
@@ -26,7 +27,6 @@ public class OaNotifyRecord extends DataEntity<OaNotifyRecord> {
 	private Date readDate;		// 阅读时间
 	private String operateFlag;  //操作标记（0：未操作；1：已操作）
 	private String outTeam;//是否从团队中删除，1-删除，0-未删除（用于未加入团队的删除）
-
 
 	public String getOutTeam() {
 		return outTeam;

@@ -40,7 +40,10 @@
 			<div class="control-group">
 				<label class="control-label">父级编号：</label>
 				<div class="controls">
-					<form:input path="Site.id" htmlEscape="false" maxlength="64" class="input-xlarge "/>
+					<form:select path="site.id" class="input-xlarge ">
+						<form:option value="" label="--请选择--"/>
+						<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					</form:select>
 				</div>
 			</div>
 			<div class="control-group">

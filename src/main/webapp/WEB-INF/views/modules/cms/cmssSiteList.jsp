@@ -28,31 +28,43 @@
 		<form:form id="searchForm" modelAttribute="cmssSite" action="${ctx}/cms/cmssSite/" method="post" class="form-horizontal clearfix form-search-block">
 			<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 			<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
-			<ul class="ul-form">
-			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			<div class="col-control-group">
+				<div class="control-group">
+					<label class="control-label">父级编号</label>
+					<div class="controls">
+						<form:select path="site.id" class="input-medium">
+							<form:option value="" label="--请选择--"/>
+							<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+						</form:select>
 					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">站点标题</label>
+					<div class="controls">
+						<form:input path="title" htmlEscape="false" maxlength="100" class="input-medium"/>
 					</div>
-						<div class="control-group">
-							<label class="control-label">站点标题</label>
-							<div class="controls">
-							<form:input path="title" htmlEscape="false" maxlength="100" class="input-medium"/>
-						</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">关键字</label>
+					<div class="controls">
+						<form:input path="keywords" htmlEscape="false" maxlength="255" class="input-medium"/>
 					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">主题</label>
+					<div class="controls">
+						<form:input path="theme" htmlEscape="false" maxlength="255" class="input-medium"/>
 					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">删除标记</label>
+					<div class="controls">
+						<form:select path="delFlag" class="input-medium">
+							<form:option value="" label="--请选择--"/>
+							<form:options items="${fns:getDictList('del_flag')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+						</form:select>
 					</div>
-					</div>
-					</div>
-					</div>
-					</div>
-					</div>
-					</div>
-					</div>
-					</div>
-					</div>
-					</div>
-					</div>
-					</div>
+				</div>
 			</div>
 			<div class="search-btn-box">
 				<button type="submit" class="btn btn-primary">查询</button>
@@ -71,6 +83,11 @@
 						<th>站点租户Logo</th>
 						<th>站点Logo</th>
 						<th>站点首页栏目（必须为根栏目）</th>
+						<th>站点域名</th>
+						<th>描述</th>
+						<th>关键字</th>
+						<th>主题</th>
+						<th>版权信息</th>
 						<th>更新时间</th>
 						<th>备注信息</th>
 						<shiro:hasPermission name="cms:cmssSite:edit"><th>操作</th></shiro:hasPermission>
@@ -80,7 +97,7 @@
 				<c:forEach items="${page.list}" var="cmssSite">
 					<tr>
 						<td><a href="${ctx}/cms/cmssSite/form?id=${cmssSite.id}">
-							${cmssSite.Site.id}
+							${cmssSite.site.name}
 						</a></td>
 						<td>
 							${cmssSite.title}
@@ -93,6 +110,21 @@
 						</td>
 						<td>
 							${cmssSite.index}
+						</td>
+						<td>
+							${cmssSite.domain}
+						</td>
+						<td>
+							${cmssSite.description}
+						</td>
+						<td>
+							${cmssSite.keywords}
+						</td>
+						<td>
+							${cmssSite.theme}
+						</td>
+						<td>
+							${cmssSite.copyright}
 						</td>
 						<td>
 							<fmt:formatDate value="${cmssSite.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>

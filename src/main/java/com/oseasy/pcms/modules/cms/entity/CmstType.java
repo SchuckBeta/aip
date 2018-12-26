@@ -14,11 +14,13 @@ import com.oseasy.pcore.common.persistence.TreeEntity;
  * @version 2018-12-25
  */
 public class CmstType extends TreeEntity<CmstType> {
-
 	private static final long serialVersionUID = 1L;
+	public static final String CMST_TOP_TYPES = "cmstTopTypes";
+	public static final String CMST_TYPES = "cmstTypes";
 	private CmstType parent;		// 父级编号
 	private String parentIds;		// 所有父级编号
 	private String name;		// 名称
+    private CmstTydetail tydetail;        //
 
 	public CmstType() {
 		super();
@@ -56,7 +58,15 @@ public class CmstType extends TreeEntity<CmstType> {
 		this.name = name;
 	}
 
-	public String getParentId() {
+	public CmstTydetail getTydetail() {
+        return tydetail;
+    }
+
+    public void setTydetail(CmstTydetail tydetail) {
+        this.tydetail = tydetail;
+    }
+
+    public String getParentId() {
 		return parent != null && parent.getId() != null ? parent.getId() : "0";
 	}
 

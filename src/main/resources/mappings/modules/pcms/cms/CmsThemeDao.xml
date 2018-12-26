@@ -1,38 +1,57 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.oseasy.initiate.modules.cms.dao.CmssSiteTplDao">
+<mapper namespace="com.oseasy.pcms.modules.cms.dao.CmsThemeDao">
 
-	<sql id="cmssSiteTplColumns">
+	<sql id="cmsThemeColumns">
 		a.id AS "id",
-		a.site_id AS "site.id",
-		a.tpl_id AS "tpl.id",
-		a.is_open AS "isOpen",
+		a.name AS "name",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		<include refid="cmsThemeDetailColumns"/>
 	</sql>
 
-	<sql id="cmssSiteTplJoins">
+	<sql id="cmsThemeDetailColumns">
+		b.id AS "tdetail.id",
+		b.theme_id AS "tdetail.theme.id",
+		b.name AS "tdetail.name",
+		b.color AS "tdetail.color",
+		b.create_by AS "tdetail.createBy.id",
+		b.create_date AS "tdetail.createDate",
+		b.update_by AS "tdetail.updateBy.id",
+		b.update_date AS "tdetail.updateDate",
+		b.remarks AS "tdetail.remarks",
+		b.del_flag AS "tdetail.delFlag"
 	</sql>
 
-	<select id="get" resultType="CmssSiteTpl">
+	<sql id="cmsThemeJoins">
+		LEFT JOIN cms_theme b ON b.id = a.theme_id
+	</sql>
+
+	<select id="get" resultType="CmsTheme">
 		SELECT
-			<include refid="cmssSiteTplColumns"/>
-		FROM cmss_site_tpl a
-		<include refid="cmssSiteTplJoins"/>
+			<include refid="cmsThemeColumns"/>
+		FROM cms_theme a
+		<include refid="cmsThemeJoins"/>
 		WHERE a.id = #{id}
 	</select>
 
-	<select id="findList" resultType="CmssSiteTpl">
+	<select id="findList" resultType="CmsTheme">
 		SELECT
-			<include refid="cmssSiteTplColumns"/>
-		FROM cmss_site_tpl a
-		<include refid="cmssSiteTplJoins"/>
+			<include refid="cmsThemeColumns"/>
+		FROM cms_theme a
+		<include refid="cmsThemeJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -44,11 +63,11 @@
 		</choose>
 	</select>
 
-	<select id="findAllList" resultType="CmssSiteTpl">
+	<select id="findAllList" resultType="CmsTheme">
 		SELECT
-			<include refid="cmssSiteTplColumns"/>
-		FROM cmss_site_tpl a
-		<include refid="cmssSiteTplJoins"/>
+			<include refid="cmsThemeColumns"/>
+		FROM cms_theme a
+		<include refid="cmsThemeJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 		</where>
@@ -63,11 +82,9 @@
 	</select>
 
 	<insert id="insert">
-		INSERT INTO cmss_site_tpl(
+		INSERT INTO cms_theme(
 			id,
-			site_id,
-			tpl_id,
-			is_open,
+			name,
 			create_by,
 			create_date,
 			update_by,
@@ -76,9 +93,7 @@
 			del_flag
 		) VALUES (
 			#{id},
-			#{site.id},
-			#{tpl.id},
-			#{isOpen},
+			#{name},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -89,11 +104,9 @@
 	</insert>
 
 	<insert id="insertPL" >
-		INSERT INTO cmss_site_tpl(
+		INSERT INTO cms_theme(
 			id,
-			site_id,
-			tpl_id,
-			is_open,
+			name,
 			create_by,
 			create_date,
 			update_by,
@@ -104,9 +117,7 @@
 		<foreach item="item" collection="entitys" index="index" separator=",">
 			(
 			#{item.id},
-			#{item.site.id},
-			#{item.tpl.id},
-			#{item.isOpen},
+			#{item.name},
 			#{item.createBy.id},
 			#{item.createDate},
 			#{item.updateBy.id},
@@ -118,10 +129,8 @@
 	</insert>
 
 	<update id="update">
-		UPDATE cmss_site_tpl SET
-			site_id = #{site.id},
-			tpl_id = #{tpl.id},
-			is_open = #{isOpen},
+		UPDATE cms_theme SET
+			name = #{name},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}
@@ -129,21 +138,11 @@
 	</update>
 
 	<update id="updatePL" parameterType="java.util.List" >
-		UPDATE cmss_site_tpl
+		UPDATE cms_theme
 		<trim prefix="set" suffixOverrides=",">
-						<trim prefix="site_id =case" suffix="end,">
+						<trim prefix="name =case" suffix="end,">
 				<foreach item="item" collection="entitys" index="index">
-					when id=#{item.id} then #{item.site.id}
-				</foreach>
-			</trim>
-			<trim prefix="tpl_id =case" suffix="end,">
-				<foreach item="item" collection="entitys" index="index">
-					when id=#{item.id} then #{item.tpl.id}
-				</foreach>
-			</trim>
-			<trim prefix="is_open =case" suffix="end,">
-				<foreach item="item" collection="entitys" index="index">
-					when id=#{item.id} then #{item.isOpen}
+					when id=#{item.id} then #{item.name}
 				</foreach>
 			</trim>
 			<trim prefix="update_by =case" suffix="end,">
@@ -172,13 +171,13 @@
 
 
 	<update id="delete">
-		UPDATE cmss_site_tpl SET
+		UPDATE cms_theme SET
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
 
 	<update id="deletePL">
-		UPDATE cmss_site_tpl SET
+		UPDATE cms_theme SET
 			del_flag = #{DEL_FLAG_DELETE}
 			WHERE id in
 			<foreach item="id" collection="ids" open="(" separator="," close=")">
@@ -187,17 +186,17 @@
 	</update>
 
 	<update id="deleteWL">
-		DELETE FROM cmss_site_tpl WHERE id = #{id}
+		DELETE FROM cms_theme WHERE id = #{id}
 	</update>
 
 	<update id="deleteWLPL">
-		DELETE FROM cmss_site_tpl WHERE id in
+		DELETE FROM cms_theme WHERE id in
 		<foreach item="id" collection="ids" open="(" separator="," close=")">
 			#{id}
 		</foreach>
 	</update>
 
 	<update id="deleteWLAll">
-		DELETE FROM cmss_site_tpl
+		DELETE FROM cms_theme
 	</update>
 </mapper>

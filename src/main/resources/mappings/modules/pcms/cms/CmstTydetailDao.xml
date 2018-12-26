@@ -1,37 +1,56 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.oseasy.initiate.modules.cms.dao.CmstThemeDao">
+<mapper namespace="com.oseasy.pcms.modules.cms.dao.CmstTydetailDao">
 
-	<sql id="cmstThemeColumns">
+	<sql id="cmstTydetailColumns">
 		a.id AS "id",
-		a.tpl_id AS "tpl.id",
-		a.theme_id AS "theme.id",
+		a.type_id AS "type.id",
+		a.name AS "name",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		<include refid="cmstTypeColumns"/>
+	</sql>
+	<sql id="cmstTypeColumns">
+		b.parent_id AS "type.parent.id",
+		b.parent_ids AS "type.parentIds",
+		b.name AS "type.name",
+		b.create_by AS "type.createBy.id",
+		b.create_date AS "type.createDate",
+		b.update_by AS "type.updateBy.id",
+		b.update_date AS "type.updateDate",
+		b.remarks AS "type.remarks",
+		b.del_flag AS "type.delFlag"
 	</sql>
 
-	<sql id="cmstThemeJoins">
+	<sql id="cmstTydetailJoins">
+		LEFT JOIN cmst_type b ON b.id = a.type_id
 	</sql>
 
-	<select id="get" resultType="CmstTheme">
+	<select id="get" resultType="CmstTydetail">
 		SELECT
-			<include refid="cmstThemeColumns"/>
-		FROM cmst_theme a
-		<include refid="cmstThemeJoins"/>
+			<include refid="cmstTydetailColumns"/>
+		FROM cmst_tydetail a
+		<include refid="cmstTydetailJoins"/>
 		WHERE a.id = #{id}
 	</select>
 
-	<select id="findList" resultType="CmstTheme">
+	<select id="findList" resultType="CmstTydetail">
 		SELECT
-			<include refid="cmstThemeColumns"/>
-		FROM cmst_theme a
-		<include refid="cmstThemeJoins"/>
+			<include refid="cmstTydetailColumns"/>
+		FROM cmst_tydetail a
+		<include refid="cmstTydetailJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -43,11 +62,11 @@
 		</choose>
 	</select>
 
-	<select id="findAllList" resultType="CmstTheme">
+	<select id="findAllList" resultType="CmstTydetail">
 		SELECT
-			<include refid="cmstThemeColumns"/>
-		FROM cmst_theme a
-		<include refid="cmstThemeJoins"/>
+			<include refid="cmstTydetailColumns"/>
+		FROM cmst_tydetail a
+		<include refid="cmstTydetailJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 		</where>
@@ -62,10 +81,10 @@
 	</select>
 
 	<insert id="insert">
-		INSERT INTO cmst_theme(
+		INSERT INTO cmst_tydetail(
 			id,
-			tpl_id,
-			theme_id,
+			type_id,
+			name,
 			create_by,
 			create_date,
 			update_by,
@@ -74,8 +93,8 @@
 			del_flag
 		) VALUES (
 			#{id},
-			#{tpl.id},
-			#{theme.id},
+			#{type.id},
+			#{name},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -86,10 +105,10 @@
 	</insert>
 
 	<insert id="insertPL" >
-		INSERT INTO cmst_theme(
+		INSERT INTO cmst_tydetail(
 			id,
-			tpl_id,
-			theme_id,
+			type_id,
+			name,
 			create_by,
 			create_date,
 			update_by,
@@ -100,8 +119,8 @@
 		<foreach item="item" collection="entitys" index="index" separator=",">
 			(
 			#{item.id},
-			#{item.tpl.id},
-			#{item.theme.id},
+			#{item.type.id},
+			#{item.name},
 			#{item.createBy.id},
 			#{item.createDate},
 			#{item.updateBy.id},
@@ -113,9 +132,9 @@
 	</insert>
 
 	<update id="update">
-		UPDATE cmst_theme SET
-			tpl_id = #{tpl.id},
-			theme_id = #{theme.id},
+		UPDATE cmst_tydetail SET
+			type_id = #{type.id},
+			name = #{name},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}
@@ -123,16 +142,16 @@
 	</update>
 
 	<update id="updatePL" parameterType="java.util.List" >
-		UPDATE cmst_theme
+		UPDATE cmst_tydetail
 		<trim prefix="set" suffixOverrides=",">
-						<trim prefix="tpl_id =case" suffix="end,">
+						<trim prefix="type_id =case" suffix="end,">
 				<foreach item="item" collection="entitys" index="index">
-					when id=#{item.id} then #{item.tpl.id}
+					when id=#{item.id} then #{item.type.id}
 				</foreach>
 			</trim>
-			<trim prefix="theme_id =case" suffix="end,">
+			<trim prefix="name =case" suffix="end,">
 				<foreach item="item" collection="entitys" index="index">
-					when id=#{item.id} then #{item.theme.id}
+					when id=#{item.id} then #{item.name}
 				</foreach>
 			</trim>
 			<trim prefix="update_by =case" suffix="end,">
@@ -161,13 +180,13 @@
 
 
 	<update id="delete">
-		UPDATE cmst_theme SET
+		UPDATE cmst_tydetail SET
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
 
 	<update id="deletePL">
-		UPDATE cmst_theme SET
+		UPDATE cmst_tydetail SET
 			del_flag = #{DEL_FLAG_DELETE}
 			WHERE id in
 			<foreach item="id" collection="ids" open="(" separator="," close=")">
@@ -176,17 +195,17 @@
 	</update>
 
 	<update id="deleteWL">
-		DELETE FROM cmst_theme WHERE id = #{id}
+		DELETE FROM cmst_tydetail WHERE id = #{id}
 	</update>
 
 	<update id="deleteWLPL">
-		DELETE FROM cmst_theme WHERE id in
+		DELETE FROM cmst_tydetail WHERE id in
 		<foreach item="id" collection="ids" open="(" separator="," close=")">
 			#{id}
 		</foreach>
 	</update>
 
 	<update id="deleteWLAll">
-		DELETE FROM cmst_theme
+		DELETE FROM cmst_tydetail
 	</update>
 </mapper>

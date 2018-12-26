@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.oseasy.initiate.modules.cms.dao.CmsThemeDetailDao">
+<mapper namespace="com.oseasy.pcms.modules.cms.dao.CmstRelDao">
 
-	<sql id="cmsThemeDetailColumns">
+	<sql id="cmstRelColumns">
 		a.id AS "id",
-		a.theme_id AS "theme.id",
-		a.name AS "name",
-		a.color AS "color",
+		a.tpl_id AS "tpl.id",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -15,30 +13,24 @@
 		a.del_flag AS "delFlag"
 	</sql>
 
-	<sql id="cmsThemeDetailJoins">
+	<sql id="cmstRelJoins">
 	</sql>
 
-	<select id="get" resultType="CmsThemeDetail">
+	<select id="get" resultType="CmstRel">
 		SELECT
-			<include refid="cmsThemeDetailColumns"/>
-		FROM cms_theme_detail a
-		<include refid="cmsThemeDetailJoins"/>
+			<include refid="cmstRelColumns"/>
+		FROM cmst_rel a
+		<include refid="cmstRelJoins"/>
 		WHERE a.id = #{id}
 	</select>
 
-	<select id="findList" resultType="CmsThemeDetail">
+	<select id="findList" resultType="CmstRel">
 		SELECT
-			<include refid="cmsThemeDetailColumns"/>
-		FROM cms_theme_detail a
-		<include refid="cmsThemeDetailJoins"/>
+			<include refid="cmstRelColumns"/>
+		FROM cmst_rel a
+		<include refid="cmstRelJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="name != null and name != ''">
-				AND a.name LIKE
-					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
-			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -50,11 +42,11 @@
 		</choose>
 	</select>
 
-	<select id="findAllList" resultType="CmsThemeDetail">
+	<select id="findAllList" resultType="CmstRel">
 		SELECT
-			<include refid="cmsThemeDetailColumns"/>
-		FROM cms_theme_detail a
-		<include refid="cmsThemeDetailJoins"/>
+			<include refid="cmstRelColumns"/>
+		FROM cmst_rel a
+		<include refid="cmstRelJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 		</where>
@@ -69,11 +61,9 @@
 	</select>
 
 	<insert id="insert">
-		INSERT INTO cms_theme_detail(
+		INSERT INTO cmst_rel(
 			id,
-			theme_id,
-			name,
-			color,
+			tpl_id,
 			create_by,
 			create_date,
 			update_by,
@@ -82,9 +72,7 @@
 			del_flag
 		) VALUES (
 			#{id},
-			#{theme.id},
-			#{name},
-			#{color},
+			#{tpl.id},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -95,11 +83,9 @@
 	</insert>
 
 	<insert id="insertPL" >
-		INSERT INTO cms_theme_detail(
+		INSERT INTO cmst_rel(
 			id,
-			theme_id,
-			name,
-			color,
+			tpl_id,
 			create_by,
 			create_date,
 			update_by,
@@ -110,9 +96,7 @@
 		<foreach item="item" collection="entitys" index="index" separator=",">
 			(
 			#{item.id},
-			#{item.theme.id},
-			#{item.name},
-			#{item.color},
+			#{item.tpl.id},
 			#{item.createBy.id},
 			#{item.createDate},
 			#{item.updateBy.id},
@@ -124,10 +108,8 @@
 	</insert>
 
 	<update id="update">
-		UPDATE cms_theme_detail SET
-			theme_id = #{theme.id},
-			name = #{name},
-			color = #{color},
+		UPDATE cmst_rel SET
+			tpl_id = #{tpl.id},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}
@@ -135,21 +117,11 @@
 	</update>
 
 	<update id="updatePL" parameterType="java.util.List" >
-		UPDATE cms_theme_detail
+		UPDATE cmst_rel
 		<trim prefix="set" suffixOverrides=",">
-						<trim prefix="theme_id =case" suffix="end,">
+						<trim prefix="tpl_id =case" suffix="end,">
 				<foreach item="item" collection="entitys" index="index">
-					when id=#{item.id} then #{item.theme.id}
-				</foreach>
-			</trim>
-			<trim prefix="name =case" suffix="end,">
-				<foreach item="item" collection="entitys" index="index">
-					when id=#{item.id} then #{item.name}
-				</foreach>
-			</trim>
-			<trim prefix="color =case" suffix="end,">
-				<foreach item="item" collection="entitys" index="index">
-					when id=#{item.id} then #{item.color}
+					when id=#{item.id} then #{item.tpl.id}
 				</foreach>
 			</trim>
 			<trim prefix="update_by =case" suffix="end,">
@@ -178,13 +150,13 @@
 
 
 	<update id="delete">
-		UPDATE cms_theme_detail SET
+		UPDATE cmst_rel SET
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
 
 	<update id="deletePL">
-		UPDATE cms_theme_detail SET
+		UPDATE cmst_rel SET
 			del_flag = #{DEL_FLAG_DELETE}
 			WHERE id in
 			<foreach item="id" collection="ids" open="(" separator="," close=")">
@@ -193,17 +165,17 @@
 	</update>
 
 	<update id="deleteWL">
-		DELETE FROM cms_theme_detail WHERE id = #{id}
+		DELETE FROM cmst_rel WHERE id = #{id}
 	</update>
 
 	<update id="deleteWLPL">
-		DELETE FROM cms_theme_detail WHERE id in
+		DELETE FROM cmst_rel WHERE id in
 		<foreach item="id" collection="ids" open="(" separator="," close=")">
 			#{id}
 		</foreach>
 	</update>
 
 	<update id="deleteWLAll">
-		DELETE FROM cms_theme_detail
+		DELETE FROM cmst_rel
 	</update>
 </mapper>

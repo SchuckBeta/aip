@@ -6,6 +6,7 @@ import org.hibernate.validator.constraints.Length;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.oseasy.pcore.common.persistence.DataEntity;
+import com.oseasy.pcore.modules.oa.entity.OaNotify;
 import com.oseasy.pcore.modules.sys.entity.User;
 
 /**

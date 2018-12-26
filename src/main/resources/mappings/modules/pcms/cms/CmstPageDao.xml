@@ -1,42 +1,64 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.oseasy.initiate.modules.cms.dao.CmsLatDao">
+<mapper namespace="com.oseasy.pcms.modules.cms.dao.CmstPageDao">
 
-	<sql id="cmsLatColumns">
+	<sql id="cmstPageColumns">
 		a.id AS "id",
-		a.name AS "name",
+		a.tpl_id AS "tpl.id",
+		a.page_id AS "cpage.id",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		<include refid="cmsTplColumns"/>,
+		<include refid="cmsPageColumns"/>
 	</sql>
 
-	<sql id="cmsLatJoins">
+	<sql id="cmsTplColumns">
+		b.id AS "tpl.id",
+		b.top_tid AS "tpl.top.id",
+		b.type_id AS "tpl.type.id",
+		b.name AS "tpl.name",
+		b.create_by AS "tpl.createBy.id",
+		b.create_date AS "tpl.createDate",
+		b.update_by AS "tpl.updateBy.id",
+		b.update_date AS "tpl.updateDate",
+		b.remarks AS "tpl.remarks",
+		b.del_flag AS "tpl.delFlag"
 	</sql>
 
-	<select id="get" resultType="CmsLat">
+	<sql id="cmsPageColumns">
+		c.id AS "cpage.id",
+		c.create_by AS "cpage.createBy.id",
+		c.create_date AS "cpage.createDate",
+		c.update_by AS "cpage.updateBy.id",
+		c.update_date AS "cpage.updateDate",
+		c.remarks AS "cpage.remarks",
+		c.del_flag AS "cpage.delFlag"
+	</sql>
+
+	<sql id="cmstPageJoins">
+		LEFT JOIN cms_tpl b ON b.id = a.tpl_id
+		LEFT JOIN cms_page c ON c.id = a.page_id
+	</sql>
+
+	<select id="get" resultType="CmstPage">
 		SELECT
-			<include refid="cmsLatColumns"/>
-		FROM cms_lat a
-		<include refid="cmsLatJoins"/>
+			<include refid="cmstPageColumns"/>
+		FROM cmst_page a
+		<include refid="cmstPageJoins"/>
 		WHERE a.id = #{id}
 	</select>
 
-	<select id="findList" resultType="CmsLat">
+	<select id="findList" resultType="CmstPage">
 		SELECT
-			<include refid="cmsLatColumns"/>
-		FROM cms_lat a
-		<include refid="cmsLatJoins"/>
+			<include refid="cmstPageColumns"/>
+		FROM cmst_page a
+		<include refid="cmstPageJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="name != null and name != ''">
-				AND a.name LIKE
-					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
-					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
-					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
-			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -48,11 +70,11 @@
 		</choose>
 	</select>
 
-	<select id="findAllList" resultType="CmsLat">
+	<select id="findAllList" resultType="CmstPage">
 		SELECT
-			<include refid="cmsLatColumns"/>
-		FROM cms_lat a
-		<include refid="cmsLatJoins"/>
+			<include refid="cmstPageColumns"/>
+		FROM cmst_page a
+		<include refid="cmstPageJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 		</where>
@@ -67,9 +89,10 @@
 	</select>
 
 	<insert id="insert">
-		INSERT INTO cms_lat(
+		INSERT INTO cmst_page(
 			id,
-			name,
+			tpl_id,
+			page_id,
 			create_by,
 			create_date,
 			update_by,
@@ -78,7 +101,8 @@
 			del_flag
 		) VALUES (
 			#{id},
-			#{name},
+			#{tpl.id},
+			#{cpage.id},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -89,9 +113,10 @@
 	</insert>
 
 	<insert id="insertPL" >
-		INSERT INTO cms_lat(
+		INSERT INTO cmst_page(
 			id,
-			name,
+			tpl_id,
+			page_id,
 			create_by,
 			create_date,
 			update_by,
@@ -102,7 +127,8 @@
 		<foreach item="item" collection="entitys" index="index" separator=",">
 			(
 			#{item.id},
-			#{item.name},
+			#{item.tpl.id},
+			#{item.cpage.id},
 			#{item.createBy.id},
 			#{item.createDate},
 			#{item.updateBy.id},
@@ -114,8 +140,9 @@
 	</insert>
 
 	<update id="update">
-		UPDATE cms_lat SET
-			name = #{name},
+		UPDATE cmst_page SET
+			tpl_id = #{tpl.id},
+			page_id = #{cpage.id},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}
@@ -123,11 +150,16 @@
 	</update>
 
 	<update id="updatePL" parameterType="java.util.List" >
-		UPDATE cms_lat
+		UPDATE cmst_page
 		<trim prefix="set" suffixOverrides=",">
-						<trim prefix="name =case" suffix="end,">
+						<trim prefix="tpl_id =case" suffix="end,">
 				<foreach item="item" collection="entitys" index="index">
-					when id=#{item.id} then #{item.name}
+					when id=#{item.id} then #{item.tpl.id}
+				</foreach>
+			</trim>
+			<trim prefix="page_id =case" suffix="end,">
+				<foreach item="item" collection="entitys" index="index">
+					when id=#{item.id} then #{item.cpage.id}
 				</foreach>
 			</trim>
 			<trim prefix="update_by =case" suffix="end,">
@@ -156,13 +188,13 @@
 
 
 	<update id="delete">
-		UPDATE cms_lat SET
+		UPDATE cmst_page SET
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
 
 	<update id="deletePL">
-		UPDATE cms_lat SET
+		UPDATE cmst_page SET
 			del_flag = #{DEL_FLAG_DELETE}
 			WHERE id in
 			<foreach item="id" collection="ids" open="(" separator="," close=")">
@@ -171,17 +203,17 @@
 	</update>
 
 	<update id="deleteWL">
-		DELETE FROM cms_lat WHERE id = #{id}
+		DELETE FROM cmst_page WHERE id = #{id}
 	</update>
 
 	<update id="deleteWLPL">
-		DELETE FROM cms_lat WHERE id in
+		DELETE FROM cmst_page WHERE id in
 		<foreach item="id" collection="ids" open="(" separator="," close=")">
 			#{id}
 		</foreach>
 	</update>
 
 	<update id="deleteWLAll">
-		DELETE FROM cms_lat
+		DELETE FROM cmst_page
 	</update>
 </mapper>

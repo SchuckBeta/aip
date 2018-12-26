@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.oseasy.initiate.modules.cms.dao.CmsPageLatDao">
+<mapper namespace="com.oseasy.pcms.modules.cms.dao.CmsPageLatDao">
 
 	<sql id="cmsPageLatColumns">
 		a.id AS "id",
@@ -11,10 +11,34 @@
 		a.update_by AS "updateBy.id",
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		<include refid="cmsLatColumns"/>,
+		<include refid="cmsPageColumns"/>
 	</sql>
 
+	<sql id="cmsLatColumns">
+		b.id AS "id",
+		b.name AS "name",
+		b.create_by AS "createBy.id",
+		b.create_date AS "createDate",
+		b.update_by AS "updateBy.id",
+		b.update_date AS "updateDate",
+		b.remarks AS "remarks",
+		b.del_flag AS "delFlag"
+	</sql>
+
+	<sql id="cmsPageColumns">
+		c.id AS "cpage.id",
+		c.create_by AS "cpage.createBy.id",
+		c.create_date AS "cpage.createDate",
+		c.update_by AS "cpage.updateBy.id",
+		c.update_date AS "cpage.updateDate",
+		c.remarks AS "cpage.remarks",
+		c.del_flag AS "cpage.delFlag"
+	</sql>
 	<sql id="cmsPageLatJoins">
+		LEFT JOIN cms_lat b ON b.id = a.lat_id
+		LEFT JOIN cms_page c ON c.id = a.page_id
 	</sql>
 
 	<select id="get" resultType="CmsPageLat">

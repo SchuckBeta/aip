@@ -28,23 +28,31 @@
 		<form:form id="searchForm" modelAttribute="cmstTydetail" action="${ctx}/cms/cmstTydetail/" method="post" class="form-horizontal clearfix form-search-block">
 			<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 			<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
-			<ul class="ul-form">
-			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			<div class="col-control-group">
+				<div class="control-group">
+					<label class="control-label">父级编号</label>
+					<div class="controls">
+						<form:select path="type.id" class="input-medium">
+							<form:option value="" label="--请选择--"/>
+							<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+						</form:select>
 					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">名称</label>
+					<div class="controls">
+						<form:input path="name" htmlEscape="false" maxlength="100" class="input-medium"/>
 					</div>
-						<div class="control-group">
-							<label class="control-label">名称</label>
-							<div class="controls">
-							<form:input path="name" htmlEscape="false" maxlength="100" class="input-medium"/>
-						</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">删除标记</label>
+					<div class="controls">
+						<form:select path="delFlag" class="input-medium">
+							<form:option value="" label="--请选择--"/>
+							<form:options items="${fns:getDictList('del_flag')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+						</form:select>
 					</div>
-					</div>
-					</div>
-					</div>
-					</div>
-					</div>
-					</div>
+				</div>
 			</div>
 			<div class="search-btn-box">
 				<button type="submit" class="btn btn-primary">查询</button>
@@ -58,6 +66,7 @@
 			<table id="contentTable" class="table table-bordered table-condensed table-hover table-center table-orange table-nowrap">
 				<thead>
 					<tr>
+						<th>父级编号</th>
 						<th>名称</th>
 						<th>更新时间</th>
 						<th>备注信息</th>
@@ -68,8 +77,11 @@
 				<c:forEach items="${page.list}" var="cmstTydetail">
 					<tr>
 						<td><a href="${ctx}/cms/cmstTydetail/form?id=${cmstTydetail.id}">
-							${cmstTydetail.name}
+							${cmstTydetail.type.name}
 						</a></td>
+						<td>
+							${cmstTydetail.name}
+						</td>
 						<td>
 							<fmt:formatDate value="${cmstTydetail.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
 						</td>

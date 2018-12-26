@@ -40,7 +40,10 @@
 			<div class="control-group">
 				<label class="control-label">主题编号：</label>
 				<div class="controls">
-					<form:input path="theme.id" htmlEscape="false" maxlength="64" class="input-xlarge required"/>
+					<form:select path="theme.id" class="input-xlarge required">
+						<form:option value="" label="--请选择--"/>
+						<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					</form:select>
 					<span class="help-inline"><font color="red">*</font> </span>
 				</div>
 			</div>

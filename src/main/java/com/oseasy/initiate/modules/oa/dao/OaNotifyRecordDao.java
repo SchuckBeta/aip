@@ -7,10 +7,10 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
-import com.oseasy.initiate.modules.oa.entity.OaNotify;
 import com.oseasy.initiate.modules.oa.entity.OaNotifyRecord;
 import com.oseasy.pcore.common.persistence.CrudDao;
 import com.oseasy.pcore.common.persistence.annotation.MyBatisDao;
+import com.oseasy.pcore.modules.oa.entity.OaNotify;
 import com.oseasy.pcore.modules.sys.entity.User;
 
 /**

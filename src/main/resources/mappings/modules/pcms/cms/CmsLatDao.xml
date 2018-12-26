@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.oseasy.initiate.modules.cms.dao.CmsThemeDao">
+<mapper namespace="com.oseasy.pcms.modules.cms.dao.CmsLatDao">
 
-	<sql id="cmsThemeColumns">
+	<sql id="cmsLatColumns">
 		a.id AS "id",
 		a.name AS "name",
 		a.create_by AS "createBy.id",
@@ -13,22 +13,22 @@
 		a.del_flag AS "delFlag"
 	</sql>
 
-	<sql id="cmsThemeJoins">
+	<sql id="cmsLatJoins">
 	</sql>
 
-	<select id="get" resultType="CmsTheme">
+	<select id="get" resultType="CmsLat">
 		SELECT
-			<include refid="cmsThemeColumns"/>
-		FROM cms_theme a
-		<include refid="cmsThemeJoins"/>
+			<include refid="cmsLatColumns"/>
+		FROM cms_lat a
+		<include refid="cmsLatJoins"/>
 		WHERE a.id = #{id}
 	</select>
 
-	<select id="findList" resultType="CmsTheme">
+	<select id="findList" resultType="CmsLat">
 		SELECT
-			<include refid="cmsThemeColumns"/>
-		FROM cms_theme a
-		<include refid="cmsThemeJoins"/>
+			<include refid="cmsLatColumns"/>
+		FROM cms_lat a
+		<include refid="cmsLatJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 			<if test="name != null and name != ''">
@@ -48,11 +48,11 @@
 		</choose>
 	</select>
 
-	<select id="findAllList" resultType="CmsTheme">
+	<select id="findAllList" resultType="CmsLat">
 		SELECT
-			<include refid="cmsThemeColumns"/>
-		FROM cms_theme a
-		<include refid="cmsThemeJoins"/>
+			<include refid="cmsLatColumns"/>
+		FROM cms_lat a
+		<include refid="cmsLatJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 		</where>
@@ -67,7 +67,7 @@
 	</select>
 
 	<insert id="insert">
-		INSERT INTO cms_theme(
+		INSERT INTO cms_lat(
 			id,
 			name,
 			create_by,
@@ -89,7 +89,7 @@
 	</insert>
 
 	<insert id="insertPL" >
-		INSERT INTO cms_theme(
+		INSERT INTO cms_lat(
 			id,
 			name,
 			create_by,
@@ -114,7 +114,7 @@
 	</insert>
 
 	<update id="update">
-		UPDATE cms_theme SET
+		UPDATE cms_lat SET
 			name = #{name},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
@@ -123,7 +123,7 @@
 	</update>
 
 	<update id="updatePL" parameterType="java.util.List" >
-		UPDATE cms_theme
+		UPDATE cms_lat
 		<trim prefix="set" suffixOverrides=",">
 						<trim prefix="name =case" suffix="end,">
 				<foreach item="item" collection="entitys" index="index">
@@ -156,13 +156,13 @@
 
 
 	<update id="delete">
-		UPDATE cms_theme SET
+		UPDATE cms_lat SET
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
 
 	<update id="deletePL">
-		UPDATE cms_theme SET
+		UPDATE cms_lat SET
 			del_flag = #{DEL_FLAG_DELETE}
 			WHERE id in
 			<foreach item="id" collection="ids" open="(" separator="," close=")">
@@ -171,17 +171,17 @@
 	</update>
 
 	<update id="deleteWL">
-		DELETE FROM cms_theme WHERE id = #{id}
+		DELETE FROM cms_lat WHERE id = #{id}
 	</update>
 
 	<update id="deleteWLPL">
-		DELETE FROM cms_theme WHERE id in
+		DELETE FROM cms_lat WHERE id in
 		<foreach item="id" collection="ids" open="(" separator="," close=")">
 			#{id}
 		</foreach>
 	</update>
 
 	<update id="deleteWLAll">
-		DELETE FROM cms_theme
+		DELETE FROM cms_lat
 	</update>
 </mapper>

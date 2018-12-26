@@ -28,18 +28,16 @@
 		<form:form id="searchForm" modelAttribute="cmsPage" action="${ctx}/cms/cmsPage/" method="post" class="form-horizontal clearfix form-search-block">
 			<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 			<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
-			<ul class="ul-form">
-			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			<div class="col-control-group">
+				<div class="control-group">
+					<label class="control-label">删除标记</label>
+					<div class="controls">
+						<form:select path="delFlag" class="input-medium">
+							<form:option value="" label="--请选择--"/>
+							<form:options items="${fns:getDictList('del_flag')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+						</form:select>
 					</div>
-					</div>
-					</div>
-					</div>
-					</div>
-					</div>
-					</div>
-					</div>
-					</div>
+				</div>
 			</div>
 			<div class="search-btn-box">
 				<button type="submit" class="btn btn-primary">查询</button>
@@ -55,6 +53,7 @@
 					<tr>
 						<th>更新时间</th>
 						<th>备注信息</th>
+						<th>删除标记</th>
 						<shiro:hasPermission name="cms:cmsPage:edit"><th>操作</th></shiro:hasPermission>
 					</tr>
 				</thead>
@@ -66,6 +65,9 @@
 						</a></td>
 						<td>
 							${cmsPage.remarks}
+						</td>
+						<td>
+							${fns:getDictLabel(cmsPage.delFlag, 'del_flag', '')}
 						</td>
 						<shiro:hasPermission name="cms:cmsPage:edit"><td>
 							<a class="btn btn-small btn-primary" href="${ctx}/cms/cmsPage/form?id=${cmsPage.id}">修改</a>

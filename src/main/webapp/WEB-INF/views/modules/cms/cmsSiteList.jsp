@@ -61,9 +61,9 @@
 				<li><label>所有父级编号：</label>
 					<form:input path="parentIds" htmlEscape="false" maxlength="2000" class="input-medium"/>
 				</li>
-				<li><label>配置编号：</label>
+				<%-- <li><label>配置编号：</label>
 					<form:input path="config.id" htmlEscape="false" maxlength="64" class="input-medium"/>
-				</li>
+				</li> --%>
 				<li><label>站点名称：</label>
 					<form:input path="name" htmlEscape="false" maxlength="100" class="input-medium"/>
 				</li>
@@ -78,7 +78,6 @@
 					<th>编号</th>
 					<th>父级编号</th>
 					<th>所有父级编号</th>
-					<th>配置编号</th>
 					<th>站点名称</th>
 					<th>是否当前站点</th>
 					<th>是否子站点:0、否；1、是</th>
@@ -96,16 +95,10 @@
 	<script type="text/template" id="treeTableTpl">
 		<tr id="{{row.id}}" pId="{{pid}}">
 			<td><a href="${ctx}/cms/cmsSite/form?id={{row.id}}">
-				{{row.id}}
+				{{row.name}}
 			</a></td>
 			<td>
-				{{row.parent.id}}
-			</td>
-			<td>
-				{{row.parentIds}}
-			</td>
-			<td>
-				{{row.config.id}}
+				{{row.parent.name}}
 			</td>
 			<td>
 				{{row.name}}

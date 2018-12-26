@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.oseasy.initiate.modules.oa.entity.OaNotify;
-import com.oseasy.initiate.modules.oa.service.OaNotifyService;
 import com.oseasy.initiate.modules.promodel.entity.ActYwAuditInfo;
 import com.oseasy.initiate.modules.promodel.entity.ProModel;
 import com.oseasy.initiate.modules.promodel.service.ActYwAuditInfoService;
@@ -18,6 +16,8 @@ import com.oseasy.pact.modules.actyw.tool.process.ActYwTool;
 import com.oseasy.pcore.common.persistence.Page;
 import com.oseasy.pcore.common.service.CrudService;
 import com.oseasy.pcore.common.utils.IdGen;
+import com.oseasy.pcore.modules.oa.entity.OaNotify;
+import com.oseasy.pcore.modules.oa.service.OaNotifyService;
 import com.oseasy.pcore.modules.sys.utils.CoreUtils;
 import com.oseasy.putil.common.utils.StringUtil;
 import org.activiti.engine.TaskService;

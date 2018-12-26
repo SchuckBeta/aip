@@ -15,6 +15,7 @@ public class CmsTheme extends DataExtEntity<CmsTheme> {
 
 	private static final long serialVersionUID = 1L;
 	private String name;		// 名称
+	private CmsThemeDetail tdetail;		// 名称
 
 	public CmsTheme() {
 		super();
@@ -33,8 +34,15 @@ public class CmsTheme extends DataExtEntity<CmsTheme> {
 		this.name = name;
 	}
 
+	public CmsThemeDetail getTdetail() {
+        return tdetail;
+    }
 
-	@Override
+    public void setTdetail(CmsThemeDetail tdetail) {
+        this.tdetail = tdetail;
+    }
+
+    @Override
 	public String toString() {
 		return ReflectionToStringBuilder.toString(this);
 	}

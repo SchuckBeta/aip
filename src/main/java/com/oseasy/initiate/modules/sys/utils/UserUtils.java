@@ -10,8 +10,6 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.subject.Subject;
 
-import com.oseasy.initiate.modules.oa.dao.OaNotifyDao;
-import com.oseasy.initiate.modules.oa.entity.OaNotify;
 import com.oseasy.initiate.modules.sys.enums.RoleBizTypeEnum;
 import com.oseasy.pact.modules.actyw.dao.ActYwSgtypeDao;
 import com.oseasy.pact.modules.actyw.entity.ActYwSgtype;
@@ -20,6 +18,8 @@ import com.oseasy.pcore.common.config.CoreSval;
 import com.oseasy.pcore.common.config.Global;
 import com.oseasy.pcore.common.utils.CacheUtils;
 import com.oseasy.pcore.common.utils.SpringContextHolder;
+import com.oseasy.pcore.modules.oa.dao.OaNotifyDao;
+import com.oseasy.pcore.modules.oa.entity.OaNotify;
 import com.oseasy.pcore.modules.sys.dao.OfficeDao;
 import com.oseasy.pcore.modules.sys.dao.RoleDao;
 import com.oseasy.pcore.modules.sys.dao.UserDao;

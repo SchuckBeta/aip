@@ -6,13 +6,13 @@ package com.oseasy.initiate.modules.oa.utils;
 import java.util.List;
 
 import com.google.common.collect.Lists;
-import com.oseasy.initiate.modules.oa.entity.OaNotify;
-import com.oseasy.initiate.modules.oa.service.OaNotifyService;
 import com.oseasy.initiate.modules.oa.vo.OaNotifySendType;
 import com.oseasy.initiate.modules.oa.vo.OaNotifyType;
 import com.oseasy.pcore.common.persistence.Page;
 import com.oseasy.pcore.common.utils.CacheUtils;
 import com.oseasy.pcore.common.utils.SpringContextHolder;
+import com.oseasy.pcore.modules.oa.entity.OaNotify;
+import com.oseasy.pcore.modules.oa.service.OaNotifyService;
 
 /**
  * 内容管理工具类

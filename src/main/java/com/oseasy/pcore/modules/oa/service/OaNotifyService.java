@@ -1,7 +1,7 @@
 /**
  *
  */
-package com.oseasy.initiate.modules.oa.service;
+package com.oseasy.pcore.modules.oa.service;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,11 +18,9 @@ import com.google.common.collect.Lists;
 import com.oseasy.initiate.modules.attachment.enums.FileStepEnum;
 import com.oseasy.initiate.modules.attachment.enums.FileTypeEnum;
 import com.oseasy.initiate.modules.attachment.service.SysAttachmentService;
-import com.oseasy.initiate.modules.oa.dao.OaNotifyDao;
 import com.oseasy.initiate.modules.oa.dao.OaNotifyKeywordDao;
 import com.oseasy.initiate.modules.oa.dao.OaNotifyRecordDao;
 import com.oseasy.initiate.modules.oa.dao.OaNotifyReoffilterDao;
-import com.oseasy.initiate.modules.oa.entity.OaNotify;
 import com.oseasy.initiate.modules.oa.entity.OaNotifyKeyword;
 import com.oseasy.initiate.modules.oa.entity.OaNotifyRecord;
 import com.oseasy.initiate.modules.oa.entity.OaNotifyReoffilter;
@@ -38,6 +36,8 @@ import com.oseasy.pcore.common.persistence.Page;
 import com.oseasy.pcore.common.service.CrudService;
 import com.oseasy.pcore.common.utils.FtpUtil;
 import com.oseasy.pcore.common.utils.IdGen;
+import com.oseasy.pcore.modules.oa.dao.OaNotifyDao;
+import com.oseasy.pcore.modules.oa.entity.OaNotify;
 import com.oseasy.pcore.modules.sys.entity.Office;
 import com.oseasy.pcore.modules.sys.entity.User;
 import com.oseasy.pcore.modules.sys.service.CoreService;

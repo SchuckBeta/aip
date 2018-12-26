@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.oseasy.initiate.modules.oa.entity.OaNotify;
 import com.oseasy.initiate.modules.oa.entity.OaNotifySent;
-import com.oseasy.initiate.modules.oa.service.OaNotifyService;
 import com.oseasy.pcore.common.web.BaseController;
+import com.oseasy.pcore.modules.oa.entity.OaNotify;
+import com.oseasy.pcore.modules.oa.service.OaNotifyService;
 import com.oseasy.putil.common.utils.StringUtil;
 
 /**

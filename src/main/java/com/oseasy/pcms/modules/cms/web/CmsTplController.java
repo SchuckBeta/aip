@@ -12,13 +12,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.oseasy.pcms.modules.cms.entity.CmsTpl;
+import com.oseasy.pcms.modules.cms.entity.CmstType;
+import com.oseasy.pcms.modules.cms.service.CmsTplService;
+import com.oseasy.pcms.modules.cms.service.CmstTypeService;
+import com.oseasy.pcore.common.config.CoreIds;
 import com.oseasy.pcore.common.config.CoreSval;
 import com.oseasy.pcore.common.config.Global;
 import com.oseasy.pcore.common.persistence.Page;
 import com.oseasy.pcore.common.web.BaseController;
 import com.oseasy.putil.common.utils.StringUtil;
-import com.oseasy.pcms.modules.cms.entity.CmsTpl;
-import com.oseasy.pcms.modules.cms.service.CmsTplService;
 
 /**
  * 模板Controller.
@@ -31,6 +34,8 @@ public class CmsTplController extends BaseController {
 
 	@Autowired
 	private CmsTplService entityService;
+	@Autowired
+	private CmstTypeService cmstTypeService;
 
 	@ModelAttribute
 	public CmsTpl get(@RequestParam(required=false) String id) {
@@ -48,6 +53,11 @@ public class CmsTplController extends BaseController {
 	@RequestMapping(value = {"list", ""})
 	public String list(CmsTpl entity, HttpServletRequest request, HttpServletResponse response, Model model) {
 		Page<CmsTpl> page = entityService.findPage(new Page<CmsTpl>(request, response), entity);
+
+		CmstType pcmstType = new CmstType();
+		pcmstType.setParent(new CmstType(CoreIds.SYS_TREE_ROOT.getId()));
+		model.addAttribute(CmstType.CMST_TOP_TYPES, cmstTypeService.findList(new CmstType()));
+		model.addAttribute(CmstType.CMST_TYPES, cmstTypeService.findList(new CmstType()));
 		model.addAttribute(Page.PAGE, page);
 		return "modules/cms/cmsTplList";
 	}

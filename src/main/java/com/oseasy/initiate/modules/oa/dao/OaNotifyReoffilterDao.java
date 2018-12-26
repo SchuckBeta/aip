@@ -1,9 +1,9 @@
 package com.oseasy.initiate.modules.oa.dao;
 
-import com.oseasy.initiate.modules.oa.entity.OaNotify;
 import com.oseasy.initiate.modules.oa.entity.OaNotifyReoffilter;
 import com.oseasy.pcore.common.persistence.CrudDao;
 import com.oseasy.pcore.common.persistence.annotation.MyBatisDao;
+import com.oseasy.pcore.modules.oa.entity.OaNotify;
 
 /**
  * 院系通知过滤DAO接口.

@@ -28,18 +28,16 @@
 		<form:form id="searchForm" modelAttribute="cmstTheme" action="${ctx}/cms/cmstTheme/" method="post" class="form-horizontal clearfix form-search-block">
 			<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 			<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
-			<ul class="ul-form">
-			<li class="btns"><input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/></li>
 			<div class="col-control-group">
+				<div class="control-group">
+					<label class="control-label">删除标记</label>
+					<div class="controls">
+						<form:select path="delFlag" class="input-medium">
+							<form:option value="" label="--请选择--"/>
+							<form:options items="${fns:getDictList('del_flag')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+						</form:select>
 					</div>
-					</div>
-					</div>
-					</div>
-					</div>
-					</div>
-					</div>
-					</div>
-					</div>
+				</div>
 			</div>
 			<div class="search-btn-box">
 				<button type="submit" class="btn btn-primary">查询</button>
@@ -53,6 +51,11 @@
 			<table id="contentTable" class="table table-bordered table-condensed table-hover table-center table-orange table-nowrap">
 				<thead>
 					<tr>
+						<th>模板ID</th>
+						<th>模板类型</th>
+						<th>创建者</th>
+						<th>创建时间</th>
+						<th>更新者</th>
 						<th>更新时间</th>
 						<th>备注信息</th>
 						<shiro:hasPermission name="cms:cmstTheme:edit"><th>操作</th></shiro:hasPermission>
@@ -62,8 +65,23 @@
 				<c:forEach items="${page.list}" var="cmstTheme">
 					<tr>
 						<td><a href="${ctx}/cms/cmstTheme/form?id=${cmstTheme.id}">
-							<fmt:formatDate value="${cmstTheme.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+							${cmstTheme.tpl.name}
 						</a></td>
+						<td>
+							${cmstTheme.theme.name}
+						</td>
+						<td>
+							${cmstTheme.createBy.id}
+						</td>
+						<td>
+							<fmt:formatDate value="${cmstTheme.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+						</td>
+						<td>
+							${cmstTheme.updateBy.id}
+						</td>
+						<td>
+							<fmt:formatDate value="${cmstTheme.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>
+						</td>
 						<td>
 							${cmstTheme.remarks}
 						</td>

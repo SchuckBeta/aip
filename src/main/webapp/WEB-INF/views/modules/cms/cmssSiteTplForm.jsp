@@ -40,21 +40,30 @@
 			<div class="control-group">
 				<label class="control-label">站点ID（cmss_site）：</label>
 				<div class="controls">
-					<form:input path="site.id" htmlEscape="false" maxlength="64" class="input-xlarge required"/>
+					<form:select path="site.id" class="input-xlarge required">
+						<form:option value="" label="--请选择--"/>
+						<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					</form:select>
 					<span class="help-inline"><font color="red">*</font> </span>
 				</div>
 			</div>
 			<div class="control-group">
 				<label class="control-label">模板ID：</label>
 				<div class="controls">
-					<form:input path="tpl.id" htmlEscape="false" maxlength="64" class="input-xlarge required"/>
+					<form:select path="tpl.id" class="input-xlarge required">
+						<form:option value="" label="--请选择--"/>
+						<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					</form:select>
 					<span class="help-inline"><font color="red">*</font> </span>
 				</div>
 			</div>
 			<div class="control-group">
 				<label class="control-label">是否开放：0、否；1、是：</label>
 				<div class="controls">
-					<form:input path="isOpen" htmlEscape="false" maxlength="1" class="input-xlarge required"/>
+					<form:select path="isOpen" class="input-xlarge required">
+						<form:option value="" label="--请选择--"/>
+						<form:options items="${fns:getDictList('')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
+					</form:select>
 					<span class="help-inline"><font color="red">*</font> </span>
 				</div>
 			</div>
