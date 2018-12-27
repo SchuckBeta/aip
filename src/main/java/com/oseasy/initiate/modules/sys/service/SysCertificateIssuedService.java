@@ -5,13 +5,13 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.oseasy.initiate.modules.sys.dao.SysCertificateIssuedDao;
 import com.oseasy.initiate.modules.sys.entity.SysCertificateIssued;
-import com.oseasy.initiate.modules.sys.utils.UserUtils;
 import com.oseasy.pcore.common.config.Global;
 import com.oseasy.pcore.common.persistence.Page;
 import com.oseasy.pcore.common.service.CrudService;
+import com.oseasy.pcore.modules.sys.utils.CoreUtils;
 import com.oseasy.putil.common.utils.StringUtil;
-import com.oseasy.initiate.modules.sys.dao.SysCertificateIssuedDao;
 
 /**
  * 系统证书执行记录Service.
@@ -100,10 +100,10 @@ public class SysCertificateIssuedService extends CrudService<SysCertificateIssue
       sysCertificateIssued.setIsYw(Global.NO);
     }
 	  if (sysCertificateIssued.getIssuedBy() == null) {
-      sysCertificateIssued.setIssuedBy(UserUtils.getUser());
+      sysCertificateIssued.setIssuedBy(CoreUtils.getUser());
     }
 	  if (sysCertificateIssued.getIsYw() == null) {
-	    sysCertificateIssued.setIssuedBy(UserUtils.getUser());
+	    sysCertificateIssued.setIssuedBy(CoreUtils.getUser());
 	  }
 		super.save(sysCertificateIssued);
 	}

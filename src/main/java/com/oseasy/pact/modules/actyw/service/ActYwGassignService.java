@@ -4,11 +4,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.activiti.engine.TaskService;
+import org.activiti.engine.impl.persistence.entity.TaskEntity;
+import org.activiti.engine.task.Task;
+import org.activiti.engine.task.TaskQuery;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.oseasy.initiate.modules.promodel.entity.ActYwAuditInfo;
 import com.oseasy.initiate.modules.promodel.entity.ProModel;
 import com.oseasy.initiate.modules.promodel.service.ActYwAuditInfoService;
 import com.oseasy.initiate.modules.promodel.service.ProModelService;
-import com.oseasy.initiate.modules.sys.utils.UserUtils;
 import com.oseasy.pact.modules.act.service.ActTaskService;
 import com.oseasy.pact.modules.actyw.dao.ActYwGassignDao;
 import com.oseasy.pact.modules.actyw.entity.ActYwGassign;
@@ -16,18 +23,8 @@ import com.oseasy.pact.modules.actyw.tool.process.ActYwTool;
 import com.oseasy.pcore.common.persistence.Page;
 import com.oseasy.pcore.common.service.CrudService;
 import com.oseasy.pcore.common.utils.IdGen;
-import com.oseasy.pcore.modules.oa.entity.OaNotify;
 import com.oseasy.pcore.modules.oa.service.OaNotifyService;
-import com.oseasy.pcore.modules.sys.utils.CoreUtils;
 import com.oseasy.putil.common.utils.StringUtil;
-import org.activiti.engine.TaskService;
-import org.activiti.engine.impl.persistence.entity.TaskEntity;
-import org.activiti.engine.task.Task;
-import org.activiti.engine.task.TaskQuery;
-import org.apache.poi.ss.formula.functions.T;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 业务指派表Service.
@@ -142,7 +139,7 @@ public class ActYwGassignService extends CrudService<ActYwGassignDao, ActYwGassi
 			//删除旧的指派记录
 			dao.deleteByAssign(actYwGassign);
 		}else{
-//			oaNotifyService.sendOaNotifyByTypeAndUser(UserUtils.getUser(), userIdList,"指派任务",
+//			oaNotifyService.sendOaNotifyByTypeAndUser(CoreUtils.getUser(), userIdList,"指派任务",
 //				"管理员指派给你"+proModel.getpName()+"项目审核任务", OaNotify.Type_Enum.TYPE20.getValue(), proModel.getId());
 		}
 		List<Task> currentTaskEntityList2 = taskService.createTaskQuery().taskDefinitionKey(ActYwTool.FLOW_ID_PREFIX+actYwGassign.getGnodeId())

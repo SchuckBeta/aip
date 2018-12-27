@@ -6,7 +6,6 @@ package com.oseasy.initiate.modules.test.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,13 +15,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.oseasy.initiate.modules.sys.utils.UserUtils;
 import com.oseasy.initiate.modules.test.entity.Test;
 import com.oseasy.initiate.modules.test.service.TestService;
 import com.oseasy.pcore.common.config.CoreSval;
 import com.oseasy.pcore.common.persistence.Page;
 import com.oseasy.pcore.common.web.BaseController;
 import com.oseasy.pcore.modules.sys.entity.User;
+import com.oseasy.pcore.modules.sys.utils.CoreUtils;
 import com.oseasy.putil.common.utils.StringUtil;
 
 /**
@@ -70,7 +69,7 @@ public class TestController extends BaseController {
 	@RequestMapping(value = "listData")
 	@ResponseBody
 	public Page<Test> listData(Test test, HttpServletRequest request, HttpServletResponse response, Model model) {
-		User user = UserUtils.getUser();
+		User user = CoreUtils.getUser();
 		if (!user.getAdmin()) {
 			test.setCreateBy(user);
 		}

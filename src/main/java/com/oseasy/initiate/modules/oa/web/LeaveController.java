@@ -27,11 +27,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.google.common.collect.Maps;
 import com.oseasy.initiate.modules.oa.entity.Leave;
 import com.oseasy.initiate.modules.oa.service.LeaveService;
-import com.oseasy.initiate.modules.sys.utils.UserUtils;
 import com.oseasy.pcore.common.config.CoreSval;
 import com.oseasy.pcore.common.mapper.JsonMapper;
 import com.oseasy.pcore.common.persistence.Page;
 import com.oseasy.pcore.common.web.BaseController;
+import com.oseasy.pcore.modules.sys.utils.CoreUtils;
 
 /**
  * 请假Controller
@@ -85,7 +85,7 @@ public class LeaveController extends BaseController {
 	@RequiresPermissions("oa:leave:view")
 	@RequestMapping(value = {"list/task",""})
 	public String taskList(HttpSession session, Model model) {
-		String userId = UserUtils.getUser().getLoginName();//ObjectUtils.toString(UserUtils.getUser().getId());
+		String userId = CoreUtils.getUser().getLoginName();//ObjectUtils.toString(CoreUtils.getUser().getId());
 		List<Leave> results = leaveService.findTodoTasks(userId);
 		model.addAttribute("leaves", results);
 		return "modules/oa/leaveTask";

@@ -42,7 +42,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 
 import com.google.common.collect.Lists;
-import com.oseasy.initiate.common.config.SysIds;
 import com.oseasy.initiate.common.config.SysIdx;
 import com.oseasy.initiate.common.service.CommonService;
 import com.oseasy.initiate.common.utils.IdUtils;
@@ -107,6 +106,7 @@ import com.oseasy.pcore.modules.sys.entity.Office;
 import com.oseasy.pcore.modules.sys.entity.Role;
 import com.oseasy.pcore.modules.sys.entity.User;
 import com.oseasy.pcore.modules.sys.service.UserService;
+import com.oseasy.pcore.modules.sys.utils.CoreUtils;
 import com.oseasy.pcore.modules.sys.utils.DictUtils;
 import com.oseasy.putil.common.utils.StringUtil;
 import com.oseasy.putil.common.utils.exception.ExceptionUtil;
@@ -894,7 +894,7 @@ public class ProModelService extends CrudService<ProModelDao, ProModel>{
                         roles.clear();
                         roles.add("assignUser");
                     }
-                    User user=UserUtils.getUser();
+                    User user=CoreUtils.getUser();
                     if (actYwNextGnode.getIsAssign() != null && actYwNextGnode.getIsAssign()) {
                         Role role = systemService.getRole(CoreIds.SYS_ROLE_ADMIN.getId());
                         roles = userService.getRolesByName(role.getEnname());
@@ -910,8 +910,8 @@ public class ProModelService extends CrudService<ProModelDao, ProModel>{
 
 
                     String key = ActYw.getPkey(actYw.getGroup(), actYw.getProProject());
-                    String userId = UserUtils.getUser().getId();
-                    // UserUtils.getUser().getLoginName();
+                    String userId = CoreUtils.getUser().getId();
+                    // CoreUtils.getUser().getLoginName();
                     identityService.setAuthenticatedUserId(userId);
 
                     //提交批次号
@@ -1209,9 +1209,9 @@ public class ProModelService extends CrudService<ProModelDao, ProModel>{
             try {
                 if (actYwGnode != null && GnodeTaskType.GTT_NONE.getKey().equals(actYwGnode.getTaskType())) {
                     taskId = actTaskService.getTaskidByProcInsId(proModel.getProcInsId());
-                    taskService.claim(taskId, UserUtils.getUser().getId());
+                    taskService.claim(taskId, CoreUtils.getUser().getId());
                 } else {
-                    taskId = actTaskService.getTaskidByProcInsId(proModel.getProcInsId(), UserUtils.getUser().getId());//UserUtils.getUser().getId()
+                    taskId = actTaskService.getTaskidByProcInsId(proModel.getProcInsId(), CoreUtils.getUser().getId());//CoreUtils.getUser().getId()
                 }
             }catch (Exception e){
                 throw new GroupErrorException("该任务已经不存在");
@@ -1229,7 +1229,7 @@ public class ProModelService extends CrudService<ProModelDao, ProModel>{
             runtimeService.suspendProcessInstanceById(proModel.getProcInsId());
             updateSubStatus(proModel.getId(), Global.NO);
 //            teamUserHistoryDao.updateFinishAsSave(proModel.getId());
-            User apply_User = UserUtils.getUser();
+            User apply_User = CoreUtils.getUser();
             User rec_User = new User();
             rec_User.setId(proModel.getDeclareId());
             String typeName = "";
@@ -1286,22 +1286,22 @@ public class ProModelService extends CrudService<ProModelDao, ProModel>{
                     //任务已经被签收就向其他待签收者发消息 该任务已经被签收
                     List<String> noneUserList=getUsersByRoleList(proModel,roleList);
                     if(noneUserList!=null &&noneUserList.size()>0){
-                        noneUserList.remove(UserUtils.getUser().getId());
+                        noneUserList.remove(CoreUtils.getUser().getId());
                         if(noneUserList.size()>0){
                             //审核完成发消息
-                            User apply_User = UserUtils.getUser();
+                            User apply_User = CoreUtils.getUser();
                             oaNotifyService.sendOaNotifyByTypeAndUser(apply_User, noneUserList, "任务审核",
                               proModel.getpName() + "项目已经被其他人签收" ,OaNotify.Type_Enum.TYPE14.getValue(), proModel.getId());
                         }
                     }
                     taskId = actTaskService.getTaskidByProcInsId(proModel.getProcInsId());
-                    taskService.claim(taskId, UserUtils.getUser().getId());
+                    taskService.claim(taskId, CoreUtils.getUser().getId());
                 } else {
                     // 铜陵学院代码 因为老师和学生角色未分开 前台提交统一按照项目负责人查找taskId
                     if (actYwGnode.getGforms() != null && FormClientType.FST_FRONT.getKey().equals(actYwGnode.getGforms().get(0).getForm().getClientType())) {
-                        taskId = actTaskService.getTaskidByProcInsId(proModel.getProcInsId(), proModel.getDeclareId());//UserUtils.getUser().getId()
+                        taskId = actTaskService.getTaskidByProcInsId(proModel.getProcInsId(), proModel.getDeclareId());//CoreUtils.getUser().getId()
                     } else {
-                        taskId = actTaskService.getTaskidByProcInsId(proModel.getProcInsId(), UserUtils.getUser().getId());//UserUtils.getUser().getId()
+                        taskId = actTaskService.getTaskidByProcInsId(proModel.getProcInsId(), CoreUtils.getUser().getId());//CoreUtils.getUser().getId()
                     }
                 }
             }catch (Exception e){
@@ -1442,7 +1442,7 @@ public class ProModelService extends CrudService<ProModelDao, ProModel>{
                                         throw new GroupErrorException("审核节点配置错误。");
                                     }
                                     //审核完成发消息
-                                    User apply_User = UserUtils.getUser();
+                                    User apply_User = CoreUtils.getUser();
                                     User rec_User = new User();
                                     rec_User.setId(proModel.getDeclareId());
                                     oaNotifyService.sendOaNotifyByType(apply_User, rec_User, "学校管理员审核",
@@ -1504,7 +1504,7 @@ public class ProModelService extends CrudService<ProModelDao, ProModel>{
                             if (isListen && StringUtil.isEmpty(auditGrade)) {
                                 setListenGrade(nextGate, proModel.getId(), actYwStatusNext.getStatus(), ClazzThemeListener.CMR_A.getKey());
                             }
-                            User apply_User = UserUtils.getUser();
+                            User apply_User = CoreUtils.getUser();
                             User rec_User = new User();
                             rec_User.setId(proModel.getDeclareId());
                             oaNotifyService.sendOaNotifyByType(apply_User, rec_User, "学校管理员审核",
@@ -1562,12 +1562,12 @@ public class ProModelService extends CrudService<ProModelDao, ProModel>{
             Role role2 = systemService.getRole(CoreIds.SYS_ADMIN_ROLE.getId());
             List<String> xxRoles = userService.getRolesByName(role2.getEnname());
             roles.addAll(xxRoles);
-            oaNotifyService.sendOaNotifyByTypeAndUser(UserUtils.getUser(), roles, "项目指派", proModel.getPName() + "项目需要你去指派人员审核。",
+            oaNotifyService.sendOaNotifyByTypeAndUser(CoreUtils.getUser(), roles, "项目指派", proModel.getPName() + "项目需要你去指派人员审核。",
                     OaNotify.Type_Enum.TYPE18.getValue(), proModel.getId());
         } else {
             roles = getUsersByRoles(proModel.getId(), nextGnodeRoleId);
             if (roles.size() > 0) {
-                User apply_User = UserUtils.getUser();
+                User apply_User = CoreUtils.getUser();
                 if (gnode.getGforms() != null && gnode.getGforms().get(0) != null && gnode.getGforms().get(0).getForm() != null
                         && gnode.getGforms().get(0).getForm().getClientType() != null
                         && FormClientType.FST_FRONT.getKey().equals(gnode.getGforms().get(0).getForm().getClientType())) {
@@ -1667,7 +1667,7 @@ public class ProModelService extends CrudService<ProModelDao, ProModel>{
 //                super.save(proModel);
 //                // 更改完成后团队历史表中的状态
 //                teamUserHistoryService.updateFinishAsClose(proModel.getId());
-//                User apply_User = UserUtils.getUser();
+//                User apply_User = CoreUtils.getUser();
 //                User rec_User = new User();
 //                rec_User.setId(proModel.getDeclareId());
 //                oaNotifyService.sendOaNotifyByType(apply_User, rec_User, "学校管理员审核",
@@ -1675,7 +1675,7 @@ public class ProModelService extends CrudService<ProModelDao, ProModel>{
 //                        OaNotify.Type_Enum.TYPE14.getValue(), proModel.getId());
 //            } else {
 //                if (proModel.getGrade() != null && proModel.getGrade().equals("1")) {
-//                    User apply_User = UserUtils.getUser();
+//                    User apply_User = CoreUtils.getUser();
 //                    User rec_User = new User();
 //                    rec_User.setId(proModel.getDeclareId());
 //                    oaNotifyService.sendOaNotifyByType(apply_User, rec_User, "学校管理员审核",
@@ -2309,7 +2309,7 @@ public class ProModelService extends CrudService<ProModelDao, ProModel>{
         // 判断审核结果
         if (proModel.getGrade() != null || proModel.getgScore() != null) {
             ActYwAuditInfo actYwAuditInfo = new ActYwAuditInfo();
-            actYwAuditInfo.setAuditId(UserUtils.getUser().getId());
+            actYwAuditInfo.setAuditId(CoreUtils.getUser().getId());
             actYwAuditInfo.setPromodelId(proModel.getId());
             actYwAuditInfo.setGnodeId(actYwGnode.getId());
             actYwAuditInfo.setGnodeVesion(gnodeVesion);
@@ -2333,7 +2333,7 @@ public class ProModelService extends CrudService<ProModelDao, ProModel>{
         // 判断审核结果
         if (proModel.getGrade() != null || proModel.getgScore() != null) {
             ActYwAuditInfo actYwAuditInfo = new ActYwAuditInfo();
-            actYwAuditInfo.setAuditId(UserUtils.getUser().getId());
+            actYwAuditInfo.setAuditId(CoreUtils.getUser().getId());
             actYwAuditInfo.setPromodelId(proModel.getId());
             actYwAuditInfo.setGnodeId(actYwGnode.getId());
             if (StringUtils.isNotBlank(proModel.getGrade())) {
@@ -2355,7 +2355,7 @@ public class ProModelService extends CrudService<ProModelDao, ProModel>{
     public void saveFrontActYwAuditInfo(ProModel proModel, ActYwGnode actYwGnode, String gnodeVesion) {
         // 判断审核结果
         ActYwAuditInfo actYwAuditInfo = new ActYwAuditInfo();
-        actYwAuditInfo.setAuditId(UserUtils.getUser().getId());
+        actYwAuditInfo.setAuditId(CoreUtils.getUser().getId());
         actYwAuditInfo.setPromodelId(proModel.getId());
         actYwAuditInfo.setGnodeId(actYwGnode.getId());
         actYwAuditInfo.setAuditName(actYwGnode.getName());
@@ -2371,7 +2371,7 @@ public class ProModelService extends CrudService<ProModelDao, ProModel>{
     public void saveFrontActYwAuditInfo(ProModel proModel, ActYwGnode actYwGnode) {
         // 判断审核结果
         ActYwAuditInfo actYwAuditInfo = new ActYwAuditInfo();
-        actYwAuditInfo.setAuditId(UserUtils.getUser().getId());
+        actYwAuditInfo.setAuditId(CoreUtils.getUser().getId());
         actYwAuditInfo.setPromodelId(proModel.getId());
         actYwAuditInfo.setGnodeId(actYwGnode.getId());
         actYwAuditInfo.setAuditName(actYwGnode.getName());
@@ -2516,7 +2516,7 @@ public class ProModelService extends CrudService<ProModelDao, ProModel>{
             vars.put(ActYwTool.FLOW_ROLE_ID_PREFIX + nodeRoleId + "s", roles);
         }
         String key = ActYw.getPkey(actYw.getGroup(), actYw.getProProject());
-        User user = UserUtils.getUser();
+        User user = CoreUtils.getUser();
         identityService.setAuthenticatedUserId(user.getId());
         vars.put("gnodeVesion", IdGen.uuid());
         ProcessInstance procIns = runtimeService.startProcessInstanceByKey(key, "pro_model:" + proModel.getId(), vars);
@@ -2570,7 +2570,7 @@ public class ProModelService extends CrudService<ProModelDao, ProModel>{
         if (list == null || list.isEmpty()) {
             return list;
         }
-        User user = UserUtils.getUser();
+        User user = CoreUtils.getUser();
         if (UserUtils.isAdmin(user)) {
             return list;
         }
@@ -3156,7 +3156,7 @@ public class ProModelService extends CrudService<ProModelDao, ProModel>{
     }
 
     public String applayForm(FormPageType fpageType, Model model, HttpServletRequest request, HttpServletResponse response, ProModel proModel, ProProject proProject, ActYw actYw) {
-        User user = UserUtils.getUser();
+        User user = CoreUtils.getUser();
         if (!org.springframework.util.StringUtils.isEmpty(proModel.getId())) {
             proModel = dao.get(proModel.getId());
         }

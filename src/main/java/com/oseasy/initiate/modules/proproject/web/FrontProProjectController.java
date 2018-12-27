@@ -39,6 +39,7 @@ import com.oseasy.pcore.common.config.Global;
 import com.oseasy.pcore.common.persistence.AttachMentEntity;
 import com.oseasy.pcore.common.web.BaseController;
 import com.oseasy.pcore.modules.sys.entity.User;
+import com.oseasy.pcore.modules.sys.utils.CoreUtils;
 import com.oseasy.pcore.modules.sys.utils.DictUtils;
 import com.oseasy.putil.common.utils.StringUtil;
 import com.oseasy.putil.common.utils.exception.ExceptionUtil;
@@ -68,7 +69,7 @@ public class FrontProProjectController extends BaseController {
 
     @RequestMapping(value = "${frontPath}/proproject/applyStep1")
     public String applyStep1(ProModel proModel, HttpServletRequest request, HttpServletResponse response, Model model) {
-        User cuser = UserUtils.getUser();
+        User cuser = CoreUtils.getUser();
         User leader = null;
         String parmact = null;
         if (StringUtil.isNotEmpty(proModel.getId())) {
@@ -103,7 +104,7 @@ public class FrontProProjectController extends BaseController {
 
     @RequestMapping(value = "${frontPath}/proproject/applyStep2")
     public String applyStep2(ProModel proModel, HttpServletRequest request, HttpServletResponse response, Model model) {
-//        User cuser = UserUtils.getUser();
+//        User cuser = CoreUtils.getUser();
 //        User leader =null;
 //        String parmact=null;
 //        if (StringUtil.isNotEmpty(proModel.getId())) {
@@ -172,7 +173,7 @@ public class FrontProProjectController extends BaseController {
                 }
 
             }
-            User cuser = UserUtils.getUser();
+            User cuser = CoreUtils.getUser();
             proModel.setDeclareId(cuser.getId());
 //            if (StringUtil.isEmpty(proModel.getCompetitionNumber())) {
 //                proModel.setCompetitionNumber(IdUtils.getProjectNumberByDb());
@@ -229,7 +230,7 @@ public class FrontProProjectController extends BaseController {
                 }
 
             }
-            User cuser = UserUtils.getUser();
+            User cuser = CoreUtils.getUser();
             proModel.setDeclareId(cuser.getId());
 //            if (StringUtil.isEmpty(proModel.getCompetitionNumber())) {
 //                proModel.setCompetitionNumber(IdUtils.getProjectNumberByDb());
@@ -249,7 +250,7 @@ public class FrontProProjectController extends BaseController {
 
     @RequestMapping(value = "${frontPath}/proproject/applyStep3")
     public String applyStep3(ProModel proModel, HttpServletRequest request, HttpServletResponse response, Model model) {
-        User cuser = UserUtils.getUser();
+        User cuser = CoreUtils.getUser();
         User leader = null;
         if (StringUtil.isNotEmpty(proModel.getId())) {
             proModel = proModelService.get(proModel.getId());

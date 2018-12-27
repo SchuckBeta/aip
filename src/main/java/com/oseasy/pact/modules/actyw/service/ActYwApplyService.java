@@ -6,27 +6,23 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.runtime.ProcessInstance;
-import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.oseasy.initiate.common.config.SysIds;
 import com.oseasy.initiate.modules.attachment.entity.SysAttachment;
 import com.oseasy.initiate.modules.attachment.service.SysAttachmentService;
 import com.oseasy.initiate.modules.promodel.entity.ActYwAuditInfo;
 import com.oseasy.initiate.modules.promodel.service.ActYwAuditInfoService;
 import com.oseasy.initiate.modules.proproject.entity.ProProject;
 import com.oseasy.initiate.modules.sys.service.SystemService;
-import com.oseasy.pcore.modules.sys.service.UserService;
 import com.oseasy.initiate.modules.sys.tool.SysNoType;
 import com.oseasy.initiate.modules.sys.tool.SysNodeTool;
-import com.oseasy.initiate.modules.sys.utils.UserUtils;
-import com.oseasy.initiate.modules.task.entity.TaskScheduleJob;
 import com.oseasy.initiate.modules.task.service.TaskScheduleJobService;
 import com.oseasy.pact.modules.act.dao.ActDao;
 import com.oseasy.pact.modules.act.entity.Act;
@@ -38,13 +34,14 @@ import com.oseasy.pact.modules.actyw.entity.ActYwGnode;
 import com.oseasy.pact.modules.actyw.exception.ApplyException;
 import com.oseasy.pact.modules.actyw.exception.ProTimeException;
 import com.oseasy.pact.modules.actyw.tool.process.ActYwTool;
-import com.oseasy.pact.modules.actyw.tool.process.vo.FlowType;
 import com.oseasy.pact.modules.actyw.vo.ActYwApplyVo;
 import com.oseasy.pcore.common.config.ApiTstatus;
 import com.oseasy.pcore.common.persistence.AttachMentEntity;
 import com.oseasy.pcore.common.persistence.Page;
 import com.oseasy.pcore.common.service.CrudService;
 import com.oseasy.pcore.modules.sys.entity.Role;
+import com.oseasy.pcore.modules.sys.service.UserService;
+import com.oseasy.pcore.modules.sys.utils.CoreUtils;
 import com.oseasy.putil.common.utils.StringUtil;
 
 /**
@@ -116,7 +113,7 @@ public class ActYwApplyService extends CrudService<ActYwApplyDao, ActYwApply> {
 				throw new RuntimeException("申报业务编号未指定");
 			}
 			if ((actYwApply.getApplyUser() == null) || StringUtil.isEmpty(actYwApply.getApplyUser().getId())) {
-				actYwApply.setApplyUser(UserUtils.getUser());
+				actYwApply.setApplyUser(CoreUtils.getUser());
 			}
 			if (StringUtil.isEmpty(actYwApply.getNo())) {
 				actYwApply.setNo(SysNodeTool.genByKeyss(SysNoType.NO_YW_APPLY));
@@ -217,7 +214,7 @@ public class ActYwApplyService extends CrudService<ActYwApplyDao, ActYwApply> {
 					vars.put("id", actYwApply.getId());
 					vars.put(nodeRoleId + "s", roles);
 					String key = ActYw.getPkey(actYw.getGroup(), actYw.getProProject());
-					String userId = UserUtils.getUser().getId();
+					String userId = CoreUtils.getUser().getId();
 					identityService.setAuthenticatedUserId(userId);
 					ProcessInstance procIns = runtimeService.startProcessInstanceByKey(key, "act_yw_apply:" + actYwApply.getId(), vars);
 					//流程id返写业务表

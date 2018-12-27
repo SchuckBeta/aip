@@ -1,16 +1,22 @@
 package com.oseasy.initiate.modules.promodel.web;
 
-import com.oseasy.initiate.modules.sys.utils.UserUtils;
-import com.oseasy.pcore.modules.sys.entity.User;
+import java.lang.reflect.Method;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.Method;
+import com.oseasy.pcore.modules.sys.entity.User;
+import com.oseasy.pcore.modules.sys.utils.CoreUtils;
 
 
 /**
@@ -78,7 +84,7 @@ public class SystemLogAspect {
        // User user = (User) session.getAttribute("user");
         //请求的IP
         //String ip = request.getRemoteAddr();
-		User user=UserUtils.getUser();
+		User user=CoreUtils.getUser();
         String ip = "127.0.0.1";
         try {
             String targetName = joinPoint.getTarget().getClass().getName();
@@ -144,7 +150,7 @@ public class SystemLogAspect {
         //获取请求ip
         String ip = request.getRemoteAddr(); */
         //获取用户请求方法的参数并序列化为JSON格式字符串
-		User user=UserUtils.getUser();
+		User user=CoreUtils.getUser();
         String ip = "127.0.0.1";
         String params = "";
          if (joinPoint.getArgs() !=  null && joinPoint.getArgs().length > 0) {

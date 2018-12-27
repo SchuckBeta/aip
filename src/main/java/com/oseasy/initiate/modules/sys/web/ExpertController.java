@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.collect.Lists;
-import com.oseasy.initiate.common.config.SysIds;
 import com.oseasy.initiate.modules.sys.service.SystemService;
 import com.oseasy.initiate.modules.sys.utils.UserUtils;
 import com.oseasy.pact.modules.act.service.ActTaskService;
@@ -30,7 +29,6 @@ import com.oseasy.pcore.common.config.CoreSval;
 import com.oseasy.pcore.common.config.Global;
 import com.oseasy.pcore.common.persistence.Page;
 import com.oseasy.pcore.common.web.BaseController;
-import com.oseasy.pcore.modules.sys.entity.Dict;
 import com.oseasy.pcore.modules.sys.entity.Office;
 import com.oseasy.pcore.modules.sys.entity.Role;
 import com.oseasy.pcore.modules.sys.entity.User;
@@ -38,7 +36,6 @@ import com.oseasy.pcore.modules.sys.service.CoreService;
 import com.oseasy.pcore.modules.sys.service.OfficeService;
 import com.oseasy.pcore.modules.sys.service.UserService;
 import com.oseasy.pcore.modules.sys.utils.CoreUtils;
-import com.oseasy.pcore.modules.sys.utils.DictUtils;
 import com.oseasy.putil.common.utils.StringUtil;
 
 /**
@@ -104,10 +101,10 @@ public class ExpertController extends BaseController {
             return "error/404";
         }
         if (user.getCompany() == null || user.getCompany().getId() == null) {
-            user.setCompany(UserUtils.getUser().getCompany());
+            user.setCompany(CoreUtils.getUser().getCompany());
         }
         model.addAttribute("user", user);
-        model.addAttribute("cuser", UserUtils.getUser());
+        model.addAttribute("cuser", CoreUtils.getUser());
         List<Role> list = new ArrayList<Role>();
 //        list.add(systemService.getRole(SysIds.SYS_COLLEGE_EXPERT.getId()));
 //        list.add(systemService.getRole(SysIds.SYS_SCHOOL_EXPERT.getId()));
@@ -127,7 +124,7 @@ public class ExpertController extends BaseController {
             user.setDomainIdList(null);
             user.setDomain(null);
         }
-        String oldLoginName = UserUtils.getUser().getLoginName();
+        String oldLoginName = CoreUtils.getUser().getLoginName();
         if (Global.isDemoMode()) {
             addMessage(redirectAttributes, "演示模式，不允许操作！");
             return CoreSval.REDIRECT + adminPath + "/sys/expert/list?repage";
@@ -164,11 +161,11 @@ public class ExpertController extends BaseController {
         // logger.info("============user.domain:"+user.getDomain());
         systemService.saveUser(user);
         // 清除当前用户缓存
-        if (user.getLoginName().equals(UserUtils.getUser().getLoginName())) {
+        if (user.getLoginName().equals(CoreUtils.getUser().getLoginName())) {
             UserUtils.clearCache();
             // CoreUtils.getCacheMap().clear();
         }
-        if (user.getId().equals(UserUtils.getUser().getId()) && !user.getLoginName().equals(oldLoginName)) {
+        if (user.getId().equals(CoreUtils.getUser().getId()) && !user.getLoginName().equals(oldLoginName)) {
             UserUtils.getSubject().logout();
         }
         // addMessage(redirectAttributes, "保存用户'" + user.getLoginName() +
@@ -180,7 +177,7 @@ public class ExpertController extends BaseController {
     @RequiresPermissions("sys:user:edit")
     @RequestMapping(value = "delete")
     public String delete(User user, RedirectAttributes redirectAttributes) {
-        if (UserUtils.getUser().getId().equals(user.getId())) {
+        if (CoreUtils.getUser().getId().equals(user.getId())) {
             addMessage(redirectAttributes, "删除用户失败, 不允许删除当前用户");
         } else if (User.getAdmin(user.getId())) {
             addMessage(redirectAttributes, "删除用户失败, 不允许删除超级管理员用户");
@@ -195,7 +192,7 @@ public class ExpertController extends BaseController {
     @ResponseBody
     public ApiResult delExpert(@RequestBody User user) {
         try {
-            Boolean delAble = UserUtils.getUser().getId().equals(user.getId());
+            Boolean delAble = CoreUtils.getUser().getId().equals(user.getId());
             Boolean isAdmin = User.getAdmin(user.getId());
             if (isAdmin) {
                 return ApiResult.failed(ApiConst.STATUS_FAIL, ApiConst.getErrMsg(ApiConst.STATUS_FAIL) + ":删除用户失败, 不允许删除超级管理员用户");

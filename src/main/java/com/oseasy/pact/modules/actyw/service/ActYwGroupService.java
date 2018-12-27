@@ -9,15 +9,15 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.collect.Lists;
 import com.oseasy.initiate.modules.sys.tool.SysNoType;
 import com.oseasy.initiate.modules.sys.tool.SysNodeTool;
-import com.oseasy.initiate.modules.sys.utils.UserUtils;
 import com.oseasy.pact.modules.actyw.dao.ActYwGroupDao;
 import com.oseasy.pact.modules.actyw.entity.ActYw;
 import com.oseasy.pact.modules.actyw.entity.ActYwGroup;
 import com.oseasy.pact.modules.actyw.tool.process.vo.FlowType;
-import com.oseasy.pcore.common.config.Global;
 import com.oseasy.pcore.common.config.ApiTstatus;
+import com.oseasy.pcore.common.config.Global;
 import com.oseasy.pcore.common.persistence.Page;
 import com.oseasy.pcore.common.service.CrudService;
+import com.oseasy.pcore.modules.sys.utils.CoreUtils;
 import com.oseasy.putil.common.utils.StringUtil;
 
 /**
@@ -177,7 +177,7 @@ public class ActYwGroupService extends CrudService<ActYwGroupDao, ActYwGroup> {
         actYwGroup.setSort(1);
       }
       if (actYwGroup.getAuthor() == null) {
-        actYwGroup.setAuthor(UserUtils.getUser().getId() + StringUtil.LINE_M + UserUtils.getUser().getName());
+        actYwGroup.setAuthor(CoreUtils.getUser().getId() + StringUtil.LINE_M + CoreUtils.getUser().getName());
       }
       if (StringUtil.isEmpty(actYwGroup.getStatus())) {
         actYwGroup.setStatus(ActYwGroup.GROUP_DEPLOY_0);

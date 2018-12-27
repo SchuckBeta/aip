@@ -20,12 +20,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.oseasy.initiate.modules.sys.utils.UserUtils;
 import com.oseasy.pcore.common.config.CoreSval;
 import com.oseasy.pcore.common.config.Global;
 import com.oseasy.pcore.common.web.BaseController;
 import com.oseasy.pcore.modules.sys.entity.Area;
 import com.oseasy.pcore.modules.sys.service.AreaService;
+import com.oseasy.pcore.modules.sys.utils.CoreUtils;
 import com.oseasy.putil.common.utils.StringUtil;
 
 /**
@@ -60,7 +60,7 @@ public class AreaController extends BaseController {
 	@RequestMapping(value = "form")
 	public String form(Area area, Model model) {
 		if (area.getParent()==null||area.getParent().getId()==null) {
-			area.setParent(UserUtils.getUser().getOffice().getArea());
+			area.setParent(CoreUtils.getUser().getOffice().getArea());
 		}
 		area.setParent(areaService.get(area.getParent().getId()));
 //		// 自动获取排序号

@@ -29,7 +29,6 @@ import com.google.common.collect.Maps;
 import com.oseasy.initiate.common.config.SysIdx;
 import com.oseasy.initiate.modules.ftp.service.FtpService;
 import com.oseasy.initiate.modules.sys.service.SystemService;
-import com.oseasy.initiate.modules.sys.utils.UserUtils;
 import com.oseasy.pact.modules.act.service.ActTaskService;
 import com.oseasy.pcore.common.config.ApiConst;
 import com.oseasy.pcore.common.config.ApiResult;
@@ -42,6 +41,7 @@ import com.oseasy.pcore.common.web.BaseController;
 import com.oseasy.pcore.modules.sys.entity.Menu;
 import com.oseasy.pcore.modules.sys.entity.Role;
 import com.oseasy.pcore.modules.sys.service.CoreService;
+import com.oseasy.pcore.modules.sys.utils.CoreUtils;
 import com.oseasy.putil.common.utils.StringUtil;
 import com.oseasy.putil.common.utils.exception.ExceptionUtil;
 
@@ -165,7 +165,7 @@ public class MenuController extends BaseController {
 //          }
             menu.setParentIds(menu.getParent().getParentIds() + menu.getParent().getId() + ",");
 //          menu.setParentIds(oldMenu.getParentIds());
-            if (!(UserUtils.getUser().getAdmin() || UserUtils.getUser().getSysAdmin())) {
+            if (!(CoreUtils.getUser().getAdmin() || CoreUtils.getUser().getSysAdmin())) {
                 return ApiResult.failed(ApiConst.CODE_INNER_ERROR,ApiConst.getErrMsg(ApiConst.CODE_INNER_ERROR)+":越权操作，只有超级管理员才能添加或修改数据！");
             }
             if (Global.isDemoMode()) {
@@ -237,7 +237,7 @@ public class MenuController extends BaseController {
     @RequiresPermissions("sys:menu:edit")
     @RequestMapping(value = "save")
     public String save(Menu menu, Model model, RedirectAttributes redirectAttributes, HttpServletRequest request) {
-        if (!(UserUtils.getUser().getAdmin() || UserUtils.getUser().getSysAdmin())) {
+        if (!(CoreUtils.getUser().getAdmin() || CoreUtils.getUser().getSysAdmin())) {
             addMessage(redirectAttributes, "越权操作，只有超级管理员才能添加或修改数据！");
             return CoreSval.REDIRECT + adminPath + "/sys/role/?repage";
         }
@@ -438,7 +438,7 @@ public class MenuController extends BaseController {
         if(StringUtil.isEmpty(id)){
             return new ApiTstatus<Long>(false, "菜单不能为空！");
         }
-        List<Role> roles = UserUtils.getUser().getRoleList();
+        List<Role> roles = CoreUtils.getUser().getRoleList();
         if(StringUtil.checkEmpty(roles)){
             return new ApiTstatus<Long>(false, "菜单不能为空！");
         }
@@ -588,7 +588,7 @@ public class MenuController extends BaseController {
 ////			}
 //			menu.setParentIds(menu.getParent().getParentIds() + menu.getParent().getId() + ",");
 ////			menu.setParentIds(oldMenu.getParentIds());
-//			if (!(UserUtils.getUser().getAdmin() || UserUtils.getUser().getSysAdmin())) {
+//			if (!(CoreUtils.getUser().getAdmin() || CoreUtils.getUser().getSysAdmin())) {
 //				return ApiResult.failed(ApiConst.CODE_INNER_ERROR,ApiConst.getErrMsg(ApiConst.CODE_INNER_ERROR)+":越权操作，只有超级管理员才能添加或修改数据！");
 //			}
 //			if (Global.isDemoMode()) {
@@ -658,7 +658,7 @@ public class MenuController extends BaseController {
 //	@RequiresPermissions("sys:menu:edit")
 //	@RequestMapping(value = "save")
 //	public String save(Menu menu, Model model, RedirectAttributes redirectAttributes, HttpServletRequest request) {
-//		if (!(UserUtils.getUser().getAdmin() || UserUtils.getUser().getSysAdmin())) {
+//		if (!(CoreUtils.getUser().getAdmin() || CoreUtils.getUser().getSysAdmin())) {
 //			addMessage(redirectAttributes, "越权操作，只有超级管理员才能添加或修改数据！");
 //			return CoreSval.REDIRECT + adminPath + "/sys/role/?repage";
 //		}
@@ -859,7 +859,7 @@ public class MenuController extends BaseController {
 //        if(StringUtil.isEmpty(id)){
 //            return new ApiTstatus<Long>(false, "菜单不能为空！");
 //        }
-//		List<Role> roles = UserUtils.getUser().getRoleList();
+//		List<Role> roles = CoreUtils.getUser().getRoleList();
 //		if(StringUtil.checkEmpty(roles)){
 //			return new ApiTstatus<Long>(false, "菜单不能为空！");
 //		}

@@ -314,7 +314,7 @@ public class UserfrontController extends BaseController {
 	public Boolean checkMobileExist(String mobile) {
 		User userForSearch=new User();
 		userForSearch.setMobile(mobile);
-		User cuser=UserUtils.getUser();
+		User cuser=CoreUtils.getUser();
 		if (cuser==null||StringUtil.isEmpty(cuser.getId())) {
 			return false;
 		}
@@ -359,7 +359,7 @@ public class UserfrontController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value="checkUserInfoPerfect")
 	public boolean checkUserInfoPerfect() {
-		if (UserUtils.checkInfoPerfect(UserUtils.getUser())) {
+		if (UserUtils.checkInfoPerfect(CoreUtils.getUser())) {
 			return true;
 		}else{
 			return false;
@@ -371,10 +371,10 @@ public class UserfrontController extends BaseController {
     @RequestMapping(value = "/ajaxUpdatePhoto", method = RequestMethod.POST, produces = "application/json;charset=utf-8")
     public ApiTstatus<User> ajaxUpdatePhoto(@RequestParam(required = false) String userId, @RequestParam(required = true) String photo) {
         if(StringUtil.isEmpty(userId)){
-            userId = UserUtils.getUser().getId();
+            userId = CoreUtils.getUser().getId();
         }
         if(StringUtil.isEmpty(photo)){
-            userId = UserUtils.getUser().getId();
+            userId = CoreUtils.getUser().getId();
         }
         User user = userService.findUserById(userId);
 

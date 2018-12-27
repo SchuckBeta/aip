@@ -18,11 +18,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.oseasy.initiate.modules.oa.entity.TestAudit;
 import com.oseasy.initiate.modules.oa.service.TestAuditService;
-import com.oseasy.initiate.modules.sys.utils.UserUtils;
 import com.oseasy.pcore.common.config.CoreSval;
 import com.oseasy.pcore.common.persistence.Page;
 import com.oseasy.pcore.common.web.BaseController;
 import com.oseasy.pcore.modules.sys.entity.User;
+import com.oseasy.pcore.modules.sys.utils.CoreUtils;
 
 /**
  * 审批Controller
@@ -54,7 +54,7 @@ public class TestAuditController extends BaseController {
 	@RequiresPermissions("oa:testAudit:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(TestAudit testAudit, HttpServletRequest request, HttpServletResponse response, Model model) {
-		User user = UserUtils.getUser();
+		User user = CoreUtils.getUser();
 		if (!user.getAdmin()) {
 			testAudit.setCreateBy(user);
 		}

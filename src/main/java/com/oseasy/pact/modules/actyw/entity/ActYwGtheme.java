@@ -6,11 +6,11 @@ import java.util.List;
 import org.hibernate.validator.constraints.Length;
 
 import com.google.common.collect.Lists;
-import com.oseasy.initiate.modules.sys.utils.UserUtils;
 import com.oseasy.pact.modules.actyw.tool.process.vo.FormTheme;
 import com.oseasy.pcore.common.persistence.DataExtEntity;
 import com.oseasy.pcore.common.utils.IdGen;
 import com.oseasy.pcore.modules.sys.entity.User;
+import com.oseasy.pcore.modules.sys.utils.CoreUtils;
 import com.oseasy.putil.common.utils.DateUtil;
 
 /**
@@ -125,8 +125,8 @@ public class ActYwGtheme extends DataExtEntity<ActYwGtheme> {
 	                .sname(formTheme.getSname())
 	                .serviceName(formTheme.getServiceName())
 	                .enable(formTheme.getEnable())
-                    .createBy(UserUtils.getUser())
-                    .updateBy(UserUtils.getUser())
+                    .createBy(CoreUtils.getUser())
+                    .updateBy(CoreUtils.getUser())
                     .createDate(DateUtil.newDate())
                     .updateDate(DateUtil.newDate())
                     .sort(sort += 10)
@@ -189,7 +189,7 @@ public class ActYwGtheme extends DataExtEntity<ActYwGtheme> {
             return this;
         }
         public Builder createBy(User createBy) {
-            entity.createBy = UserUtils.getUser();
+            entity.createBy = CoreUtils.getUser();
             return this;
         }
         public Builder createDate(Date createDate) {

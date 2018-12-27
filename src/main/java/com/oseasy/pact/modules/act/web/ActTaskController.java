@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.oseasy.initiate.modules.sys.utils.UserUtils;
 import com.oseasy.pact.modules.act.entity.Act;
 import com.oseasy.pact.modules.act.service.ActTaskService;
 import com.oseasy.pact.modules.act.utils.ActUtils;
@@ -207,7 +206,7 @@ public class ActTaskController extends BaseController {
 	@RequestMapping(value = "claim")
 	@ResponseBody
 	public String claim(Act act) {
-		String userId = UserUtils.getUser().getId();//ObjectUtils.toString(UserUtils.getUser().getId());
+		String userId = CoreUtils.getUser().getId();//ObjectUtils.toString(CoreUtils.getUser().getId());
 		actTaskService.claim(act.getTaskId(), userId);
 		return "true";//adminPath + "/act/task";
 	}

@@ -42,6 +42,7 @@ import com.oseasy.pcore.modules.sys.entity.Office;
 import com.oseasy.pcore.modules.sys.entity.User;
 import com.oseasy.pcore.modules.sys.service.CoreService;
 import com.oseasy.pcore.modules.sys.service.UserService;
+import com.oseasy.pcore.modules.sys.utils.CoreUtils;
 import com.oseasy.putil.common.utils.DateUtil;
 import com.oseasy.putil.common.utils.StringUtil;
 
@@ -233,7 +234,7 @@ public class OaNotifyService extends CrudService<OaNotifyDao, OaNotify> {
 
 	public OaNotify getRecordListByUser(OaNotify oaNotify) {
 	    OaNotifyRecord onRecord = new OaNotifyRecord(oaNotify);
-	    onRecord.setUser(UserUtils.getUser());
+	    onRecord.setUser(CoreUtils.getUser());
 	    oaNotify.setOaNotifyRecordList(oaNotifyRecordDao.findList(onRecord));
 	    return oaNotify;
 	}
@@ -612,7 +613,7 @@ public class OaNotifyService extends CrudService<OaNotifyDao, OaNotify> {
 	}
 	@Transactional(readOnly = false)
 	public List<OaNotifySent> unRead(OaNotify oaNotify) {
-		User acceptUser = UserUtils.getUser();
+		User acceptUser = CoreUtils.getUser();
 		if(acceptUser == null){
 			return Lists.newArrayList();
 		}
@@ -662,7 +663,7 @@ public class OaNotifyService extends CrudService<OaNotifyDao, OaNotify> {
 
 	@Transactional(readOnly = false)
 	public void deleteRec(OaNotify oaNotify) {
-		User currUser = UserUtils.getUser();
+		User currUser = CoreUtils.getUser();
 		OaNotifyRecord oaNotifyRecord=new OaNotifyRecord();
 		oaNotifyRecord.setOaNotify(oaNotify);
 		oaNotifyRecord.setUser(currUser);

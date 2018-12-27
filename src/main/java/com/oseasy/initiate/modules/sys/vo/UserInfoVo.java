@@ -6,11 +6,6 @@ package com.oseasy.initiate.modules.sys.vo;
 
 import java.io.Serializable;
 
-import com.oseasy.pcore.modules.sys.entity.Office;
-import com.oseasy.initiate.modules.sys.utils.UserUtils;
-import com.oseasy.pcore.modules.sys.entity.User;
-import com.oseasy.putil.common.utils.StringUtil;
-
 /**
  * 用户信息.
  * @author chenhao
@@ -58,7 +53,7 @@ public class UserInfoVo implements Serializable{
 //        if(userInfoVo.getBase() != null){
 //            UserBase userBase = userInfoVo.getBase();
 //            if(sexpansion.getUser() == null){
-//                sexpansion.setUser(UserUtils.getUser());
+//                sexpansion.setUser(CoreUtils.getUser());
 //            }
 //            User user = sexpansion.getUser();
 //            user.setId(userBase.getId());

@@ -6,6 +6,8 @@ package com.oseasy.pcms.common.utils;
 
 import java.util.List;
 
+import com.oseasy.pcms.modules.cmss.entity.CmssCategory;
+
 /**
  * .
  * @author chenhao
@@ -177,5 +179,24 @@ public class CmsUtil {
     public List getLinkList(String siteId, String categoryId, String number, String param){
         //TODO CHENHAO
         return null;
+    }
+
+    /**
+     * .
+     * @param cmssCategory
+     * @return
+     */
+    public static String getUrlDynamic(CmssCategory cmssCategory) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /**
+     * .
+     * @param string
+     */
+    public static void removeCache(String string) {
+        // TODO Auto-generated method stub
+
     }
 }

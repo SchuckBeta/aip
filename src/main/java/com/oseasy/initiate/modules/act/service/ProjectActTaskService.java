@@ -15,12 +15,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
-import com.oseasy.initiate.modules.sys.utils.UserUtils;
 import com.oseasy.pact.modules.act.entity.Act;
 import com.oseasy.pact.modules.act.service.ActTaskService;
 import com.oseasy.pact.modules.act.utils.ProcessDefCache;
 import com.oseasy.pcore.common.persistence.Page;
 import com.oseasy.pcore.common.service.BaseService;
+import com.oseasy.pcore.modules.sys.utils.CoreUtils;
 import com.oseasy.putil.common.utils.StringUtil;
 
 /**
@@ -45,7 +45,7 @@ public class ProjectActTaskService extends BaseService {
 	 * @return
 	 */
 	public Page<Act> allListForPage(Page<Act> page,Act act) {
-		String userId = UserUtils.getUser().getId();
+		String userId = CoreUtils.getUser().getId();
 		// =============== 待审核任务  ===============
 		TaskQuery todoTaskQuery = //taskService.createTaskQuery().taskAssignee(userId)
 		actTaskService.getTaskQueryByAssignee()
@@ -244,7 +244,7 @@ public class ProjectActTaskService extends BaseService {
 	}
 	//秘书或者管理员中期检查的数据
 //	public Page<Act> middleRatingList(Page<Act> page,Act act,List<Act> middleScoreList, List<ProjectDeclare> projectList) {
-//		String userId = UserUtils.getUser().getId();
+//		String userId = CoreUtils.getUser().getId();
 //		// =============== 待审核任务  ===============
 //		TaskQuery todoTaskQuery = //taskService.createTaskQuery().taskAssignee(userId)
 //				actTaskService.getTaskQueryByAssignee()
@@ -421,7 +421,7 @@ public class ProjectActTaskService extends BaseService {
 	 * @return
 	 */
 //	public Page<Act> allListForPageAddProjectList(Page<Act> page,Act act,List<ProjectDeclare> projectList) {
-//		String userId = UserUtils.getUser().getId();
+//		String userId = CoreUtils.getUser().getId();
 //		// =============== 待审核任务  ===============
 //		TaskQuery todoTaskQuery = //taskService.createTaskQuery().taskAssignee(userId)
 //				actTaskService.getTaskQueryByAssignee()
@@ -571,7 +571,7 @@ public class ProjectActTaskService extends BaseService {
 
     //
     public List<Act> finishedList(Act act) {
-		String userId = UserUtils.getUser().getId();
+		String userId = CoreUtils.getUser().getId();
 		// =============== 已审核任务  ===============
 		HistoricTaskInstanceQuery histTaskQuery = //historyService.createHistoricTaskInstanceQuery().taskAssignee(userId)
 				actTaskService.getHistoricTaskInstanceQueryByAssignee()
@@ -623,7 +623,7 @@ public class ProjectActTaskService extends BaseService {
 	}
 
 //	public Page<Act> finishedListForPage(Page<Act> page,Act act,List<ProjectDeclare> projectList) {
-//		String userId = UserUtils.getUser().getId();
+//		String userId = CoreUtils.getUser().getId();
 //		// =============== 已审核任务  ===============
 //		HistoricTaskInstanceQuery histTaskQuery = //historyService.createHistoricTaskInstanceQuery().taskAssignee(userId)
 //		actTaskService.getHistoricTaskInstanceQueryByAssignee()

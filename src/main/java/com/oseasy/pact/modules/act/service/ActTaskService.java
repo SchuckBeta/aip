@@ -86,7 +86,6 @@ import com.oseasy.initiate.modules.promodel.service.ProModelService;
 import com.oseasy.initiate.modules.promodel.utils.GT_Constant;
 import com.oseasy.initiate.modules.sys.service.SystemService;
 import com.oseasy.initiate.modules.sys.utils.UserUtils;
-import com.oseasy.pact.common.config.ActKey;
 import com.oseasy.pact.modules.act.dao.ActDao;
 import com.oseasy.pact.modules.act.entity.Act;
 import com.oseasy.pact.modules.act.service.cmd.CreateAndTakeTransitionCmd;
@@ -118,6 +117,7 @@ import com.oseasy.pcore.common.service.BaseService;
 import com.oseasy.pcore.modules.sys.entity.Role;
 import com.oseasy.pcore.modules.sys.entity.User;
 import com.oseasy.pcore.modules.sys.service.UserService;
+import com.oseasy.pcore.modules.sys.utils.CoreUtils;
 import com.oseasy.putil.common.utils.StringUtil;
 
 import net.sf.json.JSONObject;
@@ -238,7 +238,7 @@ public class ActTaskService extends BaseService {
 	 * @return
 	 */
 	public Page<Act> todoListForPage(Page<Act> page, Act act) {
-		String userId = UserUtils.getUser().getId();
+		String userId = CoreUtils.getUser().getId();
 		// =============== 已经签收的任务  ===============
 		TaskQuery todoTaskQuery = //taskService.createTaskQuery().taskAssignee(userId)
 				   getTaskQueryByAssignee()
@@ -339,7 +339,7 @@ public class ActTaskService extends BaseService {
 	 * @return
 	 */
 	public Page<Act> historicList(Page<Act> page, Act act) {
-		//String userId = UserUtils.getUser().getId();//ObjectUtils.toString(UserUtils.getUser().getId());
+		//String userId = CoreUtils.getUser().getId();//ObjectUtils.toString(CoreUtils.getUser().getId());
 		HistoricTaskInstanceQuery histTaskQuery = //historyService.createHistoricTaskInstanceQuery().taskAssignee(userId)
 			getHistoricTaskInstanceQueryByAssignee()
 				.finished().includeProcessVariables().orderByHistoricTaskInstanceEndTime().desc();
@@ -770,7 +770,7 @@ public class ActTaskService extends BaseService {
 	 * @return
 	 */
 	public List<String> modelMdtodoList(Act act, String keyName) {
-		String userId = UserUtils.getUser().getId();//ObjectUtils.toString(UserUtils.getUser().getId());
+		String userId = CoreUtils.getUser().getId();//ObjectUtils.toString(CoreUtils.getUser().getId());
 		List<String> result = new ArrayList<String>();
 		// =============== 已经签收的任务  ===============
 		TaskQuery todoTaskQuery = //taskService.createTaskQuery().taskAssignee(userId)
@@ -812,7 +812,7 @@ public class ActTaskService extends BaseService {
 	 * @return
 	 */
 	public Page<Act> modeltodoGnodeIdList(Page<Act> page, Act act, List<String> gnodeIds) {
-		String userId = UserUtils.getUser().getId();//ObjectUtils.toString(UserUtils.getUser().getId());
+		String userId = CoreUtils.getUser().getId();//ObjectUtils.toString(CoreUtils.getUser().getId());
 		List<Act> result = new ArrayList<Act>();
 		// =============== 已经签收的任务  ===============
 		long count = 0;
@@ -1010,13 +1010,13 @@ public class ActTaskService extends BaseService {
 	 */
 	public List<String> recordIds(Act act, List<String> gnodeIds, String actYwId) {
 		// Long st=System.currentTimeMillis();//记录结束时间
-		//String userId = UserUtils.getUser().getId();//ObjectUtils.toString(UserUtils.getUser().getId());
+		//String userId = CoreUtils.getUser().getId();//ObjectUtils.toString(CoreUtils.getUser().getId());
 		List<String> recordIds = new ArrayList<>();
 		// =============== 已经签收的任务  ===============
 		for (String gnodeId : gnodeIds) {
 			String keyName = ActYwTool.FLOW_ID_PREFIX + gnodeId;
 			TaskQuery todoTaskQuery =null;
-			if(!UserUtils.isAdmin(UserUtils.getUser())){
+			if(!UserUtils.isAdmin(CoreUtils.getUser())){
 				todoTaskQuery=  getTaskQueryByAssignee().includeProcessVariables().active().orderByTaskCreateTime().desc();
 			}else{
 				todoTaskQuery=taskService.createTaskQuery().includeProcessVariables().active().orderByTaskCreateTime().desc();
@@ -1040,7 +1040,7 @@ public class ActTaskService extends BaseService {
 			//taskService.createTaskQuery().taskCandidateUser(userId)
 //					getTaskQueryByCandidateUser()
 //					.includeProcessVariables().active().orderByTaskCreateTime().desc();
-			if(!UserUtils.isAdmin(UserUtils.getUser())){
+			if(!UserUtils.isAdmin(CoreUtils.getUser())){
 				toClaimQuery=  getTaskQueryByCandidateUser().includeProcessVariables().active().orderByTaskCreateTime().desc();
 			}else{
 				toClaimQuery=taskService.createTaskQuery().includeProcessVariables().active().orderByTaskCreateTime().desc();
@@ -1063,7 +1063,7 @@ public class ActTaskService extends BaseService {
 		//historyService.createHistoricTaskInstanceQuery().taskAssignee(userId)
 //		getHistoricTaskInstanceQueryByAssignee()
 //				.finished().includeProcessVariables().orderByHistoricTaskInstanceEndTime().desc();
-		if(!UserUtils.isAdmin(UserUtils.getUser())){
+		if(!UserUtils.isAdmin(CoreUtils.getUser())){
 			histTaskQuery=  getHistoricTaskInstanceQueryByAssignee()
 							.finished().includeProcessVariables().orderByHistoricTaskInstanceEndTime().desc();
 		}else{
@@ -1119,7 +1119,7 @@ public class ActTaskService extends BaseService {
 	 * @return
 	 */
 	public List<String> queryRecordIds(Act act, String actYwId) {
-		User user = UserUtils.getUser();
+		User user = CoreUtils.getUser();
 		List<String> recordIds = new ArrayList<>();
 		// =============== 已经签收的任务  ===============
 		TaskQuery todoTaskQuery = taskService.createTaskQuery()
@@ -1151,7 +1151,7 @@ public class ActTaskService extends BaseService {
 			histTaskQuery.processVariableValueEquals(ACT_YW_ID, actYwId);
 		}
 
-		if (!UserUtils.isAdminOrSuperAdmin(UserUtils.getUser())) {
+		if (!UserUtils.isAdminOrSuperAdmin(CoreUtils.getUser())) {
 			todoTaskQuery.taskAssignee(user.getId());
 			toClaimQuery.taskCandidateUser(user.getId());
 			histTaskQuery.taskAssignee(user.getId());
@@ -1181,7 +1181,7 @@ public class ActTaskService extends BaseService {
 	 * @return
 	 */
 	public int todoCount(String actywId, String gnodeId){
-		String userName = UserUtils.getUser().getId();
+		String userName = CoreUtils.getUser().getId();
 		ActYw actYw = actYwService.get(actywId);
 		if (actYw != null) {
 			TaskQuery taskQuery = //taskService.createTaskQuery().taskCandidateOrAssigned(userName)
@@ -1214,7 +1214,7 @@ public class ActTaskService extends BaseService {
 	 * @return
 	 */
 	public String flashTodoCount(String actywId){
-		String userName = UserUtils.getUser().getId();
+		String userName = CoreUtils.getUser().getId();
 		ActYw actYw = actYwService.get(actywId);
 		Map<String, Object> result = new HashMap<>();
 		JSONObject response = new JSONObject();
@@ -1285,8 +1285,8 @@ public class ActTaskService extends BaseService {
 	 * @return
 	 */
 	public Page<Act> modeltodoList(Page<Act> page, Act act, String keyName) {
-		String userId = UserUtils.getUser().getId();//ObjectUtils.toString(UserUtils.getUser().getId());
-		String loginName = UserUtils.getUser().getLoginName();
+		String userId = CoreUtils.getUser().getId();//ObjectUtils.toString(CoreUtils.getUser().getId());
+		String loginName = CoreUtils.getUser().getLoginName();
 		List<Act> result = new ArrayList<Act>();
 		// =============== 已经签收的任务  ===============
 		TaskQuery todoTaskQuery = //taskService.createTaskQuery()
@@ -1339,8 +1339,8 @@ public class ActTaskService extends BaseService {
 
 
 	public Page<Act> gtTodoList(Page<Act> page, Act act, String gnodeId) {
-		String userName = UserUtils.getUser().getLoginName();
-		String userId = UserUtils.getUser().getId();
+		String userName = CoreUtils.getUser().getLoginName();
+		String userId = CoreUtils.getUser().getId();
 		List<Act> result = new ArrayList<Act>();
 		TaskQuery todoTaskQuery = getTaskQueryByAssignee()
 				.active().includeProcessVariables().orderByTaskCreateTime().desc();
@@ -1433,7 +1433,7 @@ public class ActTaskService extends BaseService {
 		//查询当前节点下面任务节点id
 		List<ActYwGnode> actYwGnodes = actYwGnodeService.findListBygGparent(actYwGnode);
 		//查询当前角色 角色id
-		List<String> roleIds = UserUtils.getUser().getRoleIdList();
+		List<String> roleIds = CoreUtils.getUser().getRoleIdList();
 
 		for (ActYwGnode curGnode : actYwGnodes) {
 			for (int j = 0; j < roleIds.size(); j++) {
@@ -1456,8 +1456,8 @@ public class ActTaskService extends BaseService {
 	 * @return
 	 */
 	public List<String> getAllTodoId(String actYwId, String gnodeId) {
-		String userId = UserUtils.getUser().getId();//ObjectUtils.toString(UserUtils.getUser().getId());
-		String userName = UserUtils.getUser().getLoginName();
+		String userId = CoreUtils.getUser().getId();//ObjectUtils.toString(CoreUtils.getUser().getId());
+		String userName = CoreUtils.getUser().getLoginName();
 		List<String> result = new ArrayList<String>();
 		gnodeId = getGnodeName(gnodeId, actYwId);
 
@@ -1536,8 +1536,8 @@ public class ActTaskService extends BaseService {
 	 * @return
 	 */
 	public List<Act> todoList(Act act) {
-		String userId = UserUtils.getUser().getId();//ObjectUtils.toString(UserUtils.getUser().getId());
-		String userName = UserUtils.getUser().getLoginName();
+		String userId = CoreUtils.getUser().getId();//ObjectUtils.toString(CoreUtils.getUser().getId());
+		String userName = CoreUtils.getUser().getLoginName();
 		List<Act> result = new ArrayList<Act>();
 		// =============== 已经签收的任务  ===============
 		TaskQuery todoTaskQuery = //taskService.createTaskQuery().or().taskAssignee(userId).taskAssignee(userName).endOr()
@@ -1898,7 +1898,7 @@ public class ActTaskService extends BaseService {
 	 */
 	@Transactional(readOnly = false)
 	public String startProcess(String procDefKey, String businessTable, String businessId, String title, Map<String, Object> vars) {
-		String userId = UserUtils.getUser().getId();//ObjectUtils.toString(UserUtils.getUser().getId())
+		String userId = CoreUtils.getUser().getId();//ObjectUtils.toString(CoreUtils.getUser().getId())
 		// 用来设置启动流程的人员ID，引擎会自动把用户ID保存到activiti:initiator中
 		//后续改成保存用户id
 		identityService.setAuthenticatedUserId(userId);
@@ -2834,7 +2834,7 @@ public class ActTaskService extends BaseService {
 	 * @return TaskQuery
 	 */
 	public TaskQuery getTaskQueryByAssignee() {
-        User user = UserUtils.getUser();
+        User user = CoreUtils.getUser();
         //根据ID查询.
 		TaskQuery taskQuery  = taskService.createTaskQuery().
 				or().taskAssigneeLikeIgnoreCase(user.getId()).taskAssignee(user.getLoginName()).endOr();
@@ -2852,7 +2852,7 @@ public class ActTaskService extends BaseService {
 	 * @return TaskQuery
 	 */
 	public TaskQuery getTaskQueryByCandidateUser() {
-	    User user = UserUtils.getUser();
+	    User user = CoreUtils.getUser();
 		List<String> list=new ArrayList<String>();
 		list.add(user.getLoginName());
 	    //根据ID查询.
@@ -2866,7 +2866,7 @@ public class ActTaskService extends BaseService {
 	 * @return HistoricTaskInstanceQuery
 	 */
 	public HistoricTaskInstanceQuery getHistoricTaskInstanceQueryByAssignee() {
-	    User user = UserUtils.getUser();
+	    User user = CoreUtils.getUser();
 	    //根据ID查询.
 		HistoricTaskInstanceQuery histTaskQuery = historyService.createHistoricTaskInstanceQuery().
 				or().taskAssigneeLikeIgnoreCase(user.getId()).taskAssignee(user.getLoginName()).endOr();
@@ -2879,7 +2879,7 @@ public class ActTaskService extends BaseService {
 	 * @return TaskQuery
 	 */
 	public TaskQuery getTaskQueryByAssigneeOrCandidateUser() {
-		User user = UserUtils.getUser();
+		User user = CoreUtils.getUser();
 		//根据ID查询.
 		TaskQuery taskQuery  = taskService.createTaskQuery().taskCandidateOrAssigned(user.getId());
 		return taskQuery;
@@ -3109,7 +3109,7 @@ public class ActTaskService extends BaseService {
 			vars.put(ActYwTool.FLOW_ROLE_ID_PREFIX + nodeRoleId + "s", roles);
 		}
 		String key = ActYw.getPkey(actYw.getGroup(), actYw.getProProject());
-		String userId = UserUtils.getUser().getId();
+		String userId = CoreUtils.getUser().getId();
 		identityService.setAuthenticatedUserId(userId);
 //		TODO CHENHAO
 //		ProcessInstance procIns = runtimeService.startProcessInstanceByKey(key, "pro_model:" + proModel.getId(), vars);

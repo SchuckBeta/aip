@@ -30,6 +30,7 @@ import com.oseasy.pcore.common.web.BaseController;
 import com.oseasy.pcore.modules.oa.entity.OaNotify;
 import com.oseasy.pcore.modules.oa.service.OaNotifyService;
 import com.oseasy.pcore.modules.sys.entity.User;
+import com.oseasy.pcore.modules.sys.utils.CoreUtils;
 import com.oseasy.putil.common.utils.StringUtil;
 
 import net.sf.json.JSONObject;
@@ -70,7 +71,7 @@ public class FrontOaNotifyController extends BaseController {
 
     @RequestMapping(value = {"viewList"})
     public String viewList(OaNotify oaNotify, HttpServletRequest request, HttpServletResponse response, Model model) {
-//		User currUser = UserUtils.getUser();
+//		User currUser = CoreUtils.getUser();
 //		//logger.info("curre========="+currUser.getId());
 //		if (currUser!=null&&currUser.getId()!=null&&!"1".equals(currUser.getId())) {
 //			oaNotify.setUserId(String.valueOf(currUser.getId()));
@@ -84,7 +85,7 @@ public class FrontOaNotifyController extends BaseController {
     @RequestMapping(value = {"getUnreadCount"})
     @ResponseBody
     public JSONObject getUnreadCount() {
-        String uid = UserUtils.getUser().getId();
+        String uid = CoreUtils.getUser().getId();
         JSONObject js = new JSONObject();
         js.put("ret", "1");
         if (StringUtil.isEmpty(uid)) {
@@ -93,7 +94,7 @@ public class FrontOaNotifyController extends BaseController {
             return js;
         }
 //		Integer c=oaNotifyService.getUnreadCount(uid);
-        Integer c = oaNotifyService.getUnreadCountByUser(UserUtils.getUser());
+        Integer c = oaNotifyService.getUnreadCountByUser(CoreUtils.getUser());
         if (c == null) {
             c = 0;
         }
@@ -107,7 +108,7 @@ public class FrontOaNotifyController extends BaseController {
      */
     @RequestMapping(value = "indexMyNoticeList")
     public String indexMyNoticeList(OaNotify oaNotify, HttpServletRequest request, HttpServletResponse response, Model model) {
-//        User currUser = UserUtils.getUser();
+//        User currUser = CoreUtils.getUser();
 //        if((currUser == null) || StringUtil.isEmpty(currUser.getId())){
 //            return CoreSval.REDIRECT+ FrontController.LOGIN;
 //        }
@@ -128,7 +129,7 @@ public class FrontOaNotifyController extends BaseController {
     @ResponseBody
     public ApiResult getNotifyList(OaNotify oaNotify, HttpServletRequest request, HttpServletResponse response, Model model) {
         try {
-            User currUser = UserUtils.getUser();
+            User currUser = CoreUtils.getUser();
 
             //logger.info("curre========="+currUser.getId());
             if (currUser != null && currUser.getId() != null) {
@@ -157,7 +158,7 @@ public class FrontOaNotifyController extends BaseController {
      */
     @RequestMapping(value = "indexMySendNoticeList")
     public String indexMySendNoticeList(OaNotify oaNotify, HttpServletRequest request, HttpServletResponse response, Model model) {
-        User currUser = UserUtils.getUser();
+        User currUser = CoreUtils.getUser();
         //logger.info("curre========="+currUser.getId());
         if (currUser != null && currUser.getId() != null) {
             oaNotify.setUserId(String.valueOf(currUser.getId()));
@@ -178,7 +179,7 @@ public class FrontOaNotifyController extends BaseController {
     @ResponseBody
     public ApiResult getNotifySendList(OaNotify oaNotify, HttpServletRequest request, HttpServletResponse response, Model model){
         try {
-            User currUser = UserUtils.getUser();
+            User currUser = CoreUtils.getUser();
             //logger.info("curre========="+currUser.getId());
             if (currUser != null && currUser.getId() != null) {
                 oaNotify.setUserId(String.valueOf(currUser.getId()));
@@ -204,7 +205,7 @@ public class FrontOaNotifyController extends BaseController {
     @ResponseBody
     public String getReadFlag(String oaNotifyId) {
         String flag = "0";
-        User u = UserUtils.getUser();
+        User u = CoreUtils.getUser();
         if (u != null) {
             return oaNotifyService.getReadFlag(oaNotifyId, u);
         }

@@ -1,10 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ include file="/WEB-INF/views/include/taglib.jsp" %>
-<%@ page import="com.oseasy.initiate.modules.cms.entity.Site" %>
-<%@ page import="com.oseasy.initiate.modules.sys.utils.UserUtils" %>
+<%@ page import="com.oseasy.pcms.modules.cms.entity.CmsSite" %>
+<%@ page import="com.oseasy.pcore.modules.sys.utils.CoreUtils" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
-<% request.setAttribute("user", UserUtils.getUser()); %>
+<% request.setAttribute("user", CoreUtils.getUser()); %>
 <!--顶部header公用部分-->
 <div class="header">
     <div class="container">

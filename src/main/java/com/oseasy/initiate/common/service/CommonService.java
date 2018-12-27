@@ -21,6 +21,7 @@ import com.oseasy.pact.modules.actyw.entity.ActYwYear;
 import com.oseasy.pact.modules.actyw.service.ActYwYearService;
 import com.oseasy.pcore.common.config.Global;
 import com.oseasy.pcore.modules.sys.entity.User;
+import com.oseasy.pcore.modules.sys.utils.CoreUtils;
 import com.oseasy.pcore.modules.sys.utils.DictUtils;
 import com.oseasy.putil.common.utils.DateUtil;
 import com.oseasy.putil.common.utils.StringUtil;
@@ -1196,7 +1197,7 @@ public class CommonService {
         Date now = new Date();
         JSONObject js = new JSONObject();
         js.put("ret", 0);
-        User user = UserUtils.getUser();
+        User user = CoreUtils.getUser();
         if (StringUtil.isEmpty(user.getId())) {
             js.put("ret", 1);
             return js;

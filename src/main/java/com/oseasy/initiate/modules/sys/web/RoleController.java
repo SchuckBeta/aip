@@ -25,7 +25,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.oseasy.initiate.modules.sys.service.SystemService;
-import com.oseasy.initiate.modules.sys.utils.UserUtils;
 import com.oseasy.pact.modules.actyw.entity.ActYwGrole;
 import com.oseasy.pact.modules.actyw.service.ActYwGroleService;
 import com.oseasy.pcore.common.config.ApiConst;
@@ -40,6 +39,7 @@ import com.oseasy.pcore.modules.sys.entity.Role;
 import com.oseasy.pcore.modules.sys.entity.User;
 import com.oseasy.pcore.modules.sys.service.CoreService;
 import com.oseasy.pcore.modules.sys.service.OfficeService;
+import com.oseasy.pcore.modules.sys.utils.CoreUtils;
 import com.oseasy.putil.common.utils.Collections3;
 import com.oseasy.putil.common.utils.StringUtil;
 
@@ -75,7 +75,7 @@ public class RoleController extends BaseController {
 	public String list(Role role, Model model) {
 //		List<Role> list = systemService.findAllRole();
 //		model.addAttribute("list", list);
-//		if(UserUtils.getUser().getAdmin() || UserUtils.getUser().getSysAdmin()){
+//		if(CoreUtils.getUser().getAdmin() || CoreUtils.getUser().getSysAdmin()){
 //			model.addAttribute("admin", true);
 //		}else{
 //			model.addAttribute("admin", false);
@@ -100,7 +100,7 @@ public class RoleController extends BaseController {
 	@RequestMapping(value = "form")
 	public String form(Role role, Model model, HttpServletRequest request) {
 		if (role.getOffice()==null) {
-			role.setOffice(UserUtils.getUser().getOffice());
+			role.setOffice(CoreUtils.getUser().getOffice());
 		}
 		model.addAttribute("role", role);
 		model.addAttribute("menuList", systemService.findAllMenu());
@@ -109,7 +109,7 @@ public class RoleController extends BaseController {
 //		if(StringUtil.isNotEmpty(secondName)){
 //			model.addAttribute("secondName",secondName);
 //		}
-		if(UserUtils.getUser().getAdmin() || UserUtils.getUser().getSysAdmin()){
+		if(CoreUtils.getUser().getAdmin() || CoreUtils.getUser().getSysAdmin()){
 			model.addAttribute("admin", true);
 		}else{
 			model.addAttribute("admin", false);
@@ -120,7 +120,7 @@ public class RoleController extends BaseController {
 	@RequiresPermissions("sys:role:edit")
 	@RequestMapping(value = "save")
 	public String save(Role role, Model model, RedirectAttributes redirectAttributes, HttpServletRequest request) {
-//		if (!(UserUtils.getUser().getAdmin() || UserUtils.getUser().getSysAdmin()) && role.getSysData().equals(Global.YES)) {
+//		if (!(CoreUtils.getUser().getAdmin() || CoreUtils.getUser().getSysAdmin()) && role.getSysData().equals(Global.YES)) {
 //			addMessage(redirectAttributes, "越权操作，只有超级管理员才能修改此数据！");
 //			return CoreSval.REDIRECT + adminPath + "/sys/role/?repage";
 //		}
@@ -188,7 +188,7 @@ public class RoleController extends BaseController {
 			addMessage(redirectAttributes, "该角色已分配用户，不能删除！");
 			return CoreSval.REDIRECT + adminPath + "/sys/role/?repage";
 		}
-		if (!(UserUtils.getUser().getAdmin() || UserUtils.getUser().getSysAdmin()) && role.getSysData().equals(Global.YES)) {
+		if (!(CoreUtils.getUser().getAdmin() || CoreUtils.getUser().getSysAdmin()) && role.getSysData().equals(Global.YES)) {
 			addMessage(redirectAttributes, "越权操作，只有超级管理员才能修改此数据！");
 			return CoreSval.REDIRECT + adminPath + "/sys/role/?repage";
 		}
@@ -219,7 +219,7 @@ public class RoleController extends BaseController {
 				if(cc!=null&&cc>0){
 					return ApiResult.failed(ApiConst.CODE_INNER_ERROR,ApiConst.getErrMsg(ApiConst.CODE_INNER_ERROR)+":"+"该角色已分配用户，不能删除！");
 				}
-				if (!(UserUtils.getUser().getAdmin() || UserUtils.getUser().getSysAdmin()) && role.getSysData().equals(Global.YES)) {
+				if (!(CoreUtils.getUser().getAdmin() || CoreUtils.getUser().getSysAdmin()) && role.getSysData().equals(Global.YES)) {
 					return ApiResult.failed(ApiConst.CODE_INNER_ERROR,ApiConst.getErrMsg(ApiConst.CODE_INNER_ERROR)+":"+"越权操作，只有超级管理员才能修改此数据！");
 				}
 				if (Global.isDemoMode()) {
@@ -314,7 +314,7 @@ public class RoleController extends BaseController {
 		}
 		Role role = systemService.getRole(roleId);
 		User user = systemService.getUser(userId);
-		if (UserUtils.getUser().getId().equals(userId)) {
+		if (CoreUtils.getUser().getId().equals(userId)) {
 			addMessage(redirectAttributes, "无法从角色【" + role.getName() + "】中移除用户【" + user.getName() + "】自己！");
 		}else {
 			if (user.getRoleList().size() <= 1) {

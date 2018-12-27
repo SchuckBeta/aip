@@ -1,5 +1,5 @@
 <%@page import="com.oseasy.pcore.modules.sys.entity.User" %>
-<%@page import="com.oseasy.initiate.modules.sys.utils.UserUtils" %>
+<%@page import="com.oseasy.pcore.modules.sys.utils.CoreUtils" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="sitemesh" uri="http://www.opensymphony.com/sitemesh/decorator" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>

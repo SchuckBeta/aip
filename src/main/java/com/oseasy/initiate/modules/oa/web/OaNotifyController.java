@@ -24,7 +24,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.collect.Lists;
 import com.oseasy.initiate.modules.oa.entity.OaNotifyRecord;
-import com.oseasy.initiate.modules.oa.entity.OaNotifySent;
 import com.oseasy.initiate.modules.oa.service.OaNotifyKeywordService;
 import com.oseasy.initiate.modules.oa.vo.OaNotifySendType;
 import com.oseasy.initiate.modules.sys.utils.UserUtils;
@@ -39,6 +38,7 @@ import com.oseasy.pcore.common.web.BaseController;
 import com.oseasy.pcore.modules.oa.entity.OaNotify;
 import com.oseasy.pcore.modules.oa.service.OaNotifyService;
 import com.oseasy.pcore.modules.sys.entity.User;
+import com.oseasy.pcore.modules.sys.utils.CoreUtils;
 import com.oseasy.putil.common.utils.StringUtil;
 
 import net.sf.json.JSONObject;
@@ -129,7 +129,7 @@ public class OaNotifyController extends BaseController {
 	@RequestMapping(value = {"getUnreadCount"})
 	@ResponseBody
 	public JSONObject getUnreadCount() {
-		String uid=UserUtils.getUser().getId();
+		String uid=CoreUtils.getUser().getId();
 		JSONObject js=new JSONObject();
 		js.put("ret", "1");
 		if (StringUtil.isEmpty(uid)) {
@@ -138,7 +138,7 @@ public class OaNotifyController extends BaseController {
 			return js;
 		}
 //		Integer c=oaNotifyService.getUnreadCount(uid);
-		Integer c=oaNotifyService.getUnreadCountByUser(UserUtils.getUser());
+		Integer c=oaNotifyService.getUnreadCountByUser(CoreUtils.getUser());
 		if (c==null) {
 			c=0;
 		}
@@ -196,7 +196,7 @@ public class OaNotifyController extends BaseController {
 	@ResponseBody
 	public String getReadFlag(String oaNotifyId) {
 		String flag="0";
-		User u =UserUtils.getUser();
+		User u =CoreUtils.getUser();
         if (u != null) {
             return oaNotifyService.getReadFlag(oaNotifyId, u);
 		}
@@ -205,7 +205,7 @@ public class OaNotifyController extends BaseController {
 
 	@RequestMapping(value = {"msgRecList"})
 	public String msgRecList(OaNotify oaNotify, HttpServletRequest request, HttpServletResponse response, Model model) {
-		User currUser = UserUtils.getUser();
+		User currUser = CoreUtils.getUser();
 		if (currUser!=null&&currUser.getId()!=null) {
 			oaNotify.setUserId(String.valueOf(currUser.getId()));
 		}else{
@@ -219,7 +219,7 @@ public class OaNotifyController extends BaseController {
 	}
 	@RequestMapping(value = {"msgSendList"})
 	public String msgSendList(OaNotify oaNotify, HttpServletRequest request, HttpServletResponse response, Model model) {
-		User currUser = UserUtils.getUser();
+		User currUser = CoreUtils.getUser();
 		if (currUser!=null&&currUser.getId()!=null) {
 			oaNotify.setUserId(String.valueOf(currUser.getId()));
 		}else{
@@ -233,7 +233,7 @@ public class OaNotifyController extends BaseController {
 	@RequiresPermissions("oa:oaNotify:view")
 	@RequestMapping(value = {"list", ""})
 	public String list(OaNotify oaNotify, HttpServletRequest request, HttpServletResponse response, Model model) {
-		User currUser = UserUtils.getUser();
+		User currUser = CoreUtils.getUser();
 		//logger.info("curre========="+currUser.getId());
 		if (currUser!=null&&currUser.getId()!=null&&!"1".equals(currUser.getId())) {
 			oaNotify.setUserId(String.valueOf(currUser.getId()));
@@ -570,7 +570,7 @@ public class OaNotifyController extends BaseController {
 //				//根据 teamId、userId 查询team_user_relation的状态
 //				TeamUserRelation tu=new TeamUserRelation();
 //				tu.setTeamId(teamId);
-//				User user= UserUtils.getUser();
+//				User user= CoreUtils.getUser();
 //				tu.setUser(user);
 //				TeamUserRelation  teamUserRelation=teamUserRelationService.getByTeamAndUser(tu);
 //				String state=teamUserRelation.getState();

@@ -23,7 +23,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.oseasy.initiate.modules.sys.utils.UserUtils;
 import com.oseasy.pact.modules.actyw.tool.process.ActYwTool;
 import com.oseasy.pcore.common.config.ApiConst;
 import com.oseasy.pcore.common.config.ApiResult;
@@ -97,7 +96,7 @@ public class OfficeController extends BaseController {
     @RequiresPermissions("sys:office:view")
     @RequestMapping(value = "form")
     public String form(Office office, Model model) {
-        User user = UserUtils.getUser();
+        User user = CoreUtils.getUser();
         if (office.getParent() == null || office.getParent().getId() == null) {
             office.setParent(user.getOffice());
         }

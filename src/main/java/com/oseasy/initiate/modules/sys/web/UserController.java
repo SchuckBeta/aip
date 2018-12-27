@@ -152,7 +152,7 @@ public class UserController extends BaseController {
     @RequestMapping(value="checkUserIsAdmin", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public Boolean checkUserIsAdmin(){
-        return UserUtils.getUser().getAdmin() || UserUtils.getUser().getSysAdmin();
+        return CoreUtils.getUser().getAdmin() || CoreUtils.getUser().getSysAdmin();
     }
 
     // @RequiresPermissions("sys:user:view")
@@ -275,10 +275,10 @@ public class UserController extends BaseController {
     @RequestMapping(value = "form")
     public String form(User user, Model model, HttpServletRequest request) {
         if (user.getCompany() == null || user.getCompany().getId() == null) {
-            user.setCompany(UserUtils.getUser().getCompany());
+            user.setCompany(CoreUtils.getUser().getCompany());
         }
         model.addAttribute("user", user);
-        model.addAttribute("cuser", UserUtils.getUser());
+        model.addAttribute("cuser", CoreUtils.getUser());
         List<Role> rs = systemService.findAllRole();
         model.addAttribute("allRoles", rs);
         if (rs != null & rs.size() > 0) {
@@ -305,7 +305,7 @@ public class UserController extends BaseController {
             user.setDomainIdList(null);
             user.setDomain(null);
         }
-        String oldLoginName = UserUtils.getUser().getLoginName();
+        String oldLoginName = CoreUtils.getUser().getLoginName();
         if (Global.isDemoMode()) {
             addMessage(redirectAttributes, "演示模式，不允许操作！");
             return CoreSval.REDIRECT + adminPath + "/sys/user/list?repage";
@@ -406,11 +406,11 @@ public class UserController extends BaseController {
             addMessage(redirectAttributes, "修改用户成功！");
         }
         // 清除当前用户缓存
-        if (user.getLoginName().equals(UserUtils.getUser().getLoginName())) {
+        if (user.getLoginName().equals(CoreUtils.getUser().getLoginName())) {
             UserUtils.clearCache();
             // CoreUtils.getCacheMap().clear();
         }
-        if (user.getId().equals(UserUtils.getUser().getId()) && !user.getLoginName().equals(oldLoginName)) {
+        if (user.getId().equals(CoreUtils.getUser().getId()) && !user.getLoginName().equals(oldLoginName)) {
             UserUtils.getSubject().logout();
         }
         // addMessage(redirectAttributes, "保存用户'" + user.getLoginName() +
@@ -429,7 +429,7 @@ public class UserController extends BaseController {
             user.setDomainIdList(null);
             user.setDomain(null);
         }
-        String oldLoginName = UserUtils.getUser().getLoginName();
+        String oldLoginName = CoreUtils.getUser().getLoginName();
         if (Global.isDemoMode()) {
             return ApiResult.failed(ApiConst.CODE_INNER_ERROR,ApiConst.getErrMsg(ApiConst.CODE_INNER_ERROR)+":"+"演示模式，不允许操作！");
 
@@ -537,11 +537,11 @@ public class UserController extends BaseController {
             msg="修改用户成功！";
         }
         // 清除当前用户缓存
-        if (user.getLoginName().equals(UserUtils.getUser().getLoginName())) {
+        if (user.getLoginName().equals(CoreUtils.getUser().getLoginName())) {
             UserUtils.clearCache();
             // UserUtils.getCacheMap().clear();
         }
-        if (user.getId().equals(UserUtils.getUser().getId()) && !user.getLoginName().equals(oldLoginName)) {
+        if (user.getId().equals(CoreUtils.getUser().getId()) && !user.getLoginName().equals(oldLoginName)) {
             UserUtils.getSubject().logout();
         }
         return  ApiResult.success(hashMap,msg);
@@ -556,7 +556,7 @@ public class UserController extends BaseController {
     @RequestMapping(value = "resetpwd")
     public String resetpwd(User user, RedirectAttributes redirectAttributes) {
 
-        coreService.updatePasswordById(user.getId(), UserUtils.getUser().getLoginName(), CoreUtils.USER_PSW_DEFAULT);
+        coreService.updatePasswordById(user.getId(), CoreUtils.getUser().getLoginName(), CoreUtils.USER_PSW_DEFAULT);
         addMessage(redirectAttributes, "重置密码成功！密码已重置为：123456");
         return CoreSval.REDIRECT + adminPath + "/sys/user/list?repage";
     }
@@ -566,7 +566,7 @@ public class UserController extends BaseController {
     @ResponseBody
     public ApiResult resetPassword(@RequestBody User user){
         try {
-            coreService.updatePasswordById(user.getId(), UserUtils.getUser().getLoginName(), CoreUtils.USER_PSW_DEFAULT);
+            coreService.updatePasswordById(user.getId(), CoreUtils.getUser().getLoginName(), CoreUtils.USER_PSW_DEFAULT);
             return ApiResult.success();
         }catch (Exception e){
             logger.error(ExceptionUtil.getStackTrace(e));
@@ -578,7 +578,7 @@ public class UserController extends BaseController {
     @ResponseBody
     public ApiResult delUser(@RequestBody User user){
         try {
-            if (UserUtils.getUser().getId().equals(user.getId())) {
+            if (CoreUtils.getUser().getId().equals(user.getId())) {
                 return ApiResult.failed(ApiConst.STATUS_FAIL,ApiConst.getErrMsg(ApiConst.STATUS_FAIL)+":删除用户失败, 不允许删除当前用户");
             } else if (User.getAdmin(user.getId())) {
                 return ApiResult.failed(ApiConst.STATUS_FAIL,ApiConst.getErrMsg(ApiConst.STATUS_FAIL)+":删除用户失败, 不允许删除超级管理员用户");
@@ -624,7 +624,7 @@ public class UserController extends BaseController {
     @RequiresPermissions("sys:user:edit")
     @RequestMapping(value = "delete")
     public String delete(User user, RedirectAttributes redirectAttributes) {
-        if (UserUtils.getUser().getId().equals(user.getId())) {
+        if (CoreUtils.getUser().getId().equals(user.getId())) {
             addMessage(redirectAttributes, "删除用户失败, 不允许删除当前用户");
         } else if (User.getAdmin(user.getId())) {
             addMessage(redirectAttributes, "删除用户失败, 不允许删除超级管理员用户");
@@ -677,7 +677,7 @@ public class UserController extends BaseController {
 
         User curUser = null;
         for (String cid : user.getIds()) {
-            if (((UserUtils.getUser().getId()).equals(user.getId())) || User.getAdmin(user.getId())) {
+            if (((CoreUtils.getUser().getId()).equals(user.getId())) || User.getAdmin(user.getId())) {
                 continue;
             }
 
@@ -721,7 +721,7 @@ public class UserController extends BaseController {
             User curUser = null;
             List<String> idList=user.getIds();
             for (String cid :idList) {
-                if (((UserUtils.getUser().getId()).equals(cid))|| User.getAdmin(cid)) {
+                if (((CoreUtils.getUser().getId()).equals(cid))|| User.getAdmin(cid)) {
                     return ApiResult.failed(ApiConst.STATUS_FAIL,ApiConst.getErrMsg(ApiConst.STATUS_FAIL)+":删除用户失败, 不允许删除超级管理员用户");
                 }
 
@@ -835,7 +835,7 @@ public class UserController extends BaseController {
         try {
             String fileName = "用户数据导入模板.xlsx";
             List<User> list = Lists.newArrayList();
-            list.add(UserUtils.getUser());
+            list.add(CoreUtils.getUser());
             new ExportExcel("用户数据", User.class, 2).setDataList(list).write(response, fileName).dispose();
             return null;
         } catch (Exception e) {
@@ -871,7 +871,7 @@ public class UserController extends BaseController {
     @RequiresPermissions("user")
     @RequestMapping(value = "info")
     public String info(User user, HttpServletResponse response, Model model) {
-        User currentUser = UserUtils.getUser();
+        User currentUser = CoreUtils.getUser();
         if (StringUtil.isNotBlank(user.getName())) {
             if (Global.isDemoMode()) {
                 model.addAttribute("message", "演示模式，不允许操作！");
@@ -899,7 +899,7 @@ public class UserController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "infoData")
     public User infoData() {
-        return UserUtils.getUser();
+        return CoreUtils.getUser();
     }
 
     /**
@@ -913,7 +913,7 @@ public class UserController extends BaseController {
     @RequiresPermissions("user")
     @RequestMapping(value = "modifyPwd")
     public String modifyPwd(String oldPassword, String newPassword, Model model) {
-        User user = UserUtils.getUser();
+        User user = CoreUtils.getUser();
         if (StringUtil.isNotBlank(oldPassword) && StringUtil.isNotBlank(newPassword)) {
             if (Global.isDemoMode()) {
                 model.addAttribute("message", "演示模式，不允许操作！");
