@@ -72,7 +72,10 @@ public class GenSchemeController extends BaseController {
 //		if (StringUtil.isBlank(genScheme.getFunctionAuthor())) {
 //			genScheme.setFunctionAuthor(CoreUtils.getUser().getName());
 //		}
-		model.addAttribute("genScheme", genScheme);
+
+		if(StringUtil.isNotEmpty(genScheme.getId())){
+	        model.addAttribute("genScheme", genSchemeService.get(genScheme.getId()));
+		}
 //		model.addAttribute("config", GenUtils.getConfig());
 		model.addAttribute("config", GenUtils.getConfig(genSchemeService.findClass(new GenScheme())));
 		model.addAttribute("tableList", genTableService.findAll());

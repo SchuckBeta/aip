@@ -3,7 +3,18 @@
 <mapper namespace="com.oseasy.pgen.modules.gen.dao.GenTableDao">
 
     <sql id="genTableColumns">
-		a.*
+		a.id AS "id",
+		a.name AS "name",
+		a.comments AS "comments",
+		a.class_name AS "className",
+		a.parent_table AS "parentTable",
+		a.parent_table_fk AS "parentTableFk",
+		a.update_date AS "updateDate",
+		a.update_by AS "updateBy.id",
+		a.create_date AS "createDate",
+		a.create_by AS "createBy.id",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
 	</sql>
 
 	<sql id="genTableJoins">

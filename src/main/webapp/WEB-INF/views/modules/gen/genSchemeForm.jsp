@@ -31,7 +31,8 @@
 		<li class="active"><a href="${ctx}/gen/genScheme/form?id=${genScheme.id}">生成方案<shiro:hasPermission name="gen:genScheme:edit">${not empty genScheme.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="gen:genScheme:edit">查看</shiro:lacksPermission></a></li>
 	</ul><br/>
 	<form:form id="inputForm" modelAttribute="genScheme" action="${ctx}/gen/genScheme/save" method="post" class="form-horizontal">
-		<form:hidden path="id"/><form:hidden path="flag"/>
+		<form:hidden path="id"/>
+		<form:hidden path="flag"/>
 		<sys:message content="${message}"/>
 		<div class="control-group">
 			<label class="control-label">方案名称:</label>
@@ -97,7 +98,15 @@
 			<label class="control-label">业务表名:</label>
 			<div class="controls">
 				<form:select path="genTable.id" class="required input-xlarge">
-					<form:options items="${tableList}" itemLabel="nameAndComments" itemValue="id" htmlEscape="false"/>
+					<c:forEach items="${tableList}" var="curTable">
+						<c:if test="${(curTable.id eq genScheme.genTable.id)}">
+							<option value="${curTable.id }" selected="selected">${curTable.nameAndComments }</option>
+						</c:if>
+						<c:if test="${curTable.id ne genScheme.genTable.id}">
+							<option value="${curTable.id }">${curTable.nameAndComments }</option>
+						</c:if>
+						<%-- <form:options items="${tableList}" itemLabel="nameAndComments" itemValue="id" htmlEscape="false"/> --%>
+					</c:forEach>
 				</form:select>
 				<span class="help-inline">生成的数据表，一对多情况下请选择主表。</span>
 			</div>

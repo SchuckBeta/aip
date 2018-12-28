@@ -3,13 +3,47 @@
 <mapper namespace="com.oseasy.pgen.modules.gen.dao.GenTableColumnDao">
 
     <sql id="genTableColumnColumns">
-		a.*,
-		b.id AS "genTable.id",
+ 		a.id AS "id",
+		a.gen_table_id AS "genTable.id",
+		a.name AS "name",
+		a.comments AS "comments",
+		a.jdbc_type AS "jdbcType",
+		a.java_type AS "javaType",
+		a.java_field AS "javaField",
+		a.is_pk AS "isPk",
+		a.is_null AS "isNull",
+		a.is_insert AS "isInsert",
+		a.is_update AS "isUpdate",
+		a.is_update_pl AS "isUpdatePl",
+		a.is_delete_pl AS "isDeletePl",
+		a.is_edit AS "isEdit",
+		a.is_list AS "isList",
+		a.is_query AS "isQuery",
+		a.query_type AS "queryType",
+		a.dict_type AS "dictType",
+		a.settings AS "settings",
+		a.sort AS "sort",
+		a.update_date AS "updateDate",
+		a.update_by AS "updateBy.id",
+		a.create_date AS "createDate",
+		a.create_by AS "createBy.id",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		<include refid="genTableColumns"/>
+	</sql>
+
+	<sql id="genTableColumns">
 		b.name AS "genTable.name",
 		b.comments AS "genTable.comments",
 		b.class_name AS "genTable.className",
 		b.parent_table AS "genTable.parentTable",
-		b.parent_table_fk AS "genTable.parentTableFk"
+		b.parent_table_fk AS "genTable.parentTableFk",
+		b.update_date AS "genTable.updateDate",
+		b.update_by AS "genTable.updateBy.id",
+		b.create_date AS "genTable.createDate",
+		b.create_by AS "genTable.createBy.id",
+		b.remarks AS "genTable.remarks",
+		b.del_flag AS "genTable.delFlag"
 	</sql>
 
 	<sql id="genTableColumnJoins">

@@ -4,11 +4,16 @@
 
     <sql id="genSchemeColumns">
 		a.*,
-		a.gen_table_id AS "genTable.id"
+		<include refid="genTableColumns"/>
+	</sql>
+
+    <sql id="genTableColumns">
+		b.id AS "genTable.id",
+		b.name AS "genTable.name"
 	</sql>
 
 	<sql id="genSchemeJoins">
-
+		LEFT JOIN gen_table b ON b.id = a.gen_table_id
     </sql>
 
     <select id="get" resultType="GenScheme">
