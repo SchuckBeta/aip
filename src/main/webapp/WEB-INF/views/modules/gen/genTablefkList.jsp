@@ -81,13 +81,13 @@
 				<c:forEach items="${page.list}" var="genTablefk">
 					<tr>
 						<td><a href="${ctx}/gen/genTablefk/form?id=${genTablefk.id}">
-							${fns:getDictLabel(genTablefk.table.id, '', '')}
+							${genTablefk.table.name}
 						</a></td>
 						<td>
-							${fns:getDictLabel(genTablefk.tabcol.id, '', '')}
+							${genTablefk.tabcol.name}
 						</td>
 						<td>
-							${fns:getDictLabel(genTablefk.tabfk.id, '', '')}
+							${genTablefk.tabfk.name}
 						</td>
 						<td>
 							<fmt:formatDate value="${genTablefk.updateDate}" pattern="yyyy-MM-dd HH:mm:ss"/>

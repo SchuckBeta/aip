@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.oseasy.pgen.modules.gen.dao.GenTablefkDao">
+<mapper namespace="com.oseasy.pgen.modules.gen.dao.GenTgroupTemplateDao">
 
-	<sql id="genTablefkColumns">
+	<sql id="genTgroupTemplateColumns">
 		a.id AS "id",
-		a.table_id AS "table.id",
-		a.tabcol_id AS "tabcol.id",
-		a.tabfk_id AS "tabfk.id",
+		a.tpl_id AS "tpl.id",
+		a.group_id AS "group.id",
 		a.create_by AS "createBy.id",
 		a.create_date AS "createDate",
 		a.update_by AS "updateBy.id",
@@ -15,33 +14,24 @@
 		a.del_flag AS "delFlag"
 	</sql>
 
-	<sql id="genTablefkJoins">
+	<sql id="genTgroupTemplateJoins">
 	</sql>
 
-	<select id="get" resultType="GenTablefk">
+	<select id="get" resultType="GenTgroupTemplate">
 		SELECT
-			<include refid="genTablefkColumns"/>
-		FROM gen_tablefk a
-		<include refid="genTablefkJoins"/>
+			<include refid="genTgroupTemplateColumns"/>
+		FROM gen_tgroup_template a
+		<include refid="genTgroupTemplateJoins"/>
 		WHERE a.id = #{id}
 	</select>
 
-	<select id="findList" resultType="GenTablefk">
+	<select id="findList" resultType="GenTgroupTemplate">
 		SELECT
-			<include refid="genTablefkColumns"/>
-		FROM gen_tablefk a
-		<include refid="genTablefkJoins"/>
+			<include refid="genTgroupTemplateColumns"/>
+		FROM gen_tgroup_template a
+		<include refid="genTgroupTemplateJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
-			<if test="table != null and table.id != null and table.id != ''">
-				AND a.table_id = #{table.id}
-			</if>
-			<if test="tabcol != null and tabcol.id != null and tabcol.id != ''">
-				AND a.tabcol_id = #{tabcol.id}
-			</if>
-			<if test="tabfk != null and tabfk.id != null and tabfk.id != ''">
-				AND a.tabfk_id = #{tabfk.id}
-			</if>
 		</where>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
@@ -53,11 +43,11 @@
 		</choose>
 	</select>
 
-	<select id="findAllList" resultType="GenTablefk">
+	<select id="findAllList" resultType="GenTgroupTemplate">
 		SELECT
-			<include refid="genTablefkColumns"/>
-		FROM gen_tablefk a
-		<include refid="genTablefkJoins"/>
+			<include refid="genTgroupTemplateColumns"/>
+		FROM gen_tgroup_template a
+		<include refid="genTgroupTemplateJoins"/>
 		<where>
 			a.del_flag = #{DEL_FLAG_NORMAL}
 		</where>
@@ -72,11 +62,10 @@
 	</select>
 
 	<insert id="insert">
-		INSERT INTO gen_tablefk(
+		INSERT INTO gen_tgroup_template(
 			id,
-			table_id,
-			tabcol_id,
-			tabfk_id,
+			tpl_id,
+			group_id,
 			create_by,
 			create_date,
 			update_by,
@@ -85,9 +74,8 @@
 			del_flag
 		) VALUES (
 			#{id},
-			#{table.id},
-			#{tabcol.id},
-			#{tabfk.id},
+			#{tpl.id},
+			#{group.id},
 			#{createBy.id},
 			#{createDate},
 			#{updateBy.id},
@@ -98,11 +86,10 @@
 	</insert>
 
 	<insert id="insertPL" >
-		INSERT INTO gen_tablefk(
+		INSERT INTO gen_tgroup_template(
 			id,
-			table_id,
-			tabcol_id,
-			tabfk_id,
+			tpl_id,
+			group_id,
 			create_by,
 			create_date,
 			update_by,
@@ -113,9 +100,8 @@
 		<foreach item="item" collection="entitys" index="index" separator=",">
 			(
 			#{item.id},
-			#{item.table.id},
-			#{item.tabcol.id},
-			#{item.tabfk.id},
+			#{item.tpl.id},
+			#{item.group.id},
 			#{item.createBy.id},
 			#{item.createDate},
 			#{item.updateBy.id},
@@ -127,10 +113,9 @@
 	</insert>
 
 	<update id="update">
-		UPDATE gen_tablefk SET
-			table_id = #{table.id},
-			tabcol_id = #{tabcol.id},
-			tabfk_id = #{tabfk.id},
+		UPDATE gen_tgroup_template SET
+			tpl_id = #{tpl.id},
+			group_id = #{group.id},
 			update_by = #{updateBy.id},
 			update_date = #{updateDate},
 			remarks = #{remarks}
@@ -138,21 +123,16 @@
 	</update>
 
 	<update id="updatePL" parameterType="java.util.List" >
-		UPDATE gen_tablefk
+		UPDATE gen_tgroup_template
 		<trim prefix="set" suffixOverrides=",">
-						<trim prefix="table_id =case" suffix="end,">
+						<trim prefix="tpl_id =case" suffix="end,">
 				<foreach item="item" collection="entitys" index="index">
-					when id=#{item.id} then #{item.table.id}
+					when id=#{item.id} then #{item.tpl.id}
 				</foreach>
 			</trim>
-			<trim prefix="tabcol_id =case" suffix="end,">
+			<trim prefix="group_id =case" suffix="end,">
 				<foreach item="item" collection="entitys" index="index">
-					when id=#{item.id} then #{item.tabcol.id}
-				</foreach>
-			</trim>
-			<trim prefix="tabfk_id =case" suffix="end,">
-				<foreach item="item" collection="entitys" index="index">
-					when id=#{item.id} then #{item.tabfk.id}
+					when id=#{item.id} then #{item.group.id}
 				</foreach>
 			</trim>
 			<trim prefix="update_by =case" suffix="end,">
@@ -181,13 +161,13 @@
 
 
 	<update id="delete">
-		UPDATE gen_tablefk SET
+		UPDATE gen_tgroup_template SET
 			del_flag = #{DEL_FLAG_DELETE}
 		WHERE id = #{id}
 	</update>
 
 	<update id="deletePL">
-		UPDATE gen_tablefk SET
+		UPDATE gen_tgroup_template SET
 			del_flag = #{DEL_FLAG_DELETE}
 			WHERE id in
 			<foreach item="id" collection="ids" open="(" separator="," close=")">
@@ -196,17 +176,17 @@
 	</update>
 
 	<update id="deleteWL">
-		DELETE FROM gen_tablefk WHERE id = #{id}
+		DELETE FROM gen_tgroup_template WHERE id = #{id}
 	</update>
 
 	<update id="deleteWLPL">
-		DELETE FROM gen_tablefk WHERE id in
+		DELETE FROM gen_tgroup_template WHERE id in
 		<foreach item="id" collection="ids" open="(" separator="," close=")">
 			#{id}
 		</foreach>
 	</update>
 
 	<update id="deleteWLAll">
-		DELETE FROM gen_tablefk
+		DELETE FROM gen_tgroup_template
 	</update>
 </mapper>
