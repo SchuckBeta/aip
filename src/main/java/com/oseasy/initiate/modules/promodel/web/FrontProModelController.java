@@ -44,6 +44,7 @@ import com.oseasy.pact.modules.actyw.service.ActYwService;
 import com.oseasy.pact.modules.actyw.tool.process.vo.FlowPcategoryType;
 import com.oseasy.pact.modules.actyw.tool.process.vo.FlowProjectType;
 import com.oseasy.pact.modules.actyw.tool.process.vo.FormPageType;
+import com.oseasy.pcore.common.config.CoreJkey;
 import com.oseasy.pcore.common.config.CoreSval;
 import com.oseasy.pcore.common.config.Global;
 import com.oseasy.pcore.common.persistence.Page;
@@ -335,7 +336,7 @@ public class FrontProModelController extends BaseController {
         JSONObject js = new JSONObject();
 
 //        js.put("teamId", id);
-//        js.put("ret", 0);
+//        js.put(CoreJkey.JK_RET, 0);
 //
 //        ActYw actYw = actYwService.get(actywId);
 //        String subType = actYw.getProProject().getType();//项目分类
@@ -391,12 +392,12 @@ public class FrontProModelController extends BaseController {
 //
 //		/*if (type != null) {
 //            if ((type.equals("1")||type.equals("2"))  && (stuNum>5||stuNum<1)) {
-//				js.put("ret",0);
+//				js.put(CoreJkey.JK_RET,0);
 //				js.put("msg","该团队人数不符合，创新创业训练人数为1-5人。");
 //				return  js;
 //			}
 //			if ((type.equals("3"))  &&(stuNum>7||stuNum<1)) {
-//				js.put("ret",0);
+//				js.put(CoreJkey.JK_RET,0);
 //				js.put("msg","该团队人数不符合，创业实践人数为1-7人。");
 //				return  js;
 //			}
@@ -412,7 +413,7 @@ public class FrontProModelController extends BaseController {
 //            list.add(map);
 //        }
 //
-//        js.put("ret", 1);
+//        js.put(CoreJkey.JK_RET, 1);
 //        js.put("map", list);
         return js;
     }
@@ -433,7 +434,7 @@ public class FrontProModelController extends BaseController {
 //            js=workFlow.submit(proModel, js);
 //        //proModelService.auditWithGateWay(proModel, gnodeId);
 //        } catch (GroupErrorException e) {
-//            js.put("ret", 0);
+//            js.put(CoreJkey.JK_RET, 0);
 //            js.put("msg", e.getCode());
 //        }
 ////       js = proModelService.submit(proModel, js);
@@ -451,7 +452,7 @@ public class FrontProModelController extends BaseController {
     @ResponseBody
     public JSONObject submitMid(ProModel proModel, Model model, HttpServletRequest request, RedirectAttributes redirectAttributes) {
         JSONObject js = new JSONObject();
-        js.put("ret", 1);
+        js.put(CoreJkey.JK_RET, 1);
         String gnodeId = request.getParameter("gnodeId");
         if (StringUtil.isNotEmpty(gnodeId)) {
             proModel.getAttachMentEntity().setGnodeId(gnodeId);

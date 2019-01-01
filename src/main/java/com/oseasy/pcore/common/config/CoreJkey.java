@@ -21,6 +21,14 @@ public class CoreJkey {
    */
   public static final String JK_ID = "id";
   /**
+   * PID.
+   */
+  public static final String JK_PID = "parentId";
+  /**
+   * PARENT.
+   */
+  public static final String JK_PARENT = "parent";
+  /**
    * NAME.
    */
   public static final String JK_NAME = "name";
@@ -28,6 +36,10 @@ public class CoreJkey {
    * TYPE.
    */
   public static final String JK_TYPE = "type";
+  /**
+   * HREF.
+   */
+  public static final String JK_HREF = "href";
   /**
    * UUID.
    */

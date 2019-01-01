@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.net.ftp.FTPFile;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,14 +30,13 @@ import com.oseasy.initiate.modules.attachment.enums.FileTypeEnum;
 import com.oseasy.initiate.modules.attachment.exception.FileDealException;
 import com.oseasy.initiate.modules.promodel.entity.ProModel;
 import com.oseasy.initiate.modules.promodel.entity.ProReport;
-import com.oseasy.initiate.modules.proproject.entity.ProProject;
 import com.oseasy.pact.modules.actyw.entity.ActYw;
-import com.oseasy.pcore.common.config.Global;
 import com.oseasy.pcore.common.config.ApiTstatus;
+import com.oseasy.pcore.common.config.CoreJkey;
+import com.oseasy.pcore.common.config.Global;
 import com.oseasy.pcore.common.persistence.AttachMentEntity;
 import com.oseasy.pcore.common.persistence.Page;
 import com.oseasy.pcore.common.service.CrudService;
-import com.oseasy.pcore.common.utils.CacheUtils;
 import com.oseasy.pcore.common.utils.FtpUtil;
 import com.oseasy.pcore.common.utils.IdGen;
 import com.oseasy.pcore.common.utils.VsftpUtils;
@@ -51,7 +49,6 @@ import com.oseasy.putil.common.utils.DateUtil;
 import com.oseasy.putil.common.utils.FileUtil;
 import com.oseasy.putil.common.utils.StringUtil;
 import com.oseasy.putil.common.utils.exception.ExceptionUtil;
-import com.oseasy.putil.common.utils.rsa.MD5Util;
 
 import net.sf.json.JSONObject;
 
@@ -401,9 +398,9 @@ public class SysAttachmentService extends CrudService<SysAttachmentDao, SysAttac
 				}
 			}
 			if (tag == 0) {
-				map.put("ret", "0");
+				map.put(CoreJkey.JK_RET, "0");
 			} else {
-				map.put("ret", "1");
+				map.put(CoreJkey.JK_RET, "1");
 			}
 			map.put("content", content);
 			return map;

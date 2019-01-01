@@ -319,4 +319,81 @@ public class CoreSval {
         return projectPath;
     }
 
+
+
+    public enum CoreKeys {
+        DE("siteIndexCategorysSencond", "前台首页栏目-二级");
+
+        private String key;
+        private String remark;
+        private CoreKeys(String key, String remark) {
+            this.key = key;
+            this.remark = remark;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public void setKey(String key) {
+            this.key = key;
+        }
+
+        public String getRemark() {
+            return remark;
+        }
+
+        public void setRemark(String remark) {
+            this.remark = remark;
+        }
+
+        public static CoreKeys getByKey(String key) {
+            CoreKeys[] entitys = CoreKeys.values();
+            for (CoreKeys entity : entitys) {
+                if ((key).equals(entity.getKey())) {
+                    return entity;
+                }
+            }
+            return null;
+        }
+    }
+
+    public enum CoreCaches {
+        LOG_MENU_NAME_PATH_MAP("menuNamePathMap", "菜单缓存Map"),
+        LOG_CMSMENU_NAME_PATH_MAP("cmsmenuNamePathMap", "CMS菜单缓存Map"),
+        LOG_CMSSMENU_NAME_PATH_MAP("cmssmenuNamePathMap", "站点菜单缓存Map"),
+        ;
+        private String key;
+        private String remark;
+        private CoreCaches(String key, String remark) {
+            this.key = key;
+            this.remark = remark;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public void setKey(String key) {
+            this.key = key;
+        }
+
+        public String getRemark() {
+            return remark;
+        }
+
+        public void setRemark(String remark) {
+            this.remark = remark;
+        }
+
+        public static CoreCaches getByKey(String key) {
+            CoreCaches[] entitys = CoreCaches.values();
+            for (CoreCaches entity : entitys) {
+                if ((key).equals(entity.getKey())) {
+                    return entity;
+                }
+            }
+            return null;
+        }
+    }
 }

@@ -33,6 +33,8 @@ import com.oseasy.pact.modules.act.service.ActTaskService;
 import com.oseasy.pcore.common.config.ApiConst;
 import com.oseasy.pcore.common.config.ApiResult;
 import com.oseasy.pcore.common.config.ApiTstatus;
+import com.oseasy.pcore.common.config.CoreJkey;
+import com.oseasy.pcore.common.config.CorePages;
 import com.oseasy.pcore.common.config.CoreSval;
 import com.oseasy.pcore.common.config.Global;
 import com.oseasy.pcore.common.utils.FtpUtil;
@@ -299,7 +301,7 @@ public class MenuController extends BaseController {
         //没有下级菜单
         if (list.size()==0) {
             model.addAttribute("msg","无权限访问该页面");
-            return "error/msg";
+            return CorePages.ERROR_MSG.getIdxUrl();
         }
         Menu firstMenu = systemService.getMenu(parentId);
         List<Menu> secondMenus=Lists.newArrayList();
@@ -469,10 +471,10 @@ public class MenuController extends BaseController {
             if(parentMenu!=null){
                 js.put("firstName",parentMenu.getName());
             }
-            js.put("ret","1");
+            js.put(CoreJkey.JK_RET,"1");
             return js;
         }else {
-            js.put("ret", "0");
+            js.put(CoreJkey.JK_RET, "0");
             return js;
         }
     }
@@ -720,7 +722,7 @@ public class MenuController extends BaseController {
 //		//没有下级菜单
 //		if (list.size()==0) {
 //			model.addAttribute("msg","无权限访问该页面");
-//			return "error/msg";
+//			return CorePages.ERROR_MSG.getIdxUrl();
 //		}
 //		Menu firstMenu = systemService.getMenu(parentId);
 //		List<Menu> secondMenus=Lists.newArrayList();
@@ -890,10 +892,10 @@ public class MenuController extends BaseController {
 //			if(parentMenu!=null){
 //				js.put("firstName",parentMenu.getName());
 //			}
-//			js.put("ret","1");
+//			js.put(CoreJkey.JK_RET,"1");
 //			return js;
 //		}else {
-//			js.put("ret", "0");
+//			js.put(CoreJkey.JK_RET, "0");
 //			return js;
 //		}
 //	}

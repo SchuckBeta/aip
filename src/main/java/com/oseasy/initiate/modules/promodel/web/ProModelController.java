@@ -42,6 +42,7 @@ import com.oseasy.pact.modules.actyw.service.ActYwService;
 import com.oseasy.pact.modules.actyw.tool.process.vo.FlowPcategoryType;
 import com.oseasy.pact.modules.actyw.tool.process.vo.FlowProjectType;
 import com.oseasy.pact.modules.actyw.tool.process.vo.FormPageType;
+import com.oseasy.pcore.common.config.CoreJkey;
 import com.oseasy.pcore.common.config.CoreSval;
 import com.oseasy.pcore.common.config.Global;
 import com.oseasy.pcore.common.persistence.Page;
@@ -665,9 +666,9 @@ public class ProModelController extends BaseController {
 		String[] idList=ids.split(",");
 		try {
 			proModelService.promodelDeleteList(idList);
-			js.put("ret", "1");
+			js.put(CoreJkey.JK_RET, "1");
 		}catch (Exception e){
-			js.put("ret", "0");
+			js.put(CoreJkey.JK_RET, "0");
 		 	js.put("msg", "删除失败,出现了未知的错误，请重试或者联系管理员");
 		}
 		return js;
@@ -689,7 +690,7 @@ public class ProModelController extends BaseController {
         } catch (Exception e) {
             logger.error(e.getMessage());
 
-            js.put("ret", "0");
+            js.put(CoreJkey.JK_RET, "0");
             js.put("msg", "保存失败,出现了未知的错误，请重试或者联系管理员");
             return js;
         }
@@ -705,7 +706,7 @@ public class ProModelController extends BaseController {
         } catch (Exception e) {
             logger.error(e.getMessage());
             JSONObject js = new JSONObject();
-            js.put("ret", "0");
+            js.put(CoreJkey.JK_RET, "0");
             js.put("msg", "保存失败,出现了未知的错误，请重试或者联系管理员");
             return js;
         }
@@ -731,7 +732,7 @@ public class ProModelController extends BaseController {
 		JSONObject js=new JSONObject();
 		String[] idList=ids.split(",");
 		proModelService.batchChangeLevel(idList,finalStatus);
-		js.put("ret","1");
+		js.put(CoreJkey.JK_RET,"1");
 		return js;
 	}
 
@@ -746,9 +747,9 @@ public class ProModelController extends BaseController {
 		String[] idList=ids.split(",");
 		boolean ispass=proModelService.batchAudit(idList,grade,gnodeId);
 		if(ispass){
-			js.put("ret","1");
+			js.put(CoreJkey.JK_RET,"1");
 		}else{
-			js.put("ret","0");
+			js.put(CoreJkey.JK_RET,"0");
 		}
 
 		return js;
@@ -764,7 +765,7 @@ public class ProModelController extends BaseController {
 		JSONObject js=new JSONObject();
 		String[] idList=ids.split(",");
 		proModelService.batchScoreAudit(idList,score,gnodeId);
-		js.put("ret","1");
+		js.put(CoreJkey.JK_RET,"1");
 		return js;
 	}
 

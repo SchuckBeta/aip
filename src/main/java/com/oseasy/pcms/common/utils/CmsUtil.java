@@ -6,7 +6,12 @@ package com.oseasy.pcms.common.utils;
 
 import java.util.List;
 
+import com.oseasy.pcms.modules.cms.dao.CmsMenuDao;
+import com.oseasy.pcms.modules.cms.entity.CmsMenu;
+import com.oseasy.pcms.modules.cmss.dao.CmssMenuDao;
 import com.oseasy.pcms.modules.cmss.entity.CmssCategory;
+import com.oseasy.pcms.modules.cmss.entity.CmssMenu;
+import com.oseasy.pcore.common.utils.SpringContextHolder;
 
 /**
  * .
@@ -14,6 +19,8 @@ import com.oseasy.pcms.modules.cmss.entity.CmssCategory;
  *
  */
 public class CmsUtil {
+    private static CmsMenuDao cmsMenuDao = SpringContextHolder.getBean(CmsMenuDao.class);
+    private static CmssMenuDao cmssMenuDao = SpringContextHolder.getBean(CmssMenuDao.class);
 
     /**
      * 根据资源id获得html代码.
@@ -198,5 +205,12 @@ public class CmsUtil {
     public static void removeCache(String string) {
         // TODO Auto-generated method stub
 
+    }
+
+    public static List<CmsMenu> findAllCmsMenu() {
+        return cmsMenuDao.findAllList(new CmsMenu());
+    }
+    public static List<CmssMenu> findAllCmssMenu() {
+        return cmssMenuDao.findAllList(new CmssMenu());
     }
 }

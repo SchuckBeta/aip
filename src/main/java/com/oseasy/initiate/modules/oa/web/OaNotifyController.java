@@ -30,6 +30,7 @@ import com.oseasy.initiate.modules.sys.utils.UserUtils;
 import com.oseasy.pact.modules.actyw.service.ActYwService;
 import com.oseasy.pcore.common.config.ApiConst;
 import com.oseasy.pcore.common.config.ApiResult;
+import com.oseasy.pcore.common.config.CoreJkey;
 import com.oseasy.pcore.common.config.CoreSval;
 import com.oseasy.pcore.common.config.Global;
 import com.oseasy.pcore.common.persistence.Page;
@@ -117,11 +118,11 @@ public class OaNotifyController extends BaseController {
 			on.setType(OaNotify.Type_Enum.TYPE1.getValue());
 			on.setOaNotifyRecordIds(uid);
 			oaNotifyService.save(on);
-			js.put("ret", "1");
+			js.put(CoreJkey.JK_RET, "1");
 			js.put("msg", "发送成功");
 		} catch (Exception e) {
 			logger.error(e.getMessage());
-			js.put("ret", "0");
+			js.put(CoreJkey.JK_RET, "0");
 			js.put("msg", "发送失败");
 		}
 		return js;
@@ -131,9 +132,9 @@ public class OaNotifyController extends BaseController {
 	public JSONObject getUnreadCount() {
 		String uid=CoreUtils.getUser().getId();
 		JSONObject js=new JSONObject();
-		js.put("ret", "1");
+		js.put(CoreJkey.JK_RET, "1");
 		if (StringUtil.isEmpty(uid)) {
-			js.put("ret", "0");
+			js.put(CoreJkey.JK_RET, "0");
 			js.put("count", 0);
 			return js;
 		}

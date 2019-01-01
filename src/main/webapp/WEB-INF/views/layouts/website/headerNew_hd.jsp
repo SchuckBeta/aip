@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ include file="/WEB-INF/views/include/taglib.jsp" %>
-<%@ page import="com.oseasy.pcms.modules.cms.entity.CmsSite" %>
+<%@ page import="com.oseasy.pcms.modules.cmss.entity.CmsSite" %>
 <%@ page import="com.oseasy.pcore.modules.sys.utils.CoreUtils" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
 <% request.setAttribute("user", UserUtils.getUser()); %>

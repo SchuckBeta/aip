@@ -32,6 +32,7 @@ import com.oseasy.initiate.modules.sys.utils.UserUtils;
 import com.oseasy.initiate.modules.websocket.WebSockectUtil;
 import com.oseasy.initiate.modules.websocket.WsMsg;
 import com.oseasy.initiate.modules.websocket.WsMsgBtn;
+import com.oseasy.pcore.common.config.CoreJkey;
 import com.oseasy.pcore.common.persistence.Page;
 import com.oseasy.pcore.common.service.CrudService;
 import com.oseasy.pcore.common.utils.FtpUtil;
@@ -524,7 +525,7 @@ public class OaNotifyService extends CrudService<OaNotifyDao, OaNotify> {
 	}
 	private boolean saveoaNotifyContent(OaNotify es) {
 		Map<String,String> map=sysAttachmentService.moveAndSaveTempFile(es.getContent(), es.getId(), FileTypeEnum.S8, FileStepEnum.S801);
-		if ("1".equals(map.get("ret"))) {
+		if ("1".equals(map.get(CoreJkey.JK_RET))) {
 			es.setContent(map.get("content"));
 			return true;
 		}

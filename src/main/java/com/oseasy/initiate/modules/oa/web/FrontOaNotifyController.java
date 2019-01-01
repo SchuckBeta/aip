@@ -23,6 +23,7 @@ import com.oseasy.initiate.modules.oa.service.OaNotifyKeywordService;
 import com.oseasy.initiate.modules.sys.utils.UserUtils;
 import com.oseasy.pcore.common.config.ApiConst;
 import com.oseasy.pcore.common.config.ApiResult;
+import com.oseasy.pcore.common.config.CoreJkey;
 import com.oseasy.pcore.common.config.CoreSval;
 import com.oseasy.pcore.common.persistence.Page;
 import com.oseasy.pcore.common.utils.FtpUtil;
@@ -87,9 +88,9 @@ public class FrontOaNotifyController extends BaseController {
     public JSONObject getUnreadCount() {
         String uid = CoreUtils.getUser().getId();
         JSONObject js = new JSONObject();
-        js.put("ret", "1");
+        js.put(CoreJkey.JK_RET, "1");
         if (StringUtil.isEmpty(uid)) {
-            js.put("ret", "0");
+            js.put(CoreJkey.JK_RET, "0");
             js.put("count", 0);
             return js;
         }

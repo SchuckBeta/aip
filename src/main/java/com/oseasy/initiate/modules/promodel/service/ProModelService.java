@@ -96,6 +96,7 @@ import com.oseasy.pact.modules.actyw.tool.process.vo.RegType;
 import com.oseasy.pact.modules.actyw.tool.process.vo.StenType;
 import com.oseasy.pact.modules.actyw.util.ActYwUtils;
 import com.oseasy.pcore.common.config.CoreIds;
+import com.oseasy.pcore.common.config.CoreJkey;
 import com.oseasy.pcore.common.config.Global;
 import com.oseasy.pcore.common.persistence.Page;
 import com.oseasy.pcore.common.service.CrudService;
@@ -833,7 +834,7 @@ public class ProModelService extends CrudService<ProModelDao, ProModel>{
         // super.save(gContest);
         // 启动大赛工作流
         if (proModelDao.checkProName(proModel.getPName(), proModel.getId(), proModel.getActYwId()) > 0) {
-            js.put("ret", 0);
+            js.put(CoreJkey.JK_RET, 0);
             js.put("msg", "保存失败，该项目名称已经存在");
             return js;
         }
@@ -847,7 +848,7 @@ public class ProModelService extends CrudService<ProModelDao, ProModel>{
             } else if (actYw.getProProject().getProType().contains(FlowProjectType.PMT_DASAI.getKey())) {
                 js = commonService.checkGcontestApplyOnSubmit(proModel.getId(), proModel.getActYwId(), proModel.getTeamId(), proModel.getYear());
             }
-            if ("0".equals(js.getString("ret"))) {
+            if ("0".equals(js.getString(CoreJkey.JK_RET))) {
                 return js;
             }
 
@@ -869,12 +870,12 @@ public class ProModelService extends CrudService<ProModelDao, ProModel>{
                     try {
                          num = NumRuleUtils.getNumberText(proModel.getActYwId(),proModel.getYear());
                     }catch(Exception e){
-                        js.put("ret", 0);
+                        js.put(CoreJkey.JK_RET, 0);
                         js.put("msg", "未设置正确编号规则，请联系管理员设置编号规则!");
                         return js;
                     }
                     if(StringUtil.isEmpty(num)){
-                        js.put("ret", 0);
+                        js.put(CoreJkey.JK_RET, 0);
                         js.put("msg", "未设置编号规则，请联系管理员设置编号规则!");
                         return js;
                     }
@@ -942,21 +943,21 @@ public class ProModelService extends CrudService<ProModelDao, ProModel>{
 //                        }
 //                        excellentShowService.saveExcellentShow(proModel.getIntroduction(), proModel.getTeamId(),
 //                                ecxType, proModel.getId(), proModel.getActYwId());
-                        js.put("ret", 1);
+                        js.put(CoreJkey.JK_RET, 1);
                         js.put("msg", "恭喜您，申报成功！");
                         return js;
                     } else {
-                        js.put("ret", 0);
+                        js.put(CoreJkey.JK_RET, 0);
                         js.put("msg", "流程配置故障（审核流程未启动），请联系管理员!");
                         return js;
                     }
                 }
             }
-            js.put("ret", 0);
+            js.put(CoreJkey.JK_RET, 0);
             js.put("msg", "流程配置故障（流程角色未配置），请联系管理员!");
             return js;
         }
-        js.put("ret", 0);
+        js.put(CoreJkey.JK_RET, 0);
         js.put("msg", "流程配置故障（审核流程不存在），请联系管理员!");
         return js;
     }
@@ -2833,7 +2834,7 @@ public class ProModelService extends CrudService<ProModelDao, ProModel>{
     @Transactional(readOnly = false)
     public JSONObject reportSubmit(ProReport proReport, String gnodeId) {
         JSONObject js = new JSONObject();
-        js.put("ret", 0);
+        js.put(CoreJkey.JK_RET, 0);
         if (proReport == null) {
             js.put("msg", "提交失败，该表单为空");
             return js;
@@ -2857,13 +2858,13 @@ public class ProModelService extends CrudService<ProModelDao, ProModel>{
                 auditWithGateWay(pm, gnodeId);
             } catch (GroupErrorException e) {
                 js.put("msg", e.getCode());
-                js.put("ret", 0);
+                js.put(CoreJkey.JK_RET, 0);
                 return js;
             }
             // actTaskService.runNextProcessByGnodeId(this.get(proReport.getProModelId()),gnodeId);
         }
         js.put("msg", "提交成功");
-        js.put("ret", 1);
+        js.put(CoreJkey.JK_RET, 1);
         return js;
     }
 
@@ -3236,7 +3237,7 @@ public class ProModelService extends CrudService<ProModelDao, ProModel>{
 //        String proId = proModel.getId();
 //        String category = proModel.getType();
 //        js = commonService.checkProjectOnModify(stus, teas, proId, actywId, category, teamId, proModel.getYear());
-//        if ("0".equals(js.getString("ret"))) {
+//        if ("0".equals(js.getString(CoreJkey.JK_RET))) {
 //            return js;
 //        }
 //        saveForEdit(proModel);
@@ -3262,7 +3263,7 @@ public class ProModelService extends CrudService<ProModelDao, ProModel>{
 //        String teamId = proModel.getTeamId();
 //        String proId = proModel.getId();
 //        js = commonService.checkGcontestOnModify(stus, teas, proId, actywId, teamId, proModel.getYear());
-//        if ("0".equals(js.getString("ret"))) {
+//        if ("0".equals(js.getString(CoreJkey.JK_RET))) {
 //            return js;
 //        }
 //        saveForEdit(proModel);

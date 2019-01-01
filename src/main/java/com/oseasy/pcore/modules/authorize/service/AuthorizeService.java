@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.oseasy.pcore.common.config.CoreJkey;
 import com.oseasy.pcore.common.utils.license.License;
 import com.oseasy.pcore.common.utils.license.LicenseCacheUtils;
 import com.oseasy.pcore.common.utils.license.MachineCacheUtils;
@@ -161,11 +162,11 @@ public class AuthorizeService {
 			String decrypt_lic = decrypt(sb.toString());//解码文件内容
 			String vaild = validateLicense(decrypt_lic,sysDate);
 			if ("0".equals(vaild)) {
-				obj.put("ret", "0");
+				obj.put(CoreJkey.JK_RET, "0");
 				obj.put("msg", "无效的授权文件");
 				return obj;
 			} else if ("2".equals(vaild)) {
-				obj.put("ret", "0");
+				obj.put(CoreJkey.JK_RET, "0");
 				obj.put("msg", "授权文件已过期");
 				return obj;
 			} else if ("1".equals(vaild)) {
@@ -173,7 +174,7 @@ public class AuthorizeService {
 				sl.setLicense(sb.toString());
 				sysLicenseService.saveLicense(sl);//保存未解码的文件内容
 				LicenseCacheUtils.put(SysLicenseService.KEY, sl);//放入缓存
-				obj.put("ret", "1");
+				obj.put(CoreJkey.JK_RET, "1");
 				obj.put("msg", "授权成功");
 
 				License license = getLicenseInfo();
@@ -191,7 +192,7 @@ public class AuthorizeService {
 			return obj;
 		} catch (Exception e) {
 			logger.error("无效的授权文件", e);
-			obj.put("ret", "0");
+			obj.put(CoreJkey.JK_RET, "0");
 			obj.put("msg", "无效的授权文件");
 			return obj;
 		} finally {

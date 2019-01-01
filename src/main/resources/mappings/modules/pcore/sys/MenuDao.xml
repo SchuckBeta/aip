@@ -49,7 +49,6 @@
 		FROM sys_menu a
 		<include refid="menuJoins"/>
 		WHERE a.del_flag = '0' and a.href =#{href}
-
 	</select>
 
 	<select id="findAllList" resultType="Menu">

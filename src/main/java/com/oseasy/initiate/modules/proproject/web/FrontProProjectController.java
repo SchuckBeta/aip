@@ -34,6 +34,7 @@ import com.oseasy.pact.modules.actyw.exception.GroupErrorException;
 import com.oseasy.pact.modules.actyw.service.ActYwService;
 import com.oseasy.pact.modules.actyw.service.ActYwYearService;
 import com.oseasy.pact.modules.actyw.tool.process.vo.FlowPcategoryType;
+import com.oseasy.pcore.common.config.CoreJkey;
 import com.oseasy.pcore.common.config.CoreSval;
 import com.oseasy.pcore.common.config.Global;
 import com.oseasy.pcore.common.persistence.AttachMentEntity;
@@ -159,7 +160,7 @@ public class FrontProProjectController extends BaseController {
         	proModel.setYear(commonService.getApplyYear(proModel.getActYwId()));
 		}
         js = commonService.onProjectSaveStep2(proModel.getId(), proModel.getActYwId(), proModel.getProCategory(), proModel.getTeamId(),proModel.getYear());
-        if (!"1".equals(js.getString("ret"))) {
+        if (!"1".equals(js.getString(CoreJkey.JK_RET))) {
             return js;
         }
         try {
@@ -181,11 +182,11 @@ public class FrontProProjectController extends BaseController {
             proModelService.saveStep2(proModel);
         } catch (Exception e) {
             logger.error(ExceptionUtil.getStackTrace(e));
-            js.put("ret", 0);
+            js.put(CoreJkey.JK_RET, 0);
             js.put("msg", "保存失败,系统异常请联系管理员");
             return js;
         }
-        js.put("ret", 1);
+        js.put(CoreJkey.JK_RET, 1);
         js.put("id", proModel.getId());
         js.put("msg", "保存成功");
         return js;
@@ -210,12 +211,12 @@ public class FrontProProjectController extends BaseController {
             if (!StringUtil.isEmpty(proModel.getId())) {//修改
                 ProModel pm = proModelService.get(proModel.getId());
                 if (pm == null || "1".equals(pm.getDelFlag())) {
-                    js.put("ret", 0);
+                    js.put(CoreJkey.JK_RET, 0);
                     js.put("msg", "保存失败，项目已被删除");
                     return js;
                 }
                 if (Global.YES.equals(pm.getSubStatus())) {
-                    js.put("ret", 0);
+                    js.put(CoreJkey.JK_RET, 0);
                     js.put("msg", "保存失败，项目已被提交");
                     return js;
                 }
@@ -238,11 +239,11 @@ public class FrontProProjectController extends BaseController {
             proModelService.saveStep2(proModel);
         } catch (Exception e) {
             logger.error(ExceptionUtil.getStackTrace(e));
-            js.put("ret", 0);
+            js.put(CoreJkey.JK_RET, 0);
             js.put("msg", "保存失败,系统异常请联系管理员");
             return js;
         }
-        js.put("ret", 1);
+        js.put(CoreJkey.JK_RET, 1);
         js.put("id", proModel.getId());
         js.put("msg", "保存成功");
         return js;
@@ -293,18 +294,18 @@ public class FrontProProjectController extends BaseController {
         	proModel.setYear(commonService.getApplyYear(proModel.getActYwId()));
 		}
         js = commonService.onProjectSaveStep2(proModel.getId(), proModel.getActYwId(), proModel.getProCategory(), proModel.getTeamId(),proModel.getYear());
-        if (!"1".equals(js.getString("ret"))) {
+        if (!"1".equals(js.getString(CoreJkey.JK_RET))) {
             return js;
         }
         try {
             proModelService.saveStep3(proModel);
         } catch (Exception e) {
             logger.error(ExceptionUtil.getStackTrace(e));
-            js.put("ret", 0);
+            js.put(CoreJkey.JK_RET, 0);
             js.put("msg", "保存失败,系统异常请联系管理员");
             return js;
         }
-        js.put("ret", 1);
+        js.put(CoreJkey.JK_RET, 1);
         js.put("msg", "保存成功");
         return js;
     }
@@ -320,7 +321,7 @@ public class FrontProProjectController extends BaseController {
         	proModel.setYear(commonService.getApplyYear(proModel.getActYwId()));
 		}
         js = commonService.onProjectSubmitStep3(proModel.getId(), proModel.getActYwId(), proModel.getProCategory(), proModel.getTeamId(),proModel.getYear());
-        if (!"1".equals(js.getString("ret"))) {
+        if (!"1".equals(js.getString(CoreJkey.JK_RET))) {
             return js;
         }
 
@@ -328,7 +329,7 @@ public class FrontProProjectController extends BaseController {
             proModelService.submitStep3(proModel);
         } catch (Exception e) {
             logger.error(ExceptionUtil.getStackTrace(e));
-            js.put("ret", 0);
+            js.put(CoreJkey.JK_RET, 0);
             js.put("msg", "提交失败,系统异常请联系管理员");
             return js;
         }
@@ -339,7 +340,7 @@ public class FrontProProjectController extends BaseController {
 		}
         js.put("actywId", proModel.getActYwId());
 		js.put("projectId", proModel.getId());
-        js.put("ret", 1);
+        js.put(CoreJkey.JK_RET, 1);
         js.put("msg", "提交成功");
         return js;
     }
@@ -425,19 +426,19 @@ public class FrontProProjectController extends BaseController {
             logger.error(ExceptionUtil.getStackTrace(e));
             JSONObject js = new JSONObject();
             js.put("msg", "提交失败," + e.getCode());
-            js.put("ret", 0);
+            js.put(CoreJkey.JK_RET, 0);
             return js;
         }catch (ActYwRuntimeException e) {
             logger.error(ExceptionUtil.getStackTrace(e));
             JSONObject js = new JSONObject();
             js.put("msg", "提交失败," + e.getMessage());
-            js.put("ret", 0);
+            js.put(CoreJkey.JK_RET, 0);
             return js;
         } catch (Exception e) {
             logger.error(ExceptionUtil.getStackTrace(e));
             JSONObject js = new JSONObject();
             js.put("msg", "提交失败,系统异常请联系管理员");
-            js.put("ret", 0);
+            js.put(CoreJkey.JK_RET, 0);
             return js;
         }
     }

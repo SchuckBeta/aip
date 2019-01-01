@@ -12,12 +12,11 @@ import org.hibernate.validator.constraints.Length;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.oseasy.pcore.common.config.CoreIds;
+import com.oseasy.pcore.common.config.CoreSval;
 import com.oseasy.pcore.common.persistence.DataEntity;
 
 /**
  * 菜单Entity
-
-
  */
 public class Menu extends DataEntity<Menu> {
 
@@ -39,6 +38,11 @@ public class Menu extends DataEntity<Menu> {
 
 	private List<Menu> children;
 
+    public Menu() {
+        super();
+        this.sort = 30;
+        this.isShow = CoreSval.YES;
+    }
 
 	public String getImgUrl() {
 		return imgUrl;
@@ -54,12 +58,6 @@ public class Menu extends DataEntity<Menu> {
 
 	public void setChildren(List<Menu> children) {
 		this.children = children;
-	}
-
-	public Menu() {
-		super();
-		this.sort = 30;
-		this.isShow = "1";
 	}
 
 	public Menu(String id) {

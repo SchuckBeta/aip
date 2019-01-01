@@ -5,7 +5,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ include file="/WEB-INF/views/modules/cms/front/include/taglib.jsp" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
-<%request.setAttribute("user", UserUtils.getUser());%>
+<%request.setAttribute("user", CoreUtils.getUser());%>
 <!DOCTYPE html>
 <html>
 <head>

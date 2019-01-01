@@ -50,4 +50,42 @@ public class CmsSval {
         }
     }
 
+    public enum CmsCaches {
+        CMS_MENU_LIST("cmsMenuList", "CMS菜单缓存"),
+        CMSS_MENU_LIST("cmssMenuList", "站点菜单缓存"),
+        ;
+        private String key;
+        private String remark;
+        private CmsCaches(String key, String remark) {
+            this.key = key;
+            this.remark = remark;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public void setKey(String key) {
+            this.key = key;
+        }
+
+        public String getRemark() {
+            return remark;
+        }
+
+        public void setRemark(String remark) {
+            this.remark = remark;
+        }
+
+        public static CmsCaches getByKey(String key) {
+            CmsCaches[] entitys = CmsCaches.values();
+            for (CmsCaches entity : entitys) {
+                if ((key).equals(entity.getKey())) {
+                    return entity;
+                }
+            }
+            return null;
+        }
+    }
+
 }
