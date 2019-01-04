@@ -753,6 +753,17 @@
 	<!-- ************************************************************************ -->
 	<!-- CmsUtil -->
     <function>
+        <description>获取Web前端首页栏目列表</description>
+        <name>getWebCurrMenus</name>
+        <function-class>com.oseasy.pcms.common.utils.CmsUtil</function-class>
+        <function-signature>java.util.List getWebCurrMenus()</function-signature>
+        <example>${fns:getWebCurrMenus()}</example>
+    </function>
+
+
+
+
+    <function>
         <description>根据资源id获得html代码</description>
         <name>getHtmlByTemplate</name>
         <function-class>com.oseasy.pcms.common.utils.CmsUtil</function-class>
@@ -779,14 +790,6 @@
         <function-class>com.oseasy.pcms.common.utils.CmsUtil</function-class>
         <function-signature>java.util.List getCategorys(java.lang.String, java.lang.String)</function-signature>
         <example>${fns:getCategorys(key, pid)}</example>
-    </function>
-
-    <function>
-        <description>获取前端首页栏目列表</description>
-        <name>getCategorysIndex</name>
-        <function-class>com.oseasy.pcms.common.utils.CmsUtil</function-class>
-        <function-signature>java.util.List getCategorysIndex()</function-signature>
-        <example>${fns:getCategorysIndex()}</example>
     </function>
 
     <function>

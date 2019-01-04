@@ -8,7 +8,7 @@
 		a.title AS "title",
 		a.logo AS "logo",
 		a.logo_site AS "logoSite",
-		a.index AS "index",
+		a.indexx AS "index",
 		a.domain AS "domain",
 		a.description AS "description",
 		a.keywords AS "keywords",
@@ -116,7 +116,7 @@
 			title,
 			logo,
 			logo_site,
-			index,
+			indexx,
 			domain,
 			description,
 			keywords,
@@ -156,7 +156,7 @@
 			title,
 			logo,
 			logo_site,
-			index,
+			indexx,
 			domain,
 			description,
 			keywords,
@@ -198,7 +198,7 @@
 			title = #{title},
 			logo = #{logo},
 			logo_site = #{logoSite},
-			index = #{index},
+			indexx = #{index},
 			domain = #{domain},
 			description = #{description},
 			keywords = #{keywords},
@@ -233,7 +233,7 @@
 					when id=#{item.id} then #{item.logoSite}
 				</foreach>
 			</trim>
-			<trim prefix="index =case" suffix="end,">
+			<trim prefix="indexx =case" suffix="end,">
 				<foreach item="item" collection="entitys" index="index">
 					when id=#{item.id} then #{item.index}
 				</foreach>

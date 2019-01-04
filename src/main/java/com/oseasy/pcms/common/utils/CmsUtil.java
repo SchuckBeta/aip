@@ -6,12 +6,19 @@ package com.oseasy.pcms.common.utils;
 
 import java.util.List;
 
+import com.google.common.collect.Lists;
 import com.oseasy.pcms.modules.cms.dao.CmsMenuDao;
 import com.oseasy.pcms.modules.cms.entity.CmsMenu;
+import com.oseasy.pcms.modules.cmss.dao.CmsSiteDao;
 import com.oseasy.pcms.modules.cmss.dao.CmssMenuDao;
+import com.oseasy.pcms.modules.cmss.dao.CmssSiteDao;
+import com.oseasy.pcms.modules.cmss.entity.CmsSite;
 import com.oseasy.pcms.modules.cmss.entity.CmssCategory;
 import com.oseasy.pcms.modules.cmss.entity.CmssMenu;
+import com.oseasy.pcms.modules.cmss.vo.CmsSiteType;
+import com.oseasy.pcore.common.config.CoreSval;
 import com.oseasy.pcore.common.utils.SpringContextHolder;
+import com.oseasy.putil.common.utils.StringUtil;
 
 /**
  * .
@@ -21,6 +28,79 @@ import com.oseasy.pcore.common.utils.SpringContextHolder;
 public class CmsUtil {
     private static CmsMenuDao cmsMenuDao = SpringContextHolder.getBean(CmsMenuDao.class);
     private static CmssMenuDao cmssMenuDao = SpringContextHolder.getBean(CmssMenuDao.class);
+    private static CmsSiteDao cmsSiteDao = SpringContextHolder.getBean(CmsSiteDao.class);
+    private static CmssSiteDao cmssSiteDao = SpringContextHolder.getBean(CmssSiteDao.class);
+
+    /**
+     * 获取当前App站点.
+     * @return
+     */
+    public static CmsSite getAppCurr(){
+        CmsSite pcmsSite = new CmsSite();
+        pcmsSite.setType(CmsSiteType.WEB.getKey());
+        pcmsSite.setIsZzd(CoreSval.YES);
+        return cmsSiteDao.getCurr(pcmsSite);
+    }
+
+    /**
+     * 获取前端App菜单列表.
+     * @return List
+     */
+    public static List<CmssMenu> getAppCurrMenus(){
+        CmsSite curSmsSite = getAppCurr();
+        if((curSmsSite == null) || StringUtil.isEmpty(curSmsSite.getId())){
+            return Lists.newArrayList();
+        }
+        return cmssMenuDao.findListBySite(new CmssMenu(curSmsSite.getId()));
+    }
+
+    /**
+     * 获取当前Web站点.
+     * @return
+     */
+    public static CmsSite getWebCurr(){
+        CmsSite pcmsSite = new CmsSite();
+        pcmsSite.setType(CmsSiteType.WEB.getKey());
+        pcmsSite.setIsZzd(CoreSval.YES);
+        return cmsSiteDao.getCurr(pcmsSite);
+    }
+
+    /**
+     * 获取前端Web菜单列表.
+     * @return List
+     */
+    public static List<CmssMenu> getWebCurrMenus(){
+        CmsSite curSmsSite = getWebCurr();
+        if((curSmsSite == null) || StringUtil.isEmpty(curSmsSite.getId())){
+            return Lists.newArrayList();
+        }
+        List<CmssMenu> list = Lists.newArrayList();
+        List<CmssMenu> sourcelist = cmssMenuDao.findListBySite(new CmssMenu(curSmsSite));
+        CmssMenu.sortList(list, sourcelist, CmssMenu.getRootId(), true);
+        return list;
+    }
+
+    /**
+     * 获取当前站点组.
+     * @return
+     */
+    public static CmsSite getCurr(){
+        CmsSite pcmsSite = new CmsSite();
+        pcmsSite.setIsZzd(CoreSval.NO);
+        return cmsSiteDao.getCurr(pcmsSite);
+    }
+
+    /**
+     * 获取站点组菜单列表.
+     * @return
+     */
+    public static List<CmssMenu> getCurrMenus(){
+        return cmssMenuDao.findListBySite(new CmssMenu(new CmsSite(getCurr())));
+    }
+
+    /******************************************************************************/
+
+
 
     /**
      * 根据资源id获得html代码.
@@ -36,7 +116,7 @@ public class CmsUtil {
      * 获取优秀展示模板列表.
      * @return
      */
-    public java.util.List getExcTemplateList(){
+    public List getExcTemplateList(){
         //TODO CHENHAO
         return null;
     }
@@ -46,7 +126,7 @@ public class CmsUtil {
      * @param resid
      * @return
      */
-    public java.util.List getTemplateList(){
+    public List getTemplateList(){
         //TODO CHENHAO
         return null;
     }
@@ -57,16 +137,7 @@ public class CmsUtil {
      * @param pid
      * @return
      */
-    public java.util.List getCategorys(String key, String pid){
-        //TODO CHENHAO
-        return null;
-    }
-
-    /**
-     * 获取前端首页栏目列表.
-     * @return
-     */
-    public java.util.List getCategorysIndex(){
+    public List getCategorys(String key, String pid){
         //TODO CHENHAO
         return null;
     }

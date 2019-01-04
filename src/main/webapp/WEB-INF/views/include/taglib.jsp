@@ -4,6 +4,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fns" uri="/WEB-INF/tlds/fns.tld" %>
+<%@ taglib prefix="pcms" tagdir="/WEB-INF/tags/pcms" %>
 <%-- <%@ taglib prefix="fnc" uri="/WEB-INF/tlds/fnc.tld" %>
 <%@ taglib prefix="pj" uri="/WEB-INF/tlds/pj.tld" %>
 <%@ taglib prefix="sys" tagdir="/WEB-INF/tags/sys" %>

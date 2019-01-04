@@ -7,6 +7,7 @@
 		a.parent_id AS "parent.id",
 		a.parent_ids AS "parentIds",
 		a.config_id AS "config.id",
+		a.type AS "type",
 		a.name AS "name",
 		a.is_curr AS "isCurr",
 		a.is_zzd AS "isZzd",
@@ -16,13 +17,15 @@
 		a.update_date AS "updateDate",
 		a.remarks AS "remarks",
 		a.del_flag AS "delFlag",
-		<include refid="cmsSiteParentColumns"/>
+		<include refid="cmsSiteParentColumns"/>,
+		<include refid="cmssSiteColumns"/>
 	</sql>
 
 	<sql id="cmsSiteParentColumns">
 		p.parent_id AS "parent.id",
 		p.parent_ids AS "parentIds",
 		p.config_id AS "config.id",
+		a.type AS "type",
 		p.name AS "name",
 		p.is_curr AS "isCurr",
 		p.is_zzd AS "isZzd",
@@ -34,8 +37,29 @@
 		p.del_flag AS "delFlag"
 	</sql>
 
+	<sql id="cmssSiteColumns">
+		b.id AS "ssite.id",
+		b.sit_id AS "ssite.site.id",
+		b.title AS "ssite.title",
+		b.logo AS "ssite.logo",
+		b.logo_site AS "ssite.logoSite",
+		b.indexx AS "ssite.index",
+		b.domain AS "ssite.domain",
+		b.description AS "ssite.description",
+		b.keywords AS "ssite.keywords",
+		b.theme AS "ssite.theme",
+		b.copyright AS "ssite.copyright",
+		b.create_by AS "ssite.createBy.id",
+		b.create_date AS "ssite.createDate",
+		b.update_by AS "ssite.updateBy.id",
+		b.update_date AS "ssite.updateDate",
+		b.remarks AS "ssite.remarks",
+		b.del_flag AS "ssite.delFlag"
+	</sql>
+
 	<sql id="cmsSiteJoins">
 		LEFT JOIN cms_site p ON p.id = a.parent_id
+		LEFT JOIN cmss_site b ON b.sit_id = a.id
 	</sql>
 
 	<select id="get" resultType="CmsSite">
@@ -44,6 +68,54 @@
 		FROM cms_site a
 		<include refid="cmsSiteJoins"/>
 		WHERE a.id = #{id}
+	</select>
+
+	<select id="getCurr" resultType="CmsSite">
+		SELECT
+			<include refid="cmsSiteColumns"/>
+		FROM cms_site a
+		<include refid="cmsSiteJoins"/>
+		WHERE a.is_curr = '1'
+		<if test="type != null and type != ''">
+			AND a.type = #{type}
+		</if>
+		<if test="isZzd != null and isZzd != ''">
+			AND a.is_zzd = #{isZzd}
+		</if>
+	</select>
+
+	<select id="getCurrs" resultType="CmsSite">
+		SELECT
+			<include refid="cmsSiteColumns"/>
+		FROM cms_site a
+		<include refid="cmsSiteJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL} a.is_curr = '1'
+			<if test="id != null and id != ''">
+				AND a.id = #{id}
+			</if>
+			<if test="parent != null and parent.id != null and parent.id != ''">
+				AND a.parent_id = #{parent.id}
+			</if>
+			<if test="parentIds != null and parentIds != ''">
+				AND a.parent_ids LIKE
+					<if test="dbName == 'oracle'">'%'||#{parentIds}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{parentIds}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{parentIds},'%')</if>
+			</if>
+			<if test="config != null and config.id != null and config.id != ''">
+				AND a.config_id = #{config.id}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
 	</select>
 
 	<select id="findList" resultType="CmsSite">
@@ -64,6 +136,9 @@
 					<if test="dbName == 'oracle'">'%'||#{parentIds}||'%'</if>
 					<if test="dbName == 'mssql'">'%'+#{parentIds}+'%'</if>
 					<if test="dbName == 'mysql'">concat('%',#{parentIds},'%')</if>
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
 			</if>
 			<if test="config != null and config.id != null and config.id != ''">
 				AND a.config_id = #{config.id}

@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.oseasy.pcms.modules.cmss.entity.CmsSite;
+import com.oseasy.pcore.common.persistence.BaseDao;
 import com.oseasy.pcore.common.persistence.TreeDao;
 import com.oseasy.pcore.common.persistence.annotation.MyBatisDao;
 
@@ -15,6 +16,20 @@ import com.oseasy.pcore.common.persistence.annotation.MyBatisDao;
  */
 @MyBatisDao
 public interface CmsSiteDao extends TreeDao<CmsSite> {
+    /**
+     * 获取当前站点
+     * a.is_curr = '1'
+     * @return CmsSite
+     */
+    public CmsSite getCurr(CmsSite entity);
+
+    /**
+     * 获取所有当前站点
+     * a.is_curr = '1'
+     * @return List
+     */
+    public List<CmsSite> getCurrs();
+
     /**
      * 批量新增.
      * @param entitys

@@ -8,6 +8,9 @@
 	<!--新版装饰页面-->
 	<decorator name="creative" page="layouts/website/creative.jsp"></decorator>
 
+	<!--新版装饰页面-->
+	<decorator name="zjl" page="layouts/website/zjl/fhome.jsp"></decorator>
+
 
 	<!-- CMS基础主题装饰页面 -->
 	<decorator name="cms_default_basic" page="modules/cms/front/themes/basic/layouts/default.jsp" />

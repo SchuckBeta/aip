@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/views/modules/cms/front/include/taglib.jsp" %>
 <!--导航部分-->
 <ul id="header_info" style="margin-bottom: 0px;">
-    <c:forEach var="pitem" items="${fns:getCategorysIndex() }" varStatus="idx">
+    <c:forEach var="pitem" items="${fns:getWebCurrMenus() }" varStatus="idx">
         <c:if test="${fns:checkCategory(pitem.id) }">
             <c:if test="${idx.index < 7 }">
                 <li>
