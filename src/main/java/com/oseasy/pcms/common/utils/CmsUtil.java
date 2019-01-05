@@ -43,7 +43,7 @@ public class CmsUtil {
      */
     public static CmsSite putCurSite(HttpServletRequest request, HttpServletResponse response) {
         String curSiteId = (String) request.getSession().getAttribute(CmsKeys.SITE_CUR_ID.getKey());
-        curSiteId = CmsSval.CMS_SID;
+        //curSiteId = CmsSval.CMS_SID;
         if(StringUtil.isEmpty(curSiteId)){
             System.out.println("站点ID不存在！");
             return null;

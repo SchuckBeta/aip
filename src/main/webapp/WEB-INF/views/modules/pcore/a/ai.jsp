@@ -6,10 +6,10 @@
 <head>
     <title>${frontTitle}</title>
     <meta charset="UTF-8">
-    <meta name="decorator" content="zjlf"/>
+    <meta name="decorator" content="coma"/>
 </head>
 <body>
-Welcome
+Welcome Ai
 <script type="text/javascript">
 </script>
 </body>

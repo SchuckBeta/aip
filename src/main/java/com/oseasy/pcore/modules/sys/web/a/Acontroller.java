@@ -12,11 +12,16 @@ import org.apache.shiro.web.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.oseasy.pcms.common.utils.CmsUtil;
+import com.oseasy.pcms.modules.cmss.entity.CmsSite;
+import com.oseasy.pcore.common.config.CorePages;
 import com.oseasy.pcore.common.config.CoreSval;
 import com.oseasy.pcore.common.config.Global;
+import com.oseasy.pcore.common.config.CoreSval.CorePaths;
 import com.oseasy.pcore.common.security.shiro.session.SessionDAO;
 import com.oseasy.pcore.common.utils.IdGen;
 import com.oseasy.pcore.common.web.BaseController;
@@ -37,6 +42,38 @@ import com.oseasy.putil.common.utils.StringUtil;
 public class Acontroller extends BaseController{
     @Autowired
     private SessionDAO sessionDAO;
+
+    /**
+     * 登录成功，进入前台首页前置页
+     */
+    @RequestMapping(value = "ai")
+    public String findex(HttpServletRequest request,Model model, HttpServletResponse response) {
+        return CorePages.A_IV1.getIdxUrl();
+    }
+
+    /*
+     * 当前站点内容模板静态文件
+     */
+    @RequestMapping(value = "t/{page}")
+    public String curSitePage(@PathVariable String page, Model model, HttpServletRequest request, HttpServletResponse response) {
+        CmsSite curSite = CmsUtil.getCurr(request, response);
+        return CorePaths.PH_LAYOUTS_SITES.getKey() + StringUtil.LINE
+                + curSite.getParent().getKeyss() + StringUtil.LINE
+                + curSite.getKeyss() + CoreSval.getAdminPath() + StringUtil.LINE + page;
+    }
+
+    /*
+     * 当前站点内容模板静态文件
+     */
+    @RequestMapping(value = "t/{md}/{page}")
+    public String curSiteTplPage(@PathVariable String md, @PathVariable String page, Model model, HttpServletRequest request, HttpServletResponse response) {
+        CmsSite curSite = CmsUtil.getCurr(request, response);
+        return CorePaths.PH_LAYOUTS_SITES.getKey() + StringUtil.LINE
+                + curSite.getParent().getKeyss() + StringUtil.LINE
+                + curSite.getKeyss() + CoreSval.getAdminPath()+ StringUtil.LINE
+                + md + StringUtil.LINE + page;
+    }
+
 
     /**
      * 登录成功，进入管理首页
@@ -82,6 +119,12 @@ public class Acontroller extends BaseController{
 //      if(site!=null){
 //          CoreUtils.putCache("siteId", String.valueOf(site.getId()));
 //      }
+
+//        //TODO 实现站点维护
+//        if(CmsUtil.getCurr(request, response) == null){
+//            return CoreSval.REDIRECT + Global.getAdminPath() + "/ai";
+//        }
+
         return "modules/sys/sysMenuIndex";
     }
 

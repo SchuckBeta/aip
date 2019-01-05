@@ -7,13 +7,18 @@ package com.oseasy.pcore.common.config;
 public enum CorePages {
     ERROR_MSG(404, "404", "error/msg"),
     ERROR_404(404, "404", "error/404"),
-    FIDX_V1(100, "findex", "modules/pcore/findex"),
+
+    F_IV1(1000, "fi", "modules/pcore/f/fi"),
+    F_IDXV1(1100, "findex", "modules/pcore/f/findex"),
+    A_IV1(2000, "ai", "modules/pcore/a/ai"),
+    A_IDXV1(210, "aindex", "modules/pcore/a/aindex"),
+
     FIDX_VOLD(200, "弃用", "modules/website/indexForTemplate"),
     IDX_BACK_V3(13, "backV3", "modules/sys/sysIndexBackV3"),
     IDX_BACK_V4(14, "backV4", "modules/sys/sysIndexBackV4");
 
     private Integer val;
-    private String idx;
+    private String idx;//url
     private String idxUrl;
     private CorePages(Integer val, String idx, String idxUrl) {
         this.val = val;

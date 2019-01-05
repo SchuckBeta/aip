@@ -30,13 +30,13 @@
             <%-- <c:choose>
                 <c:when test="${fnc:getAutoSite().copyright != null && fnc:getAutoSite().copyright != ''}">
                     ${fnc:getAutoSite().copyright}<br>
-                    技术支持:武汉噢易云计算股份有限公司
+                    技术支持:武汉中骏龙新能源科技有限公司
 
                         <a style="font-size: 12px; color: rgb(0,0,199);text-decoration: underline" href="${fns:getSysFrontIp()}/a" >进入管理门户</a>
 
                 </c:when>
                 <c:otherwise> --%>
-                    Copyright © 2015-2018 :武汉噢易云计算股份有限公司<br>
+                    Copyright © 2015-2018 :武汉中骏龙新能源科技有限公司<br>
 
                        <a style="font-size: 12px; color: rgb(0,0,199);text-decoration: underline" href="${fns:getSysFrontIp()}/a" >进入管理门户</a>
 

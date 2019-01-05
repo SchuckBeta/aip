@@ -65,24 +65,41 @@ public class Fcontroller extends BaseController{
         if (logger.isDebugEnabled()) {
             logger.debug("show index, active session size: {}", sessionDAO.getActiveSessions(false).size());
         }
-//      return CorePages.FIDX_VOLD.getIdxUrl();
-        return CorePages.FIDX_V1.getIdxUrl();
+        if(CmsUtil.getCurr(request, response) == null){
+            return CoreSval.REDIRECT + Global.getFrontPath() + "/fi";
+        }
+        return CorePages.F_IDXV1.getIdxUrl();
+    }
+
+    /**
+     * 登录成功，进入前台首页前置页
+     */
+    @RequestMapping(value = "fi")
+    public String findex(HttpServletRequest request,Model model, HttpServletResponse response) {
+        return CorePages.F_IV1.getIdxUrl();
     }
 
     /*
      * 当前站点内容模板静态文件
      */
-    @RequestMapping(value = "/{tpl}/{page}")
-    public String curSitePage( @PathVariable String tpl, @PathVariable String page, Model model, HttpServletRequest request, HttpServletResponse response) {
+    @RequestMapping(value = "t/{page}")
+    public String curSitePage(@PathVariable String page, Model model, HttpServletRequest request, HttpServletResponse response) {
         CmsSite curSite = CmsUtil.getCurr(request, response);
-        System.out.println(CorePaths.PH_LAYOUTS_SITES.getKey() + StringUtil.LINE
+        return CorePaths.PH_LAYOUTS_SITES.getKey() + StringUtil.LINE
                 + curSite.getParent().getKeyss() + StringUtil.LINE
-                + curSite.getKeyss() + CoreSval.getFrontPath()+ StringUtil.LINE
-                + tpl + StringUtil.LINE + page);
+                + curSite.getKeyss() + CoreSval.getFrontPath() + StringUtil.LINE + page;
+    }
+
+    /*
+     * 当前站点内容模板静态文件
+     */
+    @RequestMapping(value = "t/{md}/{page}")
+    public String curSiteTplPage(@PathVariable String md, @PathVariable String page, Model model, HttpServletRequest request, HttpServletResponse response) {
+        CmsSite curSite = CmsUtil.getCurr(request, response);
         return CorePaths.PH_LAYOUTS_SITES.getKey() + StringUtil.LINE
                 + curSite.getParent().getKeyss() + StringUtil.LINE
                 + curSite.getKeyss() + CoreSval.getFrontPath()+ StringUtil.LINE
-                + tpl + StringUtil.LINE + page;
+                + md + StringUtil.LINE + page;
     }
 
 	@RequestMapping(value = "login", method = RequestMethod.GET)

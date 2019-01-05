@@ -6,10 +6,10 @@
 <head>
     <title>${frontTitle}</title>
     <meta charset="UTF-8">
-    <meta name="decorator" content="zjlf"/>
+    <meta name="decorator" content="comf"/>
 </head>
 <body>
-Welcome
+Welcome Findex
 <script type="text/javascript">
 </script>
 </body>

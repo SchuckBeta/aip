@@ -189,7 +189,7 @@
         <%--<div class="footerBox"--%>
              <%--style="height: 40px; line-height: 40px; text-align: center; background-color: rgb(255, 255, 255); position: fixed; bottom: 0px; width: 100%; border-top: 1px solid #ddd;">--%>
             <%--<p class="copyright" style="margin: 0px 10px;">--%>
-                <%--<img src="/images/net.png"><span>公司名称：武汉噢易云计算股份有限公司</span> <img--%>
+                <%--<img src="/images/net.png"><span>公司名称：武汉中骏龙新能源科技有限公司</span> <img--%>
                     <%--src="/images/net.png"><span>官方网址：www.os-easy.com</span> <img--%>
                     <%--src="/images/net.png"><span>官方网址400服务电话：4001-027-580</span>--%>
             <%--</p>--%>

@@ -1,15 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <decorators defaultdir="/WEB-INF/views">
+	<!--空白装饰页面-->
+	<decorator name="blank" page="layouts/blank.jsp" />
+
+	<!--公共版前台装饰页面-->
+	<decorator name="comf" page="layouts/website/com/f/fhome.jsp"></decorator>
+	<!--公共版后台装饰页面-->
+	<decorator name="coma" page="layouts/website/com/a/ahome.jsp"></decorator>
+
+	<!--zjl版前台装饰页面-->
+	<decorator name="zjlf" page="layouts/website/zjl/f/fhome.jsp"></decorator>
+	<!--zjl版后台装饰页面-->
+	<decorator name="zjla" page="layouts/website/zjl/a/ahome.jsp"></decorator>
+
+
+
+
+
 
 	<!-- 默认装饰页面, 在需要装饰的页面增加<meta name="decorator" content="default"/> -->
-	<decorator name="blank" page="layouts/blank.jsp" />
 	<decorator name="default" page="layouts/default.jsp" />
 
 	<!--新版装饰页面-->
 	<decorator name="creative" page="layouts/website/creative.jsp"></decorator>
 
-	<!--新版装饰页面-->
-	<decorator name="zjl" page="layouts/website/zjl/fhome.jsp"></decorator>
+
 
 
 	<!-- CMS基础主题装饰页面 -->

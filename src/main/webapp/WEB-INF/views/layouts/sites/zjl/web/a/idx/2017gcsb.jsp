@@ -7,7 +7,7 @@
     <!--头部导航公用样式-->
     <!--公用重置样式文件-->
     <title>${frontTitle}</title>
-    <meta name="decorator" content="zjlf"/>
+    <meta name="decorator" content="zjla"/>
     <link rel="stylesheet" type="text/css" href="/css/html/gxxmsb.css"/>
 </head>
 <body>
@@ -21,7 +21,7 @@
         <img class="img-responsive" style="margin: 0 auto" src="/img/gcxmtz.jpg">
     </div>
     <div id="title">
-        <h3>相关推荐</h3>
+        <h3>相关推荐VVVV</h3>
     </div>
     <div id="info">
         <ul>

@@ -273,7 +273,7 @@
             }
 
 
-        }(Vue, axios, window)
+        }(Vue, axios, window);
 
     </script>
     <sitemesh:head/>
