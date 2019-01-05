@@ -4,20 +4,28 @@
 
 package com.oseasy.pcms.common.utils;
 
+import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.google.common.collect.Lists;
+import com.oseasy.pcms.common.config.CmsSval;
+import com.oseasy.pcms.common.config.CmsSval.CmsCaches;
+import com.oseasy.pcms.common.config.CmsSval.CmsKeys;
 import com.oseasy.pcms.modules.cms.dao.CmsMenuDao;
 import com.oseasy.pcms.modules.cms.entity.CmsMenu;
 import com.oseasy.pcms.modules.cmss.dao.CmsSiteDao;
 import com.oseasy.pcms.modules.cmss.dao.CmssMenuDao;
-import com.oseasy.pcms.modules.cmss.dao.CmssSiteDao;
 import com.oseasy.pcms.modules.cmss.entity.CmsSite;
 import com.oseasy.pcms.modules.cmss.entity.CmssCategory;
 import com.oseasy.pcms.modules.cmss.entity.CmssMenu;
 import com.oseasy.pcms.modules.cmss.vo.CmsSiteType;
 import com.oseasy.pcore.common.config.CoreSval;
+import com.oseasy.pcore.common.utils.CacheUtils;
 import com.oseasy.pcore.common.utils.SpringContextHolder;
+import com.oseasy.putil.common.utils.AppUtil;
 import com.oseasy.putil.common.utils.StringUtil;
 
 /**
@@ -29,7 +37,52 @@ public class CmsUtil {
     private static CmsMenuDao cmsMenuDao = SpringContextHolder.getBean(CmsMenuDao.class);
     private static CmssMenuDao cmssMenuDao = SpringContextHolder.getBean(CmssMenuDao.class);
     private static CmsSiteDao cmsSiteDao = SpringContextHolder.getBean(CmsSiteDao.class);
-    private static CmssSiteDao cmssSiteDao = SpringContextHolder.getBean(CmssSiteDao.class);
+    /**
+     * 加载当前站点到缓存中.
+     * @throws IOException
+     */
+    public static CmsSite putCurSite(HttpServletRequest request, HttpServletResponse response) {
+        String curSiteId = (String) request.getSession().getAttribute(CmsKeys.SITE_CUR_ID.getKey());
+        curSiteId = CmsSval.CMS_SID;
+        if(StringUtil.isEmpty(curSiteId)){
+            System.out.println("站点ID不存在！");
+            return null;
+        }
+
+        CmsSite pcmsSite = new CmsSite(curSiteId);
+        if(AppUtil.checkApp(request, response)){
+            pcmsSite.setType(CmsSiteType.App.getKey());
+        }else{
+            pcmsSite.setType(CmsSiteType.WEB.getKey());
+        }
+        pcmsSite.setIsZzd(CoreSval.YES);
+        pcmsSite = cmsSiteDao.getCurr(pcmsSite);
+
+        if(pcmsSite == null){
+            System.out.println("当前站点不存在！");
+            return null;
+        }
+
+        CacheUtils.put(CmsCaches.SITE_CURR.getKey(), pcmsSite);
+        return pcmsSite;
+    }
+
+    /**
+     * 获取当前站点.
+     * @return
+     */
+    public static CmsSite getCurr(HttpServletRequest request, HttpServletResponse response){
+        CmsSite currSite = (CmsSite)CacheUtils.get(CmsCaches.SITE_CURR.getKey());
+        if (currSite == null) {
+            currSite = putCurSite(request, response);
+        }
+
+        if (currSite != null) {
+            CacheUtils.put(CmsCaches.SITE_CURR.getKey(), currSite);
+        }
+        return currSite;
+    }
+
 
     /**
      * 获取当前App站点.
@@ -77,14 +130,14 @@ public class CmsUtil {
         List<CmssMenu> list = Lists.newArrayList();
         List<CmssMenu> sourcelist = cmssMenuDao.findListBySite(new CmssMenu(curSmsSite));
         CmssMenu.sortList(list, sourcelist, CmssMenu.getRootId(), true);
-        return list;
+        return CmssMenu.buildMenuTree(list);
     }
 
     /**
      * 获取当前站点组.
      * @return
      */
-    public static CmsSite getCurr(){
+    public static CmsSite getGcurr(){
         CmsSite pcmsSite = new CmsSite();
         pcmsSite.setIsZzd(CoreSval.NO);
         return cmsSiteDao.getCurr(pcmsSite);
@@ -95,7 +148,7 @@ public class CmsUtil {
      * @return
      */
     public static List<CmssMenu> getCurrMenus(){
-        return cmssMenuDao.findListBySite(new CmssMenu(new CmsSite(getCurr())));
+        return cmssMenuDao.findListBySite(new CmssMenu(new CmsSite(getGcurr())));
     }
 
     /******************************************************************************/

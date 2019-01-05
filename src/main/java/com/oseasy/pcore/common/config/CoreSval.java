@@ -396,4 +396,43 @@ public class CoreSval {
             return null;
         }
     }
+
+    public enum CorePaths {
+        PH_LAYOUTS("layouts", "布局静态页根路径"),
+        PH_LAYOUTS_WEBSITE("layouts/website", "布局根路径"),
+        PH_LAYOUTS_SITES("layouts/sites", "布局站点根路径"),
+        ;
+        private String key;
+        private String remark;
+        private CorePaths(String key, String remark) {
+            this.key = key;
+            this.remark = remark;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public void setKey(String key) {
+            this.key = key;
+        }
+
+        public String getRemark() {
+            return remark;
+        }
+
+        public void setRemark(String remark) {
+            this.remark = remark;
+        }
+
+        public static CorePaths getByKey(String key) {
+            CorePaths[] entitys = CorePaths.values();
+            for (CorePaths entity : entitys) {
+                if ((key).equals(entity.getKey())) {
+                    return entity;
+                }
+            }
+            return null;
+        }
+    }
 }

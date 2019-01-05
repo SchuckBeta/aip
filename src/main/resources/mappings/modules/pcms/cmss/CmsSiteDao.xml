@@ -9,6 +9,7 @@
 		a.config_id AS "config.id",
 		a.type AS "type",
 		a.name AS "name",
+		a.keyss AS "keyss",
 		a.is_curr AS "isCurr",
 		a.is_zzd AS "isZzd",
 		a.create_by AS "createBy.id",
@@ -22,19 +23,20 @@
 	</sql>
 
 	<sql id="cmsSiteParentColumns">
-		p.parent_id AS "parent.id",
-		p.parent_ids AS "parentIds",
-		p.config_id AS "config.id",
-		a.type AS "type",
-		p.name AS "name",
-		p.is_curr AS "isCurr",
-		p.is_zzd AS "isZzd",
-		p.create_by AS "createBy.id",
-		p.create_date AS "createDate",
-		p.update_by AS "updateBy.id",
-		p.update_date AS "updateDate",
-		p.remarks AS "remarks",
-		p.del_flag AS "delFlag"
+		p.parent_id AS "parent.parent.id",
+		p.parent_ids AS "parent.parentIds",
+		p.config_id AS "parent.config.id",
+		a.type AS "parent.type",
+		p.name AS "parent.name",
+		p.keyss AS "parent.keyss",
+		p.is_curr AS "parent.isCurr",
+		p.is_zzd AS "parent.isZzd",
+		p.create_by AS "parent.createBy.id",
+		p.create_date AS "parent.createDate",
+		p.update_by AS "parent.updateBy.id",
+		p.update_date AS "parent.updateDate",
+		p.remarks AS "parent.remarks",
+		p.del_flag AS "parent.delFlag"
 	</sql>
 
 	<sql id="cmssSiteColumns">
@@ -109,6 +111,9 @@
 			<if test="type != null and type != ''">
 				AND a.type = #{type}
 			</if>
+			<if test="keyss != null and keyss != ''">
+				AND a.keyss = #{keyss}
+			</if>
 			<if test="name != null and name != ''">
 				AND a.name LIKE
 					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
@@ -139,6 +144,9 @@
 			</if>
 			<if test="type != null and type != ''">
 				AND a.type = #{type}
+			</if>
+			<if test="keyss != null and keyss != ''">
+				AND a.keyss = #{keyss}
 			</if>
 			<if test="config != null and config.id != null and config.id != ''">
 				AND a.config_id = #{config.id}
@@ -182,6 +190,7 @@
 			parent_ids,
 			config_id,
 			name,
+			keyss,
 			is_curr,
 			is_zzd,
 			create_by,
@@ -196,6 +205,7 @@
 			#{parentIds},
 			#{config.id},
 			#{name},
+			#{keyss},
 			#{isCurr},
 			#{isZzd},
 			#{createBy.id},
@@ -214,6 +224,7 @@
 			parent_ids,
 			config_id,
 			name,
+			keyss,
 			is_curr,
 			is_zzd,
 			create_by,
@@ -230,6 +241,7 @@
 			#{item.parentIds},
 			#{item.config.id},
 			#{item.name},
+			#{item.keyss},
 			#{item.isCurr},
 			#{item.isZzd},
 			#{item.createBy.id},
@@ -248,6 +260,7 @@
 			parent_ids = #{parentIds},
 			config_id = #{config.id},
 			name = #{name},
+			keyss = #{keyss},
 			is_curr = #{isCurr},
 			is_zzd = #{isZzd},
 			update_by = #{updateBy.id},
@@ -277,6 +290,11 @@
 			<trim prefix="name =case" suffix="end,">
 				<foreach item="item" collection="entitys" index="index">
 					when id=#{item.id} then #{item.name}
+				</foreach>
+			</trim>
+			<trim prefix="keyss =case" suffix="end,">
+				<foreach item="item" collection="entitys" index="index">
+					when id=#{item.id} then #{item.keyss}
 				</foreach>
 			</trim>
 			<trim prefix="is_curr =case" suffix="end,">

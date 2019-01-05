@@ -18,8 +18,8 @@
                 </div>
             </div>
         </div>
-        <%-- <pcms:fcmssNavContainer></pcms:fcmssNavContainer>
-        <cms:frontLogin user="${user}"></cms:frontLogin> --%>
+        <pcms:fcmssNavContainer></pcms:fcmssNavContainer>
+        <%-- <cms:frontLogin user="${user}"></cms:frontLogin> --%>
     </div>
     <input type="hidden" name="userId" value="${user.id}">
 </div>

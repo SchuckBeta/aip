@@ -22,6 +22,7 @@ public class CmsSite extends TreeEntity<CmsSite> {
 	private String parentIds;		// 所有父级编号
 	private String config;		// 配置编号
 	private String name;		// 站点名称
+	private String keyss;		// 站点唯一标识
 	private String type;		// 站点类型 CmsSiteType
 	private String isCurr;		// 是否当前站点
 	private String isZzd;		// 是否子站点:0、否；1、是
@@ -64,6 +65,14 @@ public class CmsSite extends TreeEntity<CmsSite> {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getKeyss() {
+        return keyss;
+    }
+
+    public void setKeyss(String keyss) {
+        this.keyss = keyss;
     }
 
     @Length(min=1, max=64, message="配置编号长度必须介于 1 和 64 之间")

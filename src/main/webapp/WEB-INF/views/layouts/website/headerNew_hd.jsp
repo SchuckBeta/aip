@@ -39,7 +39,7 @@
             </div>
         </div>
         <!--导航部分-->
-        <cms:frontCategorysIndex></cms:frontCategorysIndex>
+        <pcms:fcmssNavContainer></pcms:fcmssNavContainer>
         <!--登录块-->
     </div>
     <div class="user-wrap">
@@ -98,7 +98,7 @@
 		                        click: function () {
 		                        	$(this).dialog('close')
 		                        }
-		                    }] 
+		                    }]
 		                });
 					}else if(data.ret=='1'){
 						if(callFun)callFun();

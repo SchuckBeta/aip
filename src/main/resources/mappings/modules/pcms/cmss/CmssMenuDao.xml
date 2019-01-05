@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oseasy.pcms.modules.cmss.dao.CmssMenuDao">
+
+	<sql id="cmssMenuColumns">
+		a.id AS "id",
+		a.parent_id AS "parent.id",
+		a.parent_ids AS "parentIds",
+		a.menu_id AS "menu.id",
+		a.site_id AS "site.id",
+		a.name AS "name",
+		a.sort AS "sort",
+		a.href AS "href",
+		a.target AS "target",
+		a.icon AS "icon",
+		a.is_show AS "isShow",
+		a.permission AS "permission",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.img_url AS "imgUrl",
+		p.name AS "parent.name",
+		<include refid="cmsSiteColumns"/>
+	</sql>
+
+	<sql id="cmssMenuAllColumns">
+		a.id AS "id",
+		a.parent_id AS "parent.id",
+		a.parent_ids AS "parentIds",
+		a.menu_id AS "menu.id",
+		a.site_id AS "site.id",
+		a.name AS "name",
+		a.sort AS "sort",
+		a.href AS "href",
+		a.target AS "target",
+		a.icon AS "icon",
+		a.is_show AS "isShow",
+		a.permission AS "permission",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.img_url AS "imgUrl",
+		p.name AS "parent.name",
+		<include refid="cmsSiteColumns"/>,
+		<include refid="cmsSiteParentColumns"/>
+	</sql>
+
+	<sql id="cmsSiteColumns">
+		b.parent_id AS "site.parent.id",
+		b.parent_ids AS "site.parentIds",
+		b.config_id AS "site.config.id",
+		b.name AS "site.name",
+		b.is_curr AS "site.isCurr",
+		b.is_zzd AS "site.isZzd",
+		b.create_by AS "site.createBy.id",
+		b.create_date AS "site.createDate",
+		b.update_by AS "site.updateBy.id",
+		b.update_date AS "site.updateDate",
+		b.remarks AS "site.remarks",
+		b.del_flag AS "site.delFlag"
+	</sql>
+
+	<sql id="cmsSiteParentColumns">
+		sp.parent_id AS "site.parent.parent.id",
+		sp.parent_ids AS "site.parent.parentIds",
+		sp.config_id AS "site.parent.config.id",
+		sp.name AS "site.parent.name",
+		sp.is_curr AS "site.parent.isCurr",
+		sp.is_zzd AS "site.parent.isZzd",
+		sp.create_by AS "site.parent.createBy.id",
+		sp.create_date AS "site.parent.createDate",
+		sp.update_by AS "site.parent.updateBy.id",
+		sp.update_date AS "site.parent.updateDate",
+		sp.remarks AS "site.parent.remarks",
+		sp.del_flag AS "site.parent.delFlag"
+	</sql>
+
+	<sql id="cmssMenuJoins">
+		LEFT JOIN cmss_menu p ON p.id = a.parent_id
+		LEFT JOIN cms_site b ON b.id = a.site_id
+		LEFT JOIN cms_site sp ON sp.id = b.parent_id
+	</sql>
+
+	<select id="get" resultType="CmssMenu">
+		SELECT
+			<include refid="cmssMenuColumns"/>
+		FROM cmss_menu a
+		<include refid="cmssMenuJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getByName" resultType="CmssMenu">
+		SELECT DISTINCT
+				<include refid="cmssMenuColumns"/>
+		FROM cmss_menu a
+		<include refid="cmssMenuJoins"/>
+		where a.del_flag = '0' and a.name= #{name}
+	</select>
+
+	<select id="getByHref" resultType="CmssMenu">
+		SELECT
+			<include refid="cmssMenuColumns"/>
+		FROM cmss_menu a
+		<include refid="cmssMenuJoins"/>
+		WHERE a.del_flag = '0' and a.href =#{href}
+	</select>
+
+	<select id="findList" resultType="CmssMenu">
+		SELECT
+			<include refid="cmssMenuColumns"/>
+		FROM cmss_menu a
+		<include refid="cmssMenuJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="parent != null and parent.id != null and parent.id != ''">
+				AND a.parent_id = #{parent.id}
+			</if>
+			<if test="parentIds != null and parentIds != ''">
+				AND a.parent_ids LIKE
+					<if test="dbName == 'oracle'">'%'||#{parentIds}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{parentIds}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{parentIds},'%')</if>
+			</if>
+			<if test="menu != null">
+				<if test="menu.id != null and menu.id != ''">
+					AND a.menu_id = #{menu.id}
+				</if>
+			</if>
+			<if test="site != null">
+				<if test="site.id != null and site.id != ''">
+					AND a.site_id = #{site.id}
+				</if>
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="isShow != null and isShow != ''">
+				AND a.is_show = #{isShow}
+			</if>
+		</where>
+		ORDER BY a.sort ASC
+	</select>
+
+	<select id="findListBySite" resultType="CmssMenu">
+		SELECT
+			<include refid="cmssMenuColumns"/>
+		FROM cmss_menu a
+		<include refid="cmssMenuJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL} AND a.site_id = #{site.id}
+			<if test="parent != null and parent.id != null and parent.id != ''">
+				AND a.parent_id = #{parent.id}
+			</if>
+			<if test="parentIds != null and parentIds != ''">
+				AND a.parent_ids LIKE
+					<if test="dbName == 'oracle'">'%'||#{parentIds}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{parentIds}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{parentIds},'%')</if>
+			</if>
+			<if test="menu != null">
+				<if test="menu.id != null and menu.id != ''">
+					AND a.menu_id = #{menu.id}
+				</if>
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name LIKE
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="isShow != null and isShow != ''">
+				AND a.is_show = #{isShow}
+			</if>
+		</where>
+		ORDER BY a.sort ASC
+	</select>
+
+	<select id="findAllList" resultType="CmssMenu">
+		SELECT
+			<include refid="cmssMenuColumns"/>
+		FROM cmss_menu a
+		<include refid="cmssMenuJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		ORDER BY a.sort ASC
+	</select>
+
+	<select id="findByParentIdsLike" resultType="CmssMenu">
+		SELECT
+			a.id,
+			a.parent_id AS "parent.id",
+			a.parent_ids
+		FROM cmss_menu a
+		<include refid="cmssMenuJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.parent_ids LIKE #{parentIds}
+		</where>
+		ORDER BY a.sort ASC
+	</select>
+
+	<insert id="insert">
+		INSERT INTO cmss_menu(
+			id,
+			parent_id,
+			parent_ids,
+			menu_id,
+			site_id,
+			name,
+			sort,
+			href,
+			target,
+			icon,
+			is_show,
+			permission,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			img_url
+		) VALUES (
+			#{id},
+			#{parent.id},
+			#{parentIds},
+			#{menu.id},
+			#{site.id},
+			#{name},
+			#{sort},
+			#{href},
+			#{target},
+			#{icon},
+			#{isShow},
+			#{permission},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{imgUrl}
+		)
+	</insert>
+
+	<insert id="insertPL" >
+		INSERT INTO cmss_menu(
+			id,
+			parent_id,
+			parent_ids,
+			menu_id,
+			site_id,
+			name,
+			sort,
+			href,
+			target,
+			icon,
+			is_show,
+			permission,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			img_url
+		) VALUES (
+		<foreach item="item" collection="entitys" index="index" separator=",">
+			(
+			#{item.id},
+			#{item.parent.id},
+			#{item.parentIds},
+			#{item.menu.id},
+			#{item.site.id},
+			#{item.name},
+			#{item.sort},
+			#{item.href},
+			#{item.target},
+			#{item.icon},
+			#{item.isShow},
+			#{item.permission},
+			#{item.createBy.id},
+			#{item.createDate},
+			#{item.updateBy.id},
+			#{item.updateDate},
+			#{item.remarks},
+			#{item.delFlag},
+			#{item.imgUrl}
+			)
+		</foreach>
+	</insert>
+
+	<update id="update">
+		UPDATE cmss_menu SET
+			parent_id = #{parent.id},
+			parent_ids = #{parentIds},
+			menu_id = #{menu.id},
+			site_id = #{site.id},
+			name = #{name},
+			sort = #{sort},
+			href = #{href},
+			target = #{target},
+			icon = #{icon},
+			is_show = #{isShow},
+			permission = #{permission},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			img_url = #{imgUrl}
+		WHERE id = #{id}
+	</update>
+
+	<update id="updateSort">
+		UPDATE cmss_menu SET
+			sort = #{sort}
+		WHERE id = #{id}
+	</update>
+
+	<update id="updateIsShow">
+		UPDATE cmss_menu SET
+			is_show = #{isShow}
+		WHERE id = #{id}
+	</update>
+
+	<update id="updatePL" parameterType="java.util.List" >
+		UPDATE cmss_menu
+		<trim prefix="set" suffixOverrides=",">
+						<trim prefix="parent_id =case" suffix="end,">
+				<foreach item="item" collection="entitys" index="index">
+					when id=#{item.id} then #{item.parent.id}
+				</foreach>
+			</trim>
+			<trim prefix="parent_ids =case" suffix="end,">
+				<foreach item="item" collection="entitys" index="index">
+					when id=#{item.id} then #{item.parentIds}
+				</foreach>
+			</trim>
+			<trim prefix="menu_id =case" suffix="end,">
+				<foreach item="item" collection="entitys" index="index">
+					when id=#{item.id} then #{item.menu.id}
+				</foreach>
+			</trim>
+			<trim prefix="site_id =case" suffix="end,">
+				<foreach item="item" collection="entitys" index="index">
+					when id=#{item.id} then #{item.site.id}
+				</foreach>
+			</trim>
+			<trim prefix="name =case" suffix="end,">
+				<foreach item="item" collection="entitys" index="index">
+					when id=#{item.id} then #{item.name}
+				</foreach>
+			</trim>
+			<trim prefix="sort =case" suffix="end,">
+				<foreach item="item" collection="entitys" index="index">
+					when id=#{item.id} then #{item.sort}
+				</foreach>
+			</trim>
+			<trim prefix="href =case" suffix="end,">
+				<foreach item="item" collection="entitys" index="index">
+					when id=#{item.id} then #{item.href}
+				</foreach>
+			</trim>
+			<trim prefix="target =case" suffix="end,">
+				<foreach item="item" collection="entitys" index="index">
+					when id=#{item.id} then #{item.target}
+				</foreach>
+			</trim>
+			<trim prefix="icon =case" suffix="end,">
+				<foreach item="item" collection="entitys" index="index">
+					when id=#{item.id} then #{item.icon}
+				</foreach>
+			</trim>
+			<trim prefix="is_show =case" suffix="end,">
+				<foreach item="item" collection="entitys" index="index">
+					when id=#{item.id} then #{item.isShow}
+				</foreach>
+			</trim>
+			<trim prefix="permission =case" suffix="end,">
+				<foreach item="item" collection="entitys" index="index">
+					when id=#{item.id} then #{item.permission}
+				</foreach>
+			</trim>
+			<trim prefix="update_by =case" suffix="end,">
+				<foreach item="item" collection="entitys" index="index">
+					when id=#{item.id} then #{item.updateBy.id}
+				</foreach>
+			</trim>
+			<trim prefix="update_date =case" suffix="end,">
+				<foreach item="item" collection="entitys" index="index">
+					when id=#{item.id} then #{item.updateDate}
+				</foreach>
+			</trim>
+			<trim prefix="remarks =case" suffix="end,">
+				<foreach item="item" collection="entitys" index="index">
+					when id=#{item.id} then #{item.remarks}
+				</foreach>
+			</trim>
+			<trim prefix="img_url =case" suffix="end,">
+				<foreach item="item" collection="entitys" index="index">
+					when id=#{item.id} then #{item.imgUrl}
+				</foreach>
+			</trim>
+
+		</trim>
+		WHERE id in
+		<foreach item="item" collection="entitys" separator="," open="("
+			close=")">
+			#{item.id}
+		</foreach>
+	</update>
+
+
+	<update id="updateParentIds">
+		UPDATE cmss_menu SET
+			parent_id = #{parent.id},
+			parent_ids = #{parentIds}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		UPDATE cmss_menu SET
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id} OR parent_ids LIKE '%,'||#{id}||',%'
+	</update>
+
+	<update id="deletePL">
+		UPDATE cmss_menu SET
+			del_flag = #{DEL_FLAG_DELETE}
+			WHERE id in
+			<foreach item="id" collection="ids" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+	</update>
+
+	<update id="deleteWL">
+		DELETE FROM cmss_menu WHERE id = #{id}
+	</update>
+
+	<update id="deleteWLPL">
+		DELETE FROM cmss_menu WHERE id in
+		<foreach item="id" collection="ids" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+
+	<update id="deleteWLAll">
+		DELETE FROM cmss_menu
+	</update>
+</mapper>

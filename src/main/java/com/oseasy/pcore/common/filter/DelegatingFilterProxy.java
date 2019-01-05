@@ -32,6 +32,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
+import com.oseasy.pcms.common.utils.CmsUtil;
 import com.oseasy.pcore.common.utils.SpringContextHolder;
 import com.oseasy.pcore.common.utils.license.License;
 import com.oseasy.pcore.modules.authorize.service.AuthorizeService;
@@ -283,6 +284,7 @@ public class DelegatingFilterProxy extends GenericFilterBean {
         HttpServletResponse hresponse = (HttpServletResponse)response;
 		String url = hrequest.getRequestURI();
 		//fifter  start
+		CmsUtil.putCurSite(hrequest, hresponse);
 
 		if ("/a".equals(url) || url.indexOf("/a?") > -1||"/a/login".equals(url) || url.indexOf("/a/login?") > -1) {// 只对指定过滤参数后缀进行过滤
 			if (SysLicenseService.unValid) {

@@ -39,7 +39,7 @@
             </div>
         </div>
         <!--导航部分-->
-        <%--<cms:frontCategorysIndex></cms:frontCategorysIndex>--%>
+        <%--<pcms:fcmssNavContainer></pcms:fcmssNavContainer>--%>
         <ul id="header_info" style="margin-bottom: 0px;">
             <c:forEach var="pitem" items="${fns:getWebCurrMenus() }" varStatus="idx">
                 <c:if test="${fns:checkCategory(pitem.id) }">

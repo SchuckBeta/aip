@@ -17,7 +17,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.oseasy.initiate.modules.sysconfig.utils.SysConfigUtil;
+import com.oseasy.pcms.common.utils.CmsUtil;
+import com.oseasy.pcms.modules.cmss.entity.CmsSite;
+import com.oseasy.pcore.common.config.CorePages;
 import com.oseasy.pcore.common.config.CoreSval;
+import com.oseasy.pcore.common.config.CoreSval.CorePaths;
 import com.oseasy.pcore.common.config.Global;
 import com.oseasy.pcore.common.security.shiro.session.SessionDAO;
 import com.oseasy.pcore.common.utils.IdGen;
@@ -53,22 +57,32 @@ public class Fcontroller extends BaseController{
         return LOGIN_FRONT;
     }
 
-	/*内容模板静态文件*/
-	@RequestMapping(value = "cms/{template}/{pageName}")
-	public String modelCms(@PathVariable String pageName, @PathVariable String template,Model model) {
-		return "template/cms/"+template+"/"+pageName;
-	}
-
-
     /**
-     * 登录成功，进入管理首页
+     * 登录成功，进入前台首页
      */
     @RequestMapping(value = "")
     public String index(HttpServletRequest request,Model model, HttpServletResponse response) {
         if (logger.isDebugEnabled()) {
             logger.debug("show index, active session size: {}", sessionDAO.getActiveSessions(false).size());
         }
-        return "modules/website/indexForTemplate";
+//      return CorePages.FIDX_VOLD.getIdxUrl();
+        return CorePages.FIDX_V1.getIdxUrl();
+    }
+
+    /*
+     * 当前站点内容模板静态文件
+     */
+    @RequestMapping(value = "/{tpl}/{page}")
+    public String curSitePage( @PathVariable String tpl, @PathVariable String page, Model model, HttpServletRequest request, HttpServletResponse response) {
+        CmsSite curSite = CmsUtil.getCurr(request, response);
+        System.out.println(CorePaths.PH_LAYOUTS_SITES.getKey() + StringUtil.LINE
+                + curSite.getParent().getKeyss() + StringUtil.LINE
+                + curSite.getKeyss() + CoreSval.getFrontPath()+ StringUtil.LINE
+                + tpl + StringUtil.LINE + page);
+        return CorePaths.PH_LAYOUTS_SITES.getKey() + StringUtil.LINE
+                + curSite.getParent().getKeyss() + StringUtil.LINE
+                + curSite.getKeyss() + CoreSval.getFrontPath()+ StringUtil.LINE
+                + tpl + StringUtil.LINE + page;
     }
 
 	@RequestMapping(value = "login", method = RequestMethod.GET)
@@ -189,5 +203,15 @@ public class Fcontroller extends BaseController{
     @ResponseBody
     public String loginUserId() {
         return CoreUtils.getUser().getId();
+    }
+
+
+
+
+
+    /*内容模板静态文件*/
+    @RequestMapping(value = "cms/{tpl}/{page}")
+    public String modelCms(@PathVariable String tpl, @PathVariable String page, Model model) {
+        return "template/cms/" + tpl + StringUtil.LINE + page;
     }
 }
