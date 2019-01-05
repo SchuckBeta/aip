@@ -6,7 +6,7 @@
 <head>
     <title>${frontTitle}</title>
     <meta charset="UTF-8">
-    <meta name="decorator" content="comf"/>
+    <meta name="decorator" content="zjlf"/>
 </head>
 <body>
 Welcome Findex

@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="sitemesh" uri="http://www.opensymphony.com/sitemesh/decorator" %>
-<%@ include file="/WEB-INF/views/modules/cms/front/include/taglib.jsp" %>
+<%@ include file="/WEB-INF/views/include/taglib.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -82,10 +82,10 @@
 </head>
 
 <body>
-<%-- <%@ include file="header.jsp" %> --%>
+<%@ include file="header.jsp" %>
 <div id="content">
     <sitemesh:body/>
 </div>
-<%-- <%@ include file="footer.jsp" %> --%>
+<%@ include file="footer.jsp" %>
 </body>
 </html>

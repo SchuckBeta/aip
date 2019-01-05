@@ -65,9 +65,9 @@ public class Fcontroller extends BaseController{
         if (logger.isDebugEnabled()) {
             logger.debug("show index, active session size: {}", sessionDAO.getActiveSessions(false).size());
         }
-        if(CmsUtil.getCurr(request, response) == null){
-            return CoreSval.REDIRECT + Global.getFrontPath() + "/fi";
-        }
+//        if(CmsUtil.getCurr(request, response) == null){
+//            return CoreSval.REDIRECT + Global.getFrontPath() + "/fi";
+//        }
         return CorePages.F_IDXV1.getIdxUrl();
     }
 
