@@ -32,27 +32,21 @@
 				background-repeat: no-repeat; background-size: cover;
 				/* transform: translateY(-50%); */
 				background-attachment: fixed;
-			}
-
-			.section img{
-				left: 130%;
-				position:relative;
-		     	transition: all 600ms ease;
-			}
-			.section p{
-				opacity: 0;
-		     transition: all 600ms ease;
-			}
-			.section .intro{
-				left: -130%;
-				position:relative;
-		     transition: all 600ms ease;
+				text-align: center;
+				padding:auto;
 			}
 
 		   .section .intro{
-		     left: -130%;
-		     position:relative;
-		     transition: all 600ms ease;
+			   color: #fff;
+			   width: 1200px;
+				margin:auto;
+				padding:auto;
+		   }
+		   .intro h1, .intro p{
+				text-align: left;
+		   }
+   		   .intro p{
+   		   		text-indent: 2em;
 		   }
 
 			#menu li {
@@ -127,49 +121,80 @@
 <div id="fullpage">
 	<div class="section" style="background-image:url('/images/zjl/f/fi_bg.jpg');">
 		<div class="intro">
-			<h1>Fixed elements</h1>
-			<p>Create your own headers and footers</p>
+			<h1>中骏龙新能源</h1>
+			<p>
+				武汉中骏龙新能源科技有限公司是一家专为电动汽车厂家配套提供具有世界领先水平的新能源汽车动力电池（高电压大容量超薄型石墨烯电池）和氢燃料电池发电机的新能源高科技企业。企业专家团队是由我国长年从事军工高科技和石墨烯新材料研发的专家组成。公司注册资金为88889万元，发改委备案投资218亿元，公司注册地武汉阳逻经济开发区。
+			</p>
 		</div>
 	</div>
 	<div class="section" style="background-image:url('/images/zjl/f/fi_bg_1.jpg');">
 		<div class="intro">
-			<h1>Enjoy it</h1>
+			<h1>产品“六大”特点</h1>
+			<p>
+				一是环保；二是免充电无限续航；三是生产过程无污染；四是安全；五是寿命长；六是成本大大降低。它的诞生将是新能源汽车行业一次颠覆性的革命。
+			</p>
 		</div>
 	</div>
 	<div class="section" style="background-image:url('/images/zjl/f/fi_bg_2.jpg');">
 		<div class="slide" style="background-image:url('/images/zjl/f/fi_bg_2_1.jpg');">
 			<div class="intro">
-				<h1>How to do it</h1>
+				<h1>大动力、零污染、高寿命、免充电、无限续航</h1>
+				<p>
+					目前该项技术国家知识产权局已批准颁发了四项专利（详见专利原件），它的问世从真正意义上实现了人们和社会期盼的大动力、零污染、高寿命、免充电、无限续航的目标。是汽车新能源发展的一个新的里程碑，同时必将向其它行业延伸，具有深远的划时代的意义
+				</p>
+			</div>
+		</div>
+		<div class="slide" style="background-image:url('/images/zjl/f/fi_bg_2_1.jpg');">
+			<div class="intro">
+				<h1>大动力</h1>
 				<p>
 					You will need to place your header and footer outside the plugin's wrapper.
 					This way it won't move on scrolling. Take a look at the source code of this page.
 				</p>
 			</div>
 		</div>
-
 		<div class="slide" style="background-image:url('/images/zjl/f/fi_bg_2_2.jpg');">
-			<h1>Slide 2</h1>
-			<img src="imgs/iphone-blue.png" alt="iphone" id="iphone-two" />
+			<div class="intro">
+				<h1>零污染</h1>
+				<p>
+					You will need to place your header and footer outside the plugin's wrapper.
+					This way it won't move on scrolling. Take a look at the source code of this page.
+				</p>
+			</div>
 		</div>
-
+		<div class="slide" style="background-image:url('/images/zjl/f/fi_bg_2_2.jpg');">
+			<div class="intro">
+				<h1>高寿命</h1>
+				<p>
+					You will need to place your header and footer outside the plugin's wrapper.
+					This way it won't move on scrolling. Take a look at the source code of this page.
+				</p>
+			</div>
+		</div>
 		<div class="slide" style="background-image:url('/images/zjl/f/fi_bg_2_3.jpg');">
-			<h1>Slide 2</h1>
-			<img src="imgs/iphone-blue.png" alt="iphone" id="iphone-two" />
+			<div class="intro">
+				<h1>无限续航</h1>
+				<p>
+					You will need to place your header and footer outside the plugin's wrapper.
+					This way it won't move on scrolling. Take a look at the source code of this page.
+				</p>
+			</div>
 		</div>
 	</div>
 	<div class="section" style="background-image:url('/images/zjl/f/fi_bg_3.jpg');">
 		<div class="intro">
-			<h1>Enjoy it</h1>
+			<h1>百亿规划</h1>
+			<p>
+				总体规划投资218亿元人民币，拟建60条生产线和华中最大的免充电无限续航新能源汽车销售基地。计划每条生产线年产值18亿元人民币，年生产总值为1080亿元人民币，纯利为33.52%，届时每年60条生产线可实现纯利326亿元人民币。
+			</p>
 		</div>
 	</div>
 	<div class="section" style="background-image:url('/images/zjl/f/fi_bg_4.jpg');">
 		<div class="intro">
-			<h1>Enjoy it</h1>
-		</div>
-	</div>
-	<div class="section" style="background-image:url('/images/zjl/f/fi_bg_5.jpg');">
-		<div class="intro">
-			<h1>Enjoy it</h1>
+			<h1>团队和技术</h1>
+			<p>
+				专家团队和技术力量及管理团队已准备就绪，石墨烯原材料及生产流水线的意向合同已订，总之我们已在人力、物力、管理及技术等方已做好了一切准备，争取早日变为现实。
+			</p>
 		</div>
 	</div>
 </div>
