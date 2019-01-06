@@ -11,8 +11,11 @@
 <%@ taglib prefix="act" tagdir="/WEB-INF/tags/act" %>
 <%@ taglib prefix="cms" tagdir="/WEB-INF/tags/cms" %>
 <%@ taglib prefix="flow" tagdir="/WEB-INF/tags/flow" %> --%>
-<c:set var="ctx" value="${pageContext.request.contextPath}${fns:getAdminPath()}"/>
+<c:set var="ctr" value="${pageContext.request.contextPath}/"/>
+<c:set var="cta" value="${pageContext.request.contextPath}${fns:getAdminPath()}"/>
+<c:set var="ctf" value="${pageContext.request.contextPath}${fns:getFrontPath()}"/>
 <c:set var="ctxStatic" value="${pageContext.request.contextPath}/static"/>
+<c:set var="ctx" value="${pageContext.request.contextPath}${fns:getAdminPath()}"/>
 <c:set var="ctxFront" value="${pageContext.request.contextPath}${fns:getFrontPath()}"/>
 <c:set var="frontTitle" value="${fns:getFrontTitle()}"/>
 <c:set var="backgroundTitle" value="${fns:getBackgroundTitle()}"/>

@@ -5,16 +5,17 @@
 <head>
     <title>${frontTitle}</title>
     <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="${ctxStatic}/frontCyjd/bootstrap.min.css"/>
     <link rel="stylesheet" type="text/css" href="${ctxStatic}/fullpage/fullpage.min.css">
     <script src="${ctxStatic}/jquery/jquery-1.8.3.min.js" type="text/javascript"></script>
     <script src="${ctxStatic}/fullpage/fullpage.min.js" type="text/javascript"></script>
     <style type="text/css">
     		#header, #footer{
 				position:fixed;
-				height: 50px;
+				height: 80px;
 				display:block;
 				width: 100%;
-				background: #333;
+				background: #fff;
 				z-index:9;
 				text-align:center;
 				color: #f2f2f2;
@@ -89,13 +90,25 @@
 				z-index: 70;
 				width: 100%;
 				padding: 0;
-				margin:0;
+				margin:10px;
 			}
 			.fp-slidesNav.bottom{
 					bottom: 25px;
 			}
-
     </style>
+    <script type="text/javascript">
+    	function showHeaderMenu(hrbtn){
+    		console.info($(hrbtn));
+   			var hm = "#headerMenu";
+   			if($(hm).css("display") == "none"){
+   				$(hm).show();
+   				$(hrbtn).css("background-image", "url('/images/zjl/f/nav-bt-close.png')");
+   			}else{
+   				$(hm).hide();
+   				$(hrbtn).css("background-image", "url('/images/zjl/f/nav-bt-open.png')");
+   			}
+    	}
+    </script>
 </head>
 <body>
 <div id="header">
@@ -108,6 +121,41 @@
 	    <li data-menuanchor="sec6"><a href="#sec6">Third slide</a></li>
 	</ul>
 </div>
+<div id="headerBtn" style="position:fixed; top: 0px; left: 0px; height: 80px; width: 230px; z-index: 999; background-color: #fff;">
+	<div class="logo" style="position:absolute; top:0px; left:0px; height: 80px; width: 150px;display: inline-block; background-image: url('/images/zjl/f/nav-logo.png'); background-repeat: no-repeat; background-position: center center; background-color: rgb(23,42,126); margin: 0px; padding: 0px;"></div>
+	<div class="btn" onclick="showHeaderMenu(this)" style="position:absolute; top:0px; right:0px; height: 80px; width: 80px; display: inline-block; background-image: url('/images/zjl/f/nav-bt-open.png'); background-repeat: no-repeat; background-position: center center; background-color: #fff; margin: 0px; padding: 0px;"></div>
+</div>
+<div id="headerMenu" style="display: none; min-height:600px; height:60%; width: 100%;  position:fixed; top: 0px; left: 0px; background-color: #cc33ff; z-index: 998; text-align: center; padding-top: 80px;">
+	<div class="container">
+	    <div class="row">
+	      <div class="span4">AAAAAAAAAAAA</div>
+	      <div class="span8">BBBbbbb.</div>
+	    </div>
+	    <div class="row">
+	      <div class="span2">AAAAAAAAAAAA</div>
+	      <div class="span2">BBBbbbb.</div>
+	      <div class="span2">AAAAAAAAAAAA</div>
+	      <div class="span2">BBBbbbb.</div>
+	      <div class="span2">AAAAAAAAAAAA</div>
+	      <div class="span2">BBBbbbb.</div>
+	      <div class="span2">AAAAAAAAAAAA</div>
+	      <div class="span2">BBBbbbb.</div>
+	      <div class="span2">AAAAAAAAAAAA</div>
+	      <div class="span2">BBBbbbb.</div>
+	      <div class="span2">AAAAAAAAAAAA</div>
+	      <div class="span2">BBBbbbb.</div>
+	    </div>
+	    <div class="row">
+	      <div class="span4">...</div>
+	      <div class="span8">...</div>
+	    </div>
+	    <div class="row">
+	      <div class="span4">...</div>
+	      <div class="span8">...</div>
+	    </div>
+	</div>
+</div>
+
 <div id="fullpage">
 	<div class="section" style="background-image:url('/images/zjl/f/fi_bg.jpg');">
 		<div class="intro">
