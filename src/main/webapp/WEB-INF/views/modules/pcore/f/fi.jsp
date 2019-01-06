@@ -107,16 +107,6 @@
 	    <li data-menuanchor="sec5"><a href="#sec5">Second slide</a></li>
 	    <li data-menuanchor="sec6"><a href="#sec6">Third slide</a></li>
 	</ul>
-
-	<!-- <select id="demosMenu">
-	  <option selected>Choose Demo</option>
-	  <option id="jquery-adapter">jQuery adapter</option>
-	  <option id="active-slide">Active section and slide</option>
-	  <option id="auto-height">Auto height</option>
-	  <option id="autoplay-video-and-audio">Autoplay Video and Audio</option>
-	  <option id="backgrounds">Background images</option>
-	  <option id="backgrounds-fixed">Fixed fullscreen backgrounds</option>
-	</select> -->
 </div>
 <div id="fullpage">
 	<div class="section" style="background-image:url('/images/zjl/f/fi_bg.jpg');">
@@ -135,8 +125,8 @@
 			</p>
 		</div>
 	</div>
-	<div class="section" style="background-image:url('/images/zjl/f/fi_bg_2.jpg');">
-		<div class="slide" style="background-image:url('/images/zjl/f/fi_bg_2_1.jpg');">
+	<div class="section">
+		<div class="slide" style="background-image:url('/images/zjl/f/fi_bg_2.jpg');">
 			<div class="intro">
 				<h1>大动力、零污染、高寿命、免充电、无限续航</h1>
 				<p>
@@ -180,6 +170,15 @@
 				</p>
 			</div>
 		</div>
+		<div class="slide" style="background-image:url('/images/zjl/f/fi_bg_2_4.jpg');">
+			<div class="intro">
+				<h1>无限续航</h1>
+				<p>
+					You will need to place your header and footer outside the plugin's wrapper.
+					This way it won't move on scrolling. Take a look at the source code of this page.
+				</p>
+			</div>
+		</div>
 	</div>
 	<div class="section" style="background-image:url('/images/zjl/f/fi_bg_3.jpg');">
 		<div class="intro">
@@ -190,6 +189,30 @@
 		</div>
 	</div>
 	<div class="section" style="background-image:url('/images/zjl/f/fi_bg_4.jpg');">
+		<div class="intro">
+			<h1>团队和技术</h1>
+			<p>
+				专家团队和技术力量及管理团队已准备就绪，石墨烯原材料及生产流水线的意向合同已订，总之我们已在人力、物力、管理及技术等方已做好了一切准备，争取早日变为现实。
+			</p>
+		</div>
+	</div>
+	<div class="section" style="background-image:url('/images/zjl/f/fi_bg_5.jpg');">
+		<div class="intro">
+			<h1>团队和技术</h1>
+			<p>
+				专家团队和技术力量及管理团队已准备就绪，石墨烯原材料及生产流水线的意向合同已订，总之我们已在人力、物力、管理及技术等方已做好了一切准备，争取早日变为现实。
+			</p>
+		</div>
+	</div>
+	<div class="section" style="background-image:url('/images/zjl/f/fi_bg_6.jpg');">
+		<div class="intro">
+			<h1>团队和技术</h1>
+			<p>
+				专家团队和技术力量及管理团队已准备就绪，石墨烯原材料及生产流水线的意向合同已订，总之我们已在人力、物力、管理及技术等方已做好了一切准备，争取早日变为现实。
+			</p>
+		</div>
+	</div>
+		<div class="section" style="background-image:url('/images/zjl/f/fi_bg_7.jpg');">
 		<div class="intro">
 			<h1>团队和技术</h1>
 			<p>
