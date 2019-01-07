@@ -71,8 +71,8 @@ public class ActYwGnodeService extends CrudService<ActYwGnodeDao, ActYwGnode> {
     private ActYwDao actYwDao;
     @Autowired
     private ActYwGroleService actYwGroleService;
-    @Autowired
-    private ProModelService proModelService;
+//    @Autowired
+//    private ProModelService proModelService;
     @Autowired
     private ActTaskService actTaskService;
     @Autowired
@@ -1813,9 +1813,9 @@ public class ActYwGnodeService extends CrudService<ActYwGnodeDao, ActYwGnode> {
             js.put("msg","流程当前结点数据不存在[proInsId= "+proInsId+"]！");
             return js;
         }
-        if(curGnode!=null){
-            js=proModelService.getJsByProInsId(curGnode,proInsId);
-        }
+//        if(curGnode!=null){
+//            js=proModelService.getJsByProInsId(curGnode,proInsId);
+//        }
         return js;
     }
 

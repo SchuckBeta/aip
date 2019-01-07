@@ -156,8 +156,8 @@
     <import resource="spring/spring-mvc.xml" />
     <import resource="spring/spring-context-shiro.xml" />
     <import resource="spring/spring-context-activiti.xml" />
-    <import resource="spring/spring-context-ftp.xml" />
-    <import resource="spring/spring-context-scheduler.xml" />
+    <!-- <import resource="spring/spring-context-ftp.xml" /> -->
+    <!-- <import resource="spring/spring-context-scheduler.xml" /> -->
     <!-- <import resource="spring-context-jedis-cluster.xml" /> -->
     <import resource="spring/spring-context-jedis-alone.xml" />
 
