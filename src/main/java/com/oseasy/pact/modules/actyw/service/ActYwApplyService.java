@@ -23,7 +23,6 @@ import com.oseasy.initiate.modules.proproject.entity.ProProject;
 import com.oseasy.initiate.modules.sys.service.SystemService;
 import com.oseasy.initiate.modules.sys.tool.SysNoType;
 import com.oseasy.initiate.modules.sys.tool.SysNodeTool;
-import com.oseasy.initiate.modules.task.service.TaskScheduleJobService;
 import com.oseasy.pact.modules.act.dao.ActDao;
 import com.oseasy.pact.modules.act.entity.Act;
 import com.oseasy.pact.modules.act.service.ActTaskService;
@@ -73,8 +72,6 @@ public class ActYwApplyService extends CrudService<ActYwApplyDao, ActYwApply> {
 	ActDao actDao;
 	@Autowired
 	private SysAttachmentService sysAttachmentService;
-	@Autowired
-	TaskScheduleJobService taskScheduleJobService;
 
 	public ActYwApply get(String id) {
 		return super.get(id);

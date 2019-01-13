@@ -73,8 +73,8 @@ public class ActYwGnodeService extends CrudService<ActYwGnodeDao, ActYwGnode> {
     private ActYwGroleService actYwGroleService;
 //    @Autowired
 //    private ProModelService proModelService;
-    @Autowired
-    private ActTaskService actTaskService;
+//    @Autowired
+//    private ActTaskService actTaskService;
     @Autowired
     private ActYwAuditInfoService actYwAuditInfoService;
     //查询指派人员
@@ -235,31 +235,31 @@ public class ActYwGnodeService extends CrudService<ActYwGnodeDao, ActYwGnode> {
        */
       public List<ActYwGnode> queryGnodeByAuditList(String yearId, String ppid, String groupId, String promdelId, String proInsId){
           List<ActYwGnode> gnodes = queryGnodeByAuditList(yearId, ppid, groupId, promdelId);
-          ActYwGnode curGnode = actTaskService.getNodeByProInsIdByGroupId(groupId, proInsId);
-          if(curGnode == null){
-              return gnodes;
-          }
-
-          if((GnodeType.getIdByProcess()).contains(curGnode.getType())){
-              curGnode = getBygTime(curGnode.getParentId(), ppid, yearId);
-          }else{
-              curGnode = getBygTime(curGnode.getId(), ppid, yearId);
-          }
-
-          if(curGnode == null){
-              return gnodes;
-          }
-
-          Boolean notInList = true;
-          for (ActYwGnode cg : gnodes) {
-             if((cg.getId()).equals(curGnode.getId())){
-                 notInList = false;
-             }
-          }
-
-          if(notInList){
-              gnodes.add(curGnode);
-          }
+//          ActYwGnode curGnode = actTaskService.getNodeByProInsIdByGroupId(groupId, proInsId);
+//          if(curGnode == null){
+//              return gnodes;
+//          }
+//
+//          if((GnodeType.getIdByProcess()).contains(curGnode.getType())){
+//              curGnode = getBygTime(curGnode.getParentId(), ppid, yearId);
+//          }else{
+//              curGnode = getBygTime(curGnode.getId(), ppid, yearId);
+//          }
+//
+//          if(curGnode == null){
+//              return gnodes;
+//          }
+//
+//          Boolean notInList = true;
+//          for (ActYwGnode cg : gnodes) {
+//             if((cg.getId()).equals(curGnode.getId())){
+//                 notInList = false;
+//             }
+//          }
+//
+//          if(notInList){
+//              gnodes.add(curGnode);
+//          }
           return gnodes;
       }
 
@@ -1703,36 +1703,37 @@ public class ActYwGnodeService extends CrudService<ActYwGnodeDao, ActYwGnode> {
      */
     public List<GnodeView> queryGnodeByPass(String groupId, String projectId,String proInsId,String endGnodeId) {
         List<GnodeView> gviews = Lists.newArrayList();
-        ActYwGnode curGnode = null;
-        /**
-         * 若流程节点ID为空，当前节点定位开始节点.
-         */
-
-        //根据gnodeId得到最后一个结束任务节点
-        if(StringUtil.isNotEmpty(endGnodeId)){
-            curGnode = get(endGnodeId);
-        }else {
-            if (StringUtil.isNotEmpty(proInsId)) {
-                curGnode = actTaskService.getNodeByProInsIdByGroupId(groupId, proInsId);
-            } else {
-                curGnode = getStart(groupId);
-            }
-        }
-        ActYwGroup pactYwGroup = new ActYwGroup(groupId);
-        ActYwGnode actYwGnode=new ActYwGnode(pactYwGroup);
-        actYwGnode.setActYwGtime(new ActYwGtime());
-        actYwGnode.getActYwGtime().setProjectId(projectId);
-        List<ActYwGnode> gnodes = findListTimeBygGroup(actYwGnode);
-        gviews = GnodeView.convertsGview(gnodes, curGnode);
-        List<GnodeView> newGview = Lists.newArrayList();
-        for(int i=0;i<gviews.size();i++){
-            GnodeView gnodeView=gviews.get(i);
-            //判断 子流程或节点 并且 状态为结果或者正在进行
-            if((GnodeType.GT_PROCESS.getId().equals(gnodeView.getType())||GnodeType.GT_ROOT_TASK.getId().equals(gnodeView.getType())) && ((gnodeView.getApiStatus()==GnodeView.GV_END)||(gnodeView.getApiStatus()==GnodeView.GV_RUNNING))){
-                newGview.add(gnodeView);
-            }
-        }
-        return newGview;
+//        ActYwGnode curGnode = null;
+//        /**
+//         * 若流程节点ID为空，当前节点定位开始节点.
+//         */
+//
+//        //根据gnodeId得到最后一个结束任务节点
+//        if(StringUtil.isNotEmpty(endGnodeId)){
+//            curGnode = get(endGnodeId);
+//        }else {
+//            if (StringUtil.isNotEmpty(proInsId)) {
+//                curGnode = actTaskService.getNodeByProInsIdByGroupId(groupId, proInsId);
+//            } else {
+//                curGnode = getStart(groupId);
+//            }
+//        }
+//        ActYwGroup pactYwGroup = new ActYwGroup(groupId);
+//        ActYwGnode actYwGnode=new ActYwGnode(pactYwGroup);
+//        actYwGnode.setActYwGtime(new ActYwGtime());
+//        actYwGnode.getActYwGtime().setProjectId(projectId);
+//        List<ActYwGnode> gnodes = findListTimeBygGroup(actYwGnode);
+//        gviews = GnodeView.convertsGview(gnodes, curGnode);
+//        List<GnodeView> newGview = Lists.newArrayList();
+//        for(int i=0;i<gviews.size();i++){
+//            GnodeView gnodeView=gviews.get(i);
+//            //判断 子流程或节点 并且 状态为结果或者正在进行
+//            if((GnodeType.GT_PROCESS.getId().equals(gnodeView.getType())||GnodeType.GT_ROOT_TASK.getId().equals(gnodeView.getType())) && ((gnodeView.getApiStatus()==GnodeView.GV_END)||(gnodeView.getApiStatus()==GnodeView.GV_RUNNING))){
+//                newGview.add(gnodeView);
+//            }
+//        }
+//        return newGview;
+        return null;
     }
 
     /**
